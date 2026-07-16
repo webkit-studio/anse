@@ -4,11 +4,12 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import postgres from "postgres";
+import { sslFor } from "../server/db";
 import { loadEnv, requireEnv } from "./lib/env";
 
 loadEnv();
 const url = process.env.DIRECT_DATABASE_URL ?? requireEnv("DATABASE_URL");
-const sql = postgres(url, { prepare: false, max: 1 });
+const sql = postgres(url, { prepare: false, max: 1, ssl: sslFor(url) });
 
 const migrationsDir = fileURLToPath(new URL("../db/migrations", import.meta.url));
 

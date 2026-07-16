@@ -9,16 +9,32 @@ import { Button, ConfirmButton, Field, NativeSelect, Spinner, TextInput } from "
 function UserCard({ user, onChanged }: { user: UserRow; onChanged: () => void }) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
+  const [editingCode, setEditingCode] = useState(false);
+  const [codeDraft, setCodeDraft] = useState("");
 
-  async function patch(body: Record<string, unknown>) {
+  async function patch(body: Record<string, unknown>): Promise<boolean> {
     setBusy(true);
     try {
       await api(`/api/users/${user.id}`, { method: "PATCH", body });
       onChanged();
+      return true;
     } catch (err) {
       toast(err instanceof Error ? err.message : "Uložení se nepodařilo.");
+      return false;
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function saveCode() {
+    if (!/^\d{6}$/.test(codeDraft)) {
+      toast("Kód musí mít přesně 6 číslic.");
+      return;
+    }
+    if (await patch({ code: codeDraft })) {
+      setEditingCode(false);
+      setCodeDraft("");
+      toast(`Kód pro ${user.name} změněn.`);
     }
   }
 
@@ -41,9 +57,46 @@ function UserCard({ user, onChanged }: { user: UserRow; onChanged: () => void })
     <li className={`user-card ${user.active ? "" : "user-card-inactive"}`}>
       <div className="user-card-main">
         <strong>{user.name}</strong>
-        <span className="user-code" aria-label="Přihlašovací kód">
-          {user.code}
-        </span>
+        {editingCode ? (
+          <div className="user-code-edit">
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              autoFocus
+              aria-label={`Nový kód pro ${user.name}`}
+              placeholder="6 číslic"
+              value={codeDraft}
+              onChange={(e) => setCodeDraft(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            />
+            <Button variant="primary" disabled={busy || codeDraft.length !== 6} onClick={() => void saveCode()}>
+              Uložit
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setEditingCode(false);
+                setCodeDraft("");
+              }}
+              aria-label="Zrušit úpravu kódu"
+            >
+              ✕
+            </Button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="user-code user-code-btn"
+            title="Upravit kód"
+            aria-label={`Upravit kód: ${user.name}`}
+            onClick={() => {
+              setEditingCode(true);
+              setCodeDraft("");
+            }}
+          >
+            {user.code} ✎
+          </button>
+        )}
       </div>
       <div className="user-card-controls">
         <NativeSelect

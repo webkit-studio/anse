@@ -4,12 +4,13 @@
 //  - definice se porovnají s aktuální verzí; změna ⇒ nová verze (staré se nemění)
 import { randomInt } from "node:crypto";
 import postgres from "postgres";
+import { sslFor } from "../server/db";
 import { loadEnv, requireEnv } from "./lib/env";
 import { loadAndValidate } from "./validate-definitions";
 
 loadEnv();
 const url = process.env.DIRECT_DATABASE_URL ?? requireEnv("DATABASE_URL");
-const sql = postgres(url, { prepare: false, max: 1 });
+const sql = postgres(url, { prepare: false, max: 1, ssl: sslFor(url) });
 
 const DEFAULT_USERS = [
   { name: "Marek Konderla", role: "admin" },

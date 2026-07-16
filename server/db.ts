@@ -13,6 +13,11 @@ export function updatedAtUs(alias: string): string {
   return `to_char(${alias}.updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as updated_at`;
 }
 
+/** Lokální Postgres běží bez TLS; Supabase pooler TLS vyžaduje. */
+export function sslFor(url: string): "require" | undefined {
+  return /localhost|127\.0\.0\.1/.test(url) ? undefined : "require";
+}
+
 export function sql(): postgres.Sql {
   if (!client) {
     const url = process.env.DATABASE_URL;
@@ -22,6 +27,7 @@ export function sql(): postgres.Sql {
       max: 1,
       idle_timeout: 20,
       connect_timeout: 10,
+      ssl: sslFor(url),
     });
   }
   return client;

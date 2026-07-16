@@ -856,6 +856,24 @@ input[type="date"] {
   padding: 4px 10px;
 }
 
+.user-code-btn {
+  min-height: var(--tap);
+  border: 1px dashed var(--c-border-strong);
+  cursor: pointer;
+}
+
+.user-code-edit {
+  display: flex;
+  gap: var(--sp-1);
+  align-items: center;
+}
+
+.user-code-edit input {
+  width: 130px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 2px;
+}
+
 .user-card-controls {
   display: flex;
   gap: var(--sp-2);

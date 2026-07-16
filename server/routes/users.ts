@@ -1,5 +1,6 @@
 import { randomInt } from "node:crypto";
 import { userCreateBody, userUpdateBody } from "../../shared/api-contracts";
+import { isTrivialCode } from "../../shared/codes";
 import { invalidateUsersCache } from "../auth";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
@@ -68,12 +69,26 @@ export const userRoutes: Route[] = [
       if (body.name !== undefined) patch.name = body.name;
       if (body.role !== undefined) patch.role = body.role;
       if (body.active !== undefined) patch.active = body.active;
+      if (body.code !== undefined) {
+        if (isTrivialCode(body.code)) {
+          throw new ApiError(400, "Tento kód je příliš snadno uhodnutelný — zvolte jiný.");
+        }
+        patch.code = body.code;
+      }
       if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
 
-      const [user] = await db`
-        update users set ${db(patch)} where id = ${params.id!}
-        returning ${db.unsafe(USER_COLS)}
-      `;
+      let user;
+      try {
+        [user] = await db`
+          update users set ${db(patch)} where id = ${params.id!}
+          returning ${db.unsafe(USER_COLS)}
+        `;
+      } catch (err) {
+        if ((err as { code?: string }).code === "23505") {
+          throw new ApiError(409, "Tento kód už používá jiný uživatel — zvolte jiný.");
+        }
+        throw err;
+      }
       if (!user) throw new ApiError(404, "Uživatel nenalezen.");
       invalidateUsersCache();
       return json({ user });

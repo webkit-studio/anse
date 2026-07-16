@@ -101,6 +101,8 @@ export const userUpdateBody = z.object({
   name: trimmed.pipe(z.string().min(1)).optional(),
   role: z.enum(["technik", "admin"]).optional(),
   active: z.boolean().optional(),
+  /** Ruční změna přihlašovacího kódu (jen admin routa). */
+  code: z.string().regex(/^\d{6}$/, "Kód musí mít přesně 6 číslic.").optional(),
 });
 
 export const settingsBody = z.object({
