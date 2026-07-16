@@ -1,0 +1,46 @@
+[
+  {
+    "code": "SEL-15",
+    "name": "Okenní sítě",
+    "manufacturer": "jackwest",
+    "active": true,
+    "sort": 1,
+    "definitionFile": "definitions/sel15.v1.json"
+  },
+  {
+    "code": "ESD",
+    "name": "Horizontální žaluzie",
+    "manufacturer": "jackwest",
+    "active": true,
+    "sort": 2,
+    "definitionFile": "definitions/esd.v1.json"
+  },
+  {
+    "code": "PLISSE-TBD",
+    "name": "Plissé žaluzie",
+    "manufacturer": "jackwest",
+    "active": false,
+    "sort": 3
+  },
+  {
+    "code": "VZ-TBD",
+    "name": "Venkovní žaluzie",
+    "manufacturer": "jackwest",
+    "active": false,
+    "sort": 4
+  },
+  {
+    "code": "VR-TBD",
+    "name": "Venkovní rolety",
+    "manufacturer": "jackwest",
+    "active": false,
+    "sort": 5
+  },
+  {
+    "code": "VSC-TBD",
+    "name": "Venkovní screeny",
+    "manufacturer": "jackwest",
+    "active": false,
+    "sort": 6
+  }
+]

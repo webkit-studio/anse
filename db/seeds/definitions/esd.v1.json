@@ -1,0 +1,219 @@
+{
+  "groups": [
+    {
+      "key": "zakladni",
+      "label": "Základní údaje",
+      "fields": [
+        {
+          "key": "sirka",
+          "label": "Šířka",
+          "type": "number",
+          "unit": "mm",
+          "required": true,
+          "step": 1,
+          "min": null,
+          "max": null,
+          "warnMin": null,
+          "warnMax": null,
+          "summary": true
+        },
+        {
+          "key": "vyska",
+          "label": "Výška",
+          "type": "number",
+          "unit": "mm",
+          "required": true,
+          "step": 1,
+          "min": null,
+          "max": null,
+          "warnMin": null,
+          "warnMax": null,
+          "summary": true
+        },
+        {
+          "key": "ovladani_strana",
+          "label": "Ovládání (strana)",
+          "type": "select",
+          "required": true,
+          "summary": true,
+          "options": [
+            { "value": "P", "label": "P — pravá" },
+            { "value": "L", "label": "L — levá" }
+          ]
+        },
+        {
+          "key": "barva_lamely",
+          "label": "Barva (kód) lamely",
+          "type": "select",
+          "required": true,
+          "summary": true,
+          "help": "Barvy se sufixem -př. jsou příplatkové.",
+          "options": [
+            { "value": "1", "label": "1" },
+            { "value": "7", "label": "7" },
+            { "value": "17", "label": "17" },
+            { "value": "58", "label": "58" },
+            { "value": "63", "label": "63" },
+            { "value": "302", "label": "302" },
+            { "value": "378", "label": "378" },
+            { "value": "502", "label": "502" },
+            { "value": "570", "label": "570" },
+            { "value": "700", "label": "700" },
+            { "value": "705", "label": "705" },
+            { "value": "707", "label": "707" },
+            { "value": "711", "label": "711" },
+            { "value": "712", "label": "712" },
+            { "value": "713", "label": "713" },
+            { "value": "714", "label": "714" },
+            { "value": "715", "label": "715" },
+            { "value": "716", "label": "716" },
+            { "value": "738", "label": "738" },
+            { "value": "872", "label": "872" },
+            { "value": "7016", "label": "7016" },
+            { "value": "49", "label": "49 -př." },
+            { "value": "56", "label": "56 -př." },
+            { "value": "61", "label": "61 -př." },
+            { "value": "103", "label": "103 -př." },
+            { "value": "110", "label": "110 -př." },
+            { "value": "190", "label": "190 -př." },
+            { "value": "191", "label": "191 -př." },
+            { "value": "423", "label": "423 -př." },
+            { "value": "454", "label": "454 -př." },
+            { "value": "780+", "label": "780+ -př." },
+            { "value": "783+", "label": "783+ -př." },
+            { "value": "814", "label": "814 -př." },
+            { "value": "950", "label": "950 -př." },
+            { "value": "1010", "label": "1010 -př." },
+            { "value": "2002", "label": "2002 -př." },
+            { "value": "6796", "label": "6796 -př." },
+            { "value": "6797", "label": "6797 -př." },
+            { "value": "6798", "label": "6798 -př." },
+            { "value": "8202", "label": "8202 -př." },
+            { "value": "8300", "label": "8300 -př." },
+            { "value": "9940", "label": "9940 -př." },
+            { "value": "9941", "label": "9941 -př." },
+            { "value": "9943", "label": "9943 -př." },
+            { "value": "9944", "label": "9944 -př." },
+            { "value": "9946", "label": "9946 -př." },
+            { "value": "9947", "label": "9947 -př." },
+            { "value": "9948", "label": "9948 -př." },
+            { "value": "9949", "label": "9949 -př." }
+          ]
+        },
+        {
+          "key": "oznaceni_pozice",
+          "label": "Označení pozice",
+          "type": "text",
+          "help": "Nepovinné — místnost se eviduje zvlášť."
+        },
+        {
+          "key": "barva_retizku",
+          "label": "Barva řetízku",
+          "type": "select",
+          "required": true,
+          "default": "Standard",
+          "options": [
+            { "value": "Standard", "label": "Standard" },
+            { "value": "Bílá 9003", "label": "Bílá 9003" },
+            { "value": "Stříbrná 9006", "label": "Stříbrná 9006" },
+            { "value": "Antracit 7016", "label": "Antracit 7016" },
+            { "value": "Zlatý dub 8003", "label": "Zlatý dub 8003" },
+            { "value": "Béžová 1011", "label": "Béžová 1011" },
+            { "value": "Tm. hnědá 8017", "label": "Tm. hnědá 8017" },
+            { "value": "Červenohnědá 8004", "label": "Červenohnědá 8004" }
+          ]
+        },
+        {
+          "key": "delka_retizku",
+          "label": "Délka řetízku",
+          "type": "select",
+          "required": true,
+          "default": "Na výšku",
+          "options": [
+            { "value": "Na výšku", "label": "Na výšku" },
+            { "value": "Jiná", "label": "Jiná" },
+            { "value": "3/4", "label": "3/4" }
+          ]
+        },
+        {
+          "key": "jina_delka_retizku",
+          "label": "Jiná délka řetízku",
+          "type": "text",
+          "required": true,
+          "visibleIf": { "field": "delka_retizku", "op": "eq", "value": "Jiná" },
+          "placeholder": "např. 1100/1600"
+        }
+      ]
+    },
+    {
+      "key": "barva_profilu",
+      "label": "Barva profilu",
+      "fields": [
+        {
+          "key": "profil_horni",
+          "label": "Horní",
+          "type": "select",
+          "required": true,
+          "default": "Bílá 9003",
+          "options": [
+            { "value": "Bílá 9003", "label": "Bílá 9003" },
+            { "value": "Antracit 7016", "label": "Antracit 7016" },
+            { "value": "Tmavě hnědá 8017", "label": "Tmavě hnědá 8017" },
+            { "value": "Stříbrná 9006", "label": "Stříbrná 9006" },
+            { "value": "Světle hnědá 8003", "label": "Světle hnědá 8003" },
+            { "value": "Červenohnědá 8004", "label": "Červenohnědá 8004" },
+            { "value": "AL-bílý hliníkový", "label": "AL-bílý hliníkový" }
+          ]
+        },
+        {
+          "key": "profil_spodni",
+          "label": "Spodní",
+          "type": "select",
+          "required": true,
+          "default": "Bílá 9003",
+          "options": [
+            { "value": "Bílá 9003", "label": "Bílá 9003" },
+            { "value": "Antracit 7016", "label": "Antracit 7016" },
+            { "value": "Tmavě hnědá 8017", "label": "Tmavě hnědá 8017" },
+            { "value": "Stříbrná 9006", "label": "Stříbrná 9006" },
+            { "value": "Světle hnědá 8003", "label": "Světle hnědá 8003" },
+            { "value": "Červenohnědá 8004", "label": "Červenohnědá 8004" },
+            { "value": "AL-bílý hliníkový", "label": "AL-bílý hliníkový" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ostatni",
+      "label": "Ostatní",
+      "fields": [
+        {
+          "key": "prevodovka",
+          "label": "Převodovka",
+          "type": "select",
+          "default": "Ne",
+          "options": [
+            { "value": "Ano", "label": "Ano" },
+            { "value": "Ne", "label": "Ne" }
+          ]
+        },
+        {
+          "key": "dist_podlozka",
+          "label": "Dist. podložka párů na ks",
+          "type": "number",
+          "step": 1,
+          "default": 0,
+          "min": 0
+        }
+      ]
+    }
+  ],
+  "rules": [],
+  "printMap": {
+    "sirka": "sirka",
+    "vyska": "vyska",
+    "barva": "barva_lamely",
+    "strana": "ovladani_strana",
+    "ovladani": "delka_retizku"
+  }
+}
