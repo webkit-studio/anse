@@ -1,12 +1,28 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+import { ToastProvider } from "./components/Toast";
+
 export default function App() {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+            staleTime: 15_000,
+          },
+        },
+      }),
+  );
+
   return (
-    <main style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 24 }}>
-      <div style={{ textAlign: "center" }}>
-        <h1 style={{ color: "var(--c-green-dark)", letterSpacing: 3, fontSize: 28 }}>ANSE</h1>
-        <p style={{ color: "var(--c-text-muted)", marginTop: 8 }}>
-          Interní aplikace pro zakázky — připravujeme.
-        </p>
-      </div>
-    </main>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </QueryClientProvider>
   );
 }
