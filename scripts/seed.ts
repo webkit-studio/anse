@@ -4,6 +4,7 @@
 //  - definice se porovnají s aktuální verzí; změna ⇒ nová verze (staré se nemění)
 import { randomInt } from "node:crypto";
 import postgres from "postgres";
+import { CODE_REGEX, isTrivialCode } from "../shared/codes";
 import { sslFor } from "../server/db";
 import { loadEnv, requireEnv } from "./lib/env";
 import { loadAndValidate } from "./validate-definitions";
@@ -40,13 +41,45 @@ async function generateUniqueCode(): Promise<string> {
 }
 
 async function seedUsers() {
+  // Bootstrap bez kódů v (build) logu: SEED_ADMIN_CODE dostane Lukáš Svoboda,
+  // přihlásí se a kódy ostatních zobrazí/změní v admin rozhraní.
+  const bootstrap = process.env.SEED_ADMIN_CODE;
+  const bootstrapValid = !!bootstrap && CODE_REGEX.test(bootstrap) && !isTrivialCode(bootstrap);
+  if (bootstrap && !bootstrapValid) {
+    console.warn("SEED_ADMIN_CODE není platný (6 číslic, ne triviální) — ignoruji.");
+  }
+
+  let createdAny = false;
   for (const u of DEFAULT_USERS) {
     const [existing] = await sql`select 1 from users where name = ${u.name}`;
     if (existing) continue;
+    createdAny = true;
+
+    if (u.name === "Lukáš Svoboda" && bootstrapValid) {
+      const [taken] = await sql`select 1 from users where code = ${bootstrap!}`;
+      const code = taken ? await generateUniqueCode() : bootstrap!;
+      await sql`insert into users (name, code, role) values (${u.name}, ${code}, ${u.role})`;
+      console.log(
+        taken
+          ? `Založen uživatel ${u.name} — SEED_ADMIN_CODE už je obsazený, kód zobrazíte v admin UI.`
+          : `Založen uživatel ${u.name} — kód dle SEED_ADMIN_CODE (nevypisuji).`,
+      );
+      continue;
+    }
+
     const code = await generateUniqueCode();
     await sql`insert into users (name, code, role) values (${u.name}, ${code}, ${u.role})`;
-    // Jediné místo, kde kód opustí DB mimo admin API — při zakládání.
-    console.log(`Založen uživatel ${u.name} (${u.role}) — přihlašovací kód: ${code}`);
+    if (bootstrapValid) {
+      // kódy nejdou do logu — admin je uvidí v aplikaci
+      console.log(`Založen uživatel ${u.name} (${u.role}) — kód zobrazíte v admin UI.`);
+    } else {
+      // fallback bootstrap: jednorázový výpis (jinak by se nešlo přihlásit)
+      console.log(`Založen uživatel ${u.name} (${u.role}) — přihlašovací kód: ${code}`);
+    }
+  }
+
+  if (createdAny) {
+    console.log("Tip: kódy můžete kdykoli změnit v aplikaci (Správa → Uživatelé).");
   }
 }
 

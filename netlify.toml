@@ -4,7 +4,9 @@
 # jen když nic jiného (soubor, funkce) nematchne.
 
 [build]
-  command = "npm run build"
+  # Migrace a seed běží při každém deployi (idempotentní): úprava JSON definice
+  # → push → deploy = nová verze definice v DB, bez ručních kroků.
+  command = "npm run build && npm run migrate && npm run seed"
   publish = "dist"
 
 [functions]

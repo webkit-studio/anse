@@ -90,6 +90,11 @@ uživatelem, port 5433, DB `anse` — connection string
   artefakt 90 dnů. Obnova: `psql $DIRECT_DATABASE_URL < dump.sql`.
 - **Deploy**: push na branch → Netlify branch/deploy preview → merge do `main`
   = produkce. Malé commity s popisem česky nebo anglicky, konzistentně.
+- **Migrace + seed běží v Netlify buildu** (idempotentní) — úprava JSON definice
+  → push → deploy = nová verze v DB. První seed: nastav `SEED_ADMIN_CODE`
+  (6 číslic) v Netlify env → kód pro Lukáše, ostatní kódy se zobrazí v admin UI
+  a nikdy nejdou do logů; bez této proměnné se kódy jednorázově vypíšou do
+  build logu (fallback, ať se jde přihlásit).
 
 ## Notion workflow
 
