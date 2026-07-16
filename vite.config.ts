@@ -14,8 +14,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // lokální vývoj: API běží přes `npm run dev:api` na 8788
-      "/api": "http://localhost:8788",
+      // lokální vývoj: API běží přes `npm run dev:api` na 8788.
+      // changeOrigin: false zachovává Host hlavičku (localhost:5173),
+      // aby seděl CSRF Origin check v server/router.ts.
+      "/api": { target: "http://localhost:8788", changeOrigin: false },
     },
   },
   test: {

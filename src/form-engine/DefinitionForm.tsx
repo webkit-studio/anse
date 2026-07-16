@@ -256,13 +256,15 @@ export function DefinitionForm({
         </Field>
       </section>
 
-      {attempted && generalIssues.length > 0 && (
+      {generalIssues.filter((i) => i.level !== "error" || attempted).length > 0 && (
         <div className="form-issues">
-          {generalIssues.map((i, idx) => (
-            <p key={idx} className={`field-msg field-msg-${i.level}`}>
-              {i.message}
-            </p>
-          ))}
+          {generalIssues
+            .filter((i) => i.level !== "error" || attempted)
+            .map((i, idx) => (
+              <p key={idx} className={`field-msg field-msg-${i.level}`}>
+                {i.message}
+              </p>
+            ))}
         </div>
       )}
 

@@ -1,0 +1,35 @@
+# Noční záloha Supabase (free tier nemá automatické zálohy).
+# Vyžaduje secret DIRECT_DATABASE_URL (session pooler connection string).
+# Artefakt se drží 90 dnů. Obnova: psql $DIRECT_DATABASE_URL < dump.sql
+name: Záloha DB
+
+on:
+  schedule:
+    - cron: "30 2 * * *" # každou noc 02:30 UTC
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pg_dump
+        env:
+          DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+        run: |
+          if [ -z "$DIRECT_DATABASE_URL" ]; then
+            echo "Secret DIRECT_DATABASE_URL není nastaven — přeskakuji."
+            exit 0
+          fi
+          sudo apt-get -yq install postgresql-client >/dev/null
+          pg_dump "$DIRECT_DATABASE_URL" \
+            --no-owner --no-privileges \
+            -f "anse-dump-$(date +%Y%m%d).sql"
+          ls -lh anse-dump-*.sql
+
+      - name: Uložit artefakt
+        uses: actions/upload-artifact@v4
+        with:
+          name: anse-db-dump-${{ github.run_id }}
+          path: anse-dump-*.sql
+          retention-days: 90
+          if-no-files-found: warn

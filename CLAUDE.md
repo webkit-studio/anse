@@ -23,13 +23,20 @@ npm run dev            # Vite na :5173 (proxuje /api na :8788)
 npm run dev:api        # lokální API server na :8788 (stejný handler jako Netlify funkce)
 npm run build          # tsc --noEmit && vite build
 npm test               # Vitest (form-engine, server)
-npm run test:e2e       # Playwright smoke (mobilní viewport)
+npm run test:e2e       # Playwright smoke (mobilní viewport) — vyžaduje lokální
+                       # Postgres (viz níže) + proběhlý migrate a seed; nastaví
+                       # testovací kódy 111111/999999 (jen proti localhost DB).
+                       # V sandboxu: PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium
 npm run validate:definitions   # zod kontrola JSON definic formulářů
 npm run migrate        # aplikuje db/migrations/*.sql (DIRECT_DATABASE_URL)
 npm run seed           # uživatelé + typy produktů + definice (DIRECT_DATABASE_URL)
 ```
 
 Env proměnné: viz `.env.example`. Secrets nikdy s prefixem `VITE_` (nesmí do bundle).
+
+Lokální Postgres bez Dockeru (sandbox): initdb + pg_ctl pod neprivilegovaným
+uživatelem, port 5433, DB `anse` — connection string
+`postgres://postgres@localhost:5433/anse` do `.env` (DATABASE_URL i DIRECT_DATABASE_URL).
 
 ## Architektonická pravidla
 

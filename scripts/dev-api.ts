@@ -10,7 +10,8 @@ const PORT = Number(process.env.API_PORT ?? 8788);
 
 createServer(async (req, res) => {
   try {
-    const url = `http://localhost:${PORT}${req.url ?? "/"}`;
+    // Host z hlavičky (vite proxy ho zachovává) — jinak by neseděl CSRF Origin check
+    const url = `http://${req.headers.host ?? `localhost:${PORT}`}${req.url ?? "/"}`;
     const method = req.method ?? "GET";
     const headers = new Headers();
     for (const [k, v] of Object.entries(req.headers)) {
