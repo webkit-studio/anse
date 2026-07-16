@@ -1,0 +1,39 @@
+/* Design tokeny — bílá/černá + zelená Anse, systémová Helvetica.
+   Zelená #17C6A3 převzata z placeholderu (z loga); po dodání loga případně doladit.
+   Kontrast: zelená NIKDY jako barva textu na bílé (2,3:1) — jen plochy/akcenty,
+   text na zelené vždy inkoustový (--c-ink, ~10:1). */
+:root {
+  --c-green: #17c6a3;
+  --c-green-dark: #0fa385;
+  --c-green-soft: #e3f8f2;
+
+  --c-ink: #101413;
+  --c-text: #1b201f;
+  --c-text-muted: #56605d;
+  --c-bg: #ffffff;
+  --c-surface: #f4f7f6;
+  --c-border: #d4dcda;
+  --c-border-strong: #a8b5b2;
+
+  --c-error: #c62828;
+  --c-error-soft: #fdeaea;
+  --c-warn: #9a5b00;
+  --c-warn-soft: #fff3dd;
+  --c-info: #135ba1;
+  --c-info-soft: #e8f1fb;
+
+  --font: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+
+  --tap: 48px;           /* minimální touch target */
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow-card: 0 1px 3px rgba(16, 20, 19, 0.1);
+  --focus-ring: 0 0 0 3px rgba(23, 198, 163, 0.45);
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+}

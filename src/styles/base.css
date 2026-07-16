@@ -1,0 +1,86 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--c-text);
+  background: var(--c-bg);
+  line-height: 1.45;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* Formulářové prvky: 16px+ (iOS jinak zoomuje), výška = touch target */
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  font-size: 16px;
+  color: inherit;
+}
+
+input,
+select {
+  height: var(--tap);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0 var(--sp-3);
+  border: 1.5px solid var(--c-border-strong);
+  border-radius: var(--radius);
+  background: var(--c-bg);
+}
+
+textarea {
+  padding: var(--sp-3);
+  min-height: 88px;
+  resize: vertical;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-color: var(--c-green-dark);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  min-height: var(--tap);
+  border-radius: var(--radius);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+a {
+  color: inherit;
+}
