@@ -10,16 +10,27 @@ export function json(data: unknown, init: ResponseInit = {}): Response {
 
 export class ApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  /** Doplňková data pro klienta (např. issues u 422). */
+  extra?: Record<string, unknown>;
+
+  constructor(status: number, message: string, extra?: Record<string, unknown>) {
     super(message);
     this.status = status;
+    this.extra = extra;
   }
 }
 
 export function errorResponse(err: unknown): Response {
   if (err instanceof ApiError) {
-    return json({ error: err.message }, { status: err.status });
+    return json({ error: err.message, ...err.extra }, { status: err.status });
   }
   console.error(err);
   return json({ error: "Neočekávaná chyba serveru. Zkuste to prosím znovu." }, { status: 500 });
+}
+
+/** Vrátí response s přidanou set-cookie hlavičkou (Response headers jsou immutable). */
+export function withCookie(res: Response, cookie: string): Response {
+  const headers = new Headers(res.headers);
+  headers.append("set-cookie", cookie);
+  return new Response(res.body, { status: res.status, headers });
 }

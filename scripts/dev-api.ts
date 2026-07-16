@@ -2,6 +2,9 @@
 // bez Netlify CLI. Vite dev server na něj proxuje /api.
 import { createServer } from "node:http";
 import { handle } from "../server/handler";
+import { loadEnv } from "./lib/env";
+
+loadEnv();
 
 const PORT = Number(process.env.API_PORT ?? 8788);
 
@@ -23,7 +26,14 @@ createServer(async (req, res) => {
     const response = await handle(
       new Request(url, { method, headers, body: body ? new Uint8Array(body) : undefined }),
     );
-    res.writeHead(response.status, Object.fromEntries(response.headers.entries()));
+    // set-cookie nesmí projít přes entries() — víc cookies by se slepilo čárkou
+    const outHeaders: Record<string, string | string[]> = {};
+    response.headers.forEach((value, key) => {
+      if (key !== "set-cookie") outHeaders[key] = value;
+    });
+    const setCookies = response.headers.getSetCookie();
+    if (setCookies.length > 0) outHeaders["set-cookie"] = setCookies;
+    res.writeHead(response.status, outHeaders);
     res.end(Buffer.from(await response.arrayBuffer()));
   } catch (err) {
     console.error(err);

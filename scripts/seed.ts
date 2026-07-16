@@ -79,10 +79,11 @@ async function seedProductTypes() {
     if (unchanged) continue;
 
     await sql.begin(async (tx) => {
-      const [{ next_version }] = await tx`
+      const [versionRow] = await tx`
         select coalesce(max(version), 0) + 1 as next_version
         from form_definitions where product_type_id = ${pt.id}
       `;
+      const next_version = versionRow!.next_version as number;
       const [fd] = await tx`
         insert into form_definitions (product_type_id, version, definition)
         values (${pt.id}, ${next_version}, ${tx.json(definition as never)})

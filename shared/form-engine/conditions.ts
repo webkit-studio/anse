@@ -17,8 +17,10 @@ export function evalCond(cond: Cond, params: Params): boolean {
       return value === cond.value;
     case "neq":
       return value !== cond.value;
-    case "in":
-      return (cond.values ?? []).includes(value);
+    case "in": {
+      const values: readonly string[] = cond.values ?? [];
+      return values.includes(value);
+    }
   }
 }
 

@@ -4,6 +4,15 @@ import postgres from "postgres";
 // prepared statements → prepare: false. Lambda instance drží 1 spojení.
 let client: postgres.Sql | undefined;
 
+/**
+ * updated_at jako ISO text s mikrosekundami. JS Date má jen ms — kdyby se
+ * timestamp točil přes Date, optimistický zámek (rovnost updated_at) by nikdy
+ * neseděl. Vždy SELECTovat přes tento fragment a porovnávat ::timestamptz.
+ */
+export function updatedAtUs(alias: string): string {
+  return `to_char(${alias}.updated_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as updated_at`;
+}
+
 export function sql(): postgres.Sql {
   if (!client) {
     const url = process.env.DATABASE_URL;
