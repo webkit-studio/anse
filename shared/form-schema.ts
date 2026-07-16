@@ -28,6 +28,8 @@ export const optionSchema = z
     value: z.string().min(1),
     /** Text zobrazený ve formuláři (česky, vč. případného „-př." sufixu). */
     label: z.string().min(1),
+    /** Náhled barvy ve výběru (hex). */
+    swatch: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
   })
   .strict();
 

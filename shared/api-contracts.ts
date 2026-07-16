@@ -84,6 +84,8 @@ export const itemCreateBody = z.object({
 export const itemUpdateBody = z.object({
   params: paramsSchema,
   note: optionalText,
+  /** Přesun položky do jiné místnosti téže zakázky. */
+  room_id: z.string().uuid().optional(),
   expected_updated_at: z.string().min(1),
 });
 

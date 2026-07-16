@@ -89,6 +89,7 @@ export function DefinitionForm({
   const generalIssues = allIssues.filter((i) => i.fieldKey === undefined);
 
   function handleSubmit() {
+    if (busy) return; // dvojtap na Uložit nesmí odeslat druhý request
     setAttempted(true);
     if (hasBlocking(allIssues)) {
       // odscrollovat na první chybné pole

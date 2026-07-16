@@ -18,6 +18,7 @@ import { orderRoutes } from "./routes/orders";
 import { productTypeRoutes } from "./routes/product-types";
 import { roomRoutes } from "./routes/rooms";
 import { settingsRoutes } from "./routes/settings";
+import { statsRoutes } from "./routes/stats";
 import { userRoutes } from "./routes/users";
 import { makeRoute } from "./router";
 
@@ -33,6 +34,7 @@ const routes: Route[] = [
   ...productTypeRoutes,
   ...userRoutes,
   ...settingsRoutes,
+  ...statsRoutes,
 ];
 
 /** Placeholder pro public routy — handlery public rout ctx.user nečtou. */

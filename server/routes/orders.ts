@@ -5,7 +5,7 @@ import {
   STATUS_LABELS,
   type OrderStatus,
 } from "../../shared/types";
-import { sql, updatedAtUs } from "../db";
+import { sql } from "../db";
 import { ApiError, json } from "../http";
 import { makeRoute, parseBody, type Route } from "../router";
 
@@ -13,7 +13,7 @@ const ORDER_COLS = (db: ReturnType<typeof sql>) => db.unsafe(`
   o.id, o.client_id, o.installation_address, o.montage_number, o.order_number, o.status,
   to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
   to_char(o.delivery_date, 'YYYY-MM-DD') as delivery_date,
-  o.invoice_number, o.note, o.created_at, ${updatedAtUs("o")}
+  o.invoice_number, o.note, o.created_at, o.updated_at
 `);
 
 export const orderRoutes: Route[] = [
@@ -40,7 +40,7 @@ export const orderRoutes: Route[] = [
     const rows = await db`
       select
         o.id, o.status, o.installation_address, o.montage_number, o.order_number,
-        ${db.unsafe(updatedAtUs("o"))},
+        o.updated_at,
         c.name as client_name,
         (select count(*)::int from items i where i.order_id = o.id) as item_count
       from orders o
@@ -59,7 +59,7 @@ export const orderRoutes: Route[] = [
                    or unaccent_cz(pt.code) like '%' || unaccent_cz(${q}) || '%')
           )
         )
-      order by o.updated_at desc
+      order by o.created_at desc
       limit 100
     `;
     return json({ orders: rows });
@@ -109,7 +109,7 @@ export const orderRoutes: Route[] = [
 
     const [client] = await db`
       select c.id, c.name, c.contact_person, c.address, c.delivery_address, c.phone,
-             c.email, c.ico, c.dic, c.note, ${db.unsafe(updatedAtUs("c"))}
+             c.email, c.ico, c.dic, c.note, c.updated_at
       from clients c where c.id = ${order.client_id}
     `;
     const rooms = await db`
@@ -118,7 +118,7 @@ export const orderRoutes: Route[] = [
     `;
     const items = await db`
       select i.id, i.order_id, i.room_id, i.product_type_id, i.form_definition_id,
-             i.params, i.note, i.position, ${db.unsafe(updatedAtUs("i"))},
+             i.params, i.note, i.position, i.updated_at,
              pt.code as product_type_code, pt.name as product_type_name
       from items i
       join product_types pt on pt.id = i.product_type_id
@@ -166,7 +166,7 @@ export const orderRoutes: Route[] = [
 
     const [updated] = await db`
       update orders o set ${db(patch)}
-      where o.id = ${params.id!} and o.updated_at = ${body.expected_updated_at}::timestamptz
+      where o.id = ${params.id!} and o.updated_at = ${body.expected_updated_at}
       returning ${ORDER_COLS(db)}
     `;
     if (!updated) {
@@ -192,15 +192,8 @@ export const orderRoutes: Route[] = [
     }
 
     // Compare-and-swap: přepne se jen z očekávaného stavu; jinak 409.
-    // Odchod z „K vyměření" doplní termín vyměření (pokud chybí).
     const [updated] = await db`
-      update orders o set
-        status = ${to},
-        measured_at = case
-          when ${expected} = 'k_vymereni' and ${to} = 'rozpracovana'
-            then coalesce(o.measured_at, current_date)
-          else o.measured_at
-        end
+      update orders o set status = ${to}
       where o.id = ${params.id!} and o.status = ${expected}
       returning ${ORDER_COLS(db)}
     `;

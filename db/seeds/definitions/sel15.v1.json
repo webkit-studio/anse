@@ -31,24 +31,17 @@
           "summary": true
         },
         {
-          "key": "oznaceni_pozice",
-          "label": "Označení pozice",
-          "type": "text",
-          "help": "Nepovinné — místnost se eviduje zvlášť."
-        },
-        {
           "key": "barva_profilu",
           "label": "Barva profilu",
           "type": "select",
           "required": true,
           "summary": true,
           "options": [
-            { "value": "Bílá 9003", "label": "Bílá 9003" },
-            { "value": "Hnědá 8019", "label": "Hnědá 8019" },
-            { "value": "Sv. hnědá 8003", "label": "Sv. hnědá 8003" },
-            { "value": "Stříbrná 9006", "label": "Stříbrná 9006" },
-            { "value": "Antracit 7016", "label": "Antracit 7016" },
-            { "value": "Renolit", "label": "Renolit" },
+            { "value": "Bílá 9003", "label": "Bílá 9003", "swatch": "#f4f4f4" },
+            { "value": "Hnědá 8019", "label": "Hnědá 8019", "swatch": "#403a3a" },
+            { "value": "Sv. hnědá 8003", "label": "Sv. hnědá 8003", "swatch": "#7e4b26" },
+            { "value": "Stříbrná 9006", "label": "Stříbrná 9006", "swatch": "#a5a5a5" },
+            { "value": "Antracit 7016", "label": "Antracit 7016", "swatch": "#373f43" },
             { "value": "RAL", "label": "RAL" }
           ]
         },
@@ -61,27 +54,10 @@
           "placeholder": "např. 7035"
         },
         {
-          "key": "renolit_podklad",
-          "label": "Renolit podklad",
-          "type": "select",
-          "required": true,
-          "tbd": true,
-          "visibleIf": { "field": "barva_profilu", "op": "eq", "value": "Renolit" }
-        },
-        {
-          "key": "renolit_barva",
-          "label": "Renolit barva",
-          "type": "select",
-          "required": true,
-          "tbd": true,
-          "visibleIf": { "field": "barva_profilu", "op": "eq", "value": "Renolit" }
-        },
-        {
           "key": "sitovina",
           "label": "Síťovina",
           "type": "select",
           "required": true,
-          "default": "Standard",
           "options": [
             { "value": "Standard", "label": "Standard" },
             { "value": "Petscreen", "label": "Petscreen" },
@@ -95,10 +71,9 @@
           "label": "Barva síťoviny",
           "type": "select",
           "required": true,
-          "default": "Šedá",
           "options": [
-            { "value": "Černá", "label": "Černá" },
-            { "value": "Šedá", "label": "Šedá" }
+            { "value": "Černá", "label": "Černá", "swatch": "#1a1a1a" },
+            { "value": "Šedá", "label": "Šedá", "swatch": "#8c8c8c" }
           ]
         }
       ]
@@ -183,7 +158,6 @@
           "key": "orez_lemu",
           "label": "Ořez lemu sítě",
           "type": "select",
-          "default": "Ne",
           "options": [
             { "value": "Ano", "label": "Ano" },
             { "value": "Ne", "label": "Ne" }

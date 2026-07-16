@@ -1,11 +1,11 @@
 import { clientUpdateBody } from "../../shared/api-contracts";
-import { sql, updatedAtUs } from "../db";
+import { sql } from "../db";
 import { ApiError, json } from "../http";
 import { makeRoute, parseBody, type Route } from "../router";
 
 const CLIENT_COLS = (db: ReturnType<typeof sql>) => db.unsafe(`
   c.id, c.name, c.contact_person, c.address, c.delivery_address, c.phone,
-  c.email, c.ico, c.dic, c.note, ${updatedAtUs("c")}
+  c.email, c.ico, c.dic, c.note, c.updated_at
 `);
 
 export const clientRoutes: Route[] = [
@@ -32,7 +32,7 @@ export const clientRoutes: Route[] = [
 
     const [updated] = await db`
       update clients c set ${db(fields)}
-      where c.id = ${params.id!} and c.updated_at = ${expected_updated_at}::timestamptz
+      where c.id = ${params.id!} and c.updated_at = ${expected_updated_at}
       returning ${CLIENT_COLS(db)}
     `;
     if (!updated) {

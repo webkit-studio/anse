@@ -18,6 +18,8 @@ function sel15Base(extra: Params = {}): Params {
     vyska: 1450,
     barva_profilu: "Bílá 9003",
     typ_uchyceni: "STANDARD",
+    sitovina: "Standard",
+    barva_sitoviny: "Šedá",
     ...extra,
   };
 }
@@ -29,28 +31,18 @@ function esdBase(extra: Params = {}): Params {
     vyska: 1400,
     ovladani_strana: "P",
     barva_lamely: "58",
+    barva_retizku: "Standard",
+    delka_retizku: "Na výšku",
+    profil_horni: "Bílá 9003",
+    profil_spodni: "Bílá 9003",
     ...extra,
   };
 }
 
 describe("defaulty", () => {
-  it("SEL-15: síťovina Standard, barva síťoviny Šedá, ořez Ne", () => {
-    expect(initialParams(sel15)).toEqual({
-      sitovina: "Standard",
-      barva_sitoviny: "Šedá",
-      orez_lemu: "Ne",
-    });
-  });
-
-  it("ESD: řetízek, délka, profily, převodovka, dist. podložka 0", () => {
-    expect(initialParams(esd)).toEqual({
-      barva_retizku: "Standard",
-      delka_retizku: "Na výšku",
-      profil_horni: "Bílá 9003",
-      profil_spodni: "Bílá 9003",
-      prevodovka: "Ne",
-      dist_podlozka: 0,
-    });
+  it("žádné defaulty — všechny selecty začínají prázdné (rozhodnutí 16. 7.)", () => {
+    expect(initialParams(sel15)).toEqual({});
+    expect(initialParams(esd)).toEqual({});
   });
 });
 
@@ -71,7 +63,14 @@ describe("povinná pole (required jen když viditelné)", () => {
   it("SEL-15: prázdný formulář hlásí jen viditelná povinná pole", () => {
     const { issues } = validateItem(sel15, initialParams(sel15), "");
     const errorKeys = issues.filter((i) => i.level === "error").map((i) => i.fieldKey);
-    expect(errorKeys.sort()).toEqual(["barva_profilu", "sirka", "typ_uchyceni", "vyska"]);
+    expect(errorKeys.sort()).toEqual([
+      "barva_profilu",
+      "barva_sitoviny",
+      "sirka",
+      "sitovina",
+      "typ_uchyceni",
+      "vyska",
+    ]);
   });
 
   it("skryté podmíněné pole nehlásí chybu (RAL bez zvolené barvy RAL)", () => {
@@ -93,16 +92,6 @@ describe("podmíněná viditelnost — SEL-15", () => {
 
     const ok = validateItem(sel15, { ...params, ral: "7035" }, "");
     expect(issuesForField(ok.issues, "ral")).toEqual([]);
-  });
-
-  it("Renolit podklad/barva: viditelné při Renolit, ale tbd ⇒ bez vynucení", () => {
-    const params = sel15Base({ barva_profilu: "Renolit" });
-    const visible = visibleFieldKeys(sel15, params);
-    expect(visible.has("renolit_podklad")).toBe(true);
-    expect(visible.has("renolit_barva")).toBe(true);
-    const { issues } = validateItem(sel15, params, "");
-    expect(issuesForField(issues, "renolit_podklad")).toEqual([]);
-    expect(issuesForField(issues, "renolit_barva")).toEqual([]);
   });
 
   it("kartáček 8/12/18 ⇒ délka a lepení viditelné + povinné; žádný ⇒ skryté", () => {
@@ -162,8 +151,8 @@ describe("pruneHidden — hodnoty skrytých polí se mažou", () => {
   });
 
   it("prázdné hodnoty se zahodí, ale číslo 0 a volba „0“ zůstávají", () => {
-    const pruned = pruneHidden(esd, esdBase({ oznaceni_pozice: "", dist_podlozka: 0 }));
-    expect(pruned).not.toHaveProperty("oznaceni_pozice");
+    const pruned = pruneHidden(esd, esdBase({ prevodovka: "", dist_podlozka: 0 }));
+    expect(pruned).not.toHaveProperty("prevodovka");
     expect(pruned.dist_podlozka).toBe(0);
 
     const sel = pruneHidden(sel15, sel15Base({ otocne_hacky: "0" }));

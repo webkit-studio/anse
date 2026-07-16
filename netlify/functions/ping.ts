@@ -12,4 +12,6 @@ export default async () => {
   return new Response("ok");
 };
 
-export const config = { schedule: "0 5 * * *" };
+// Každých 5 minut: drží funkci i DB spojení teplé (latence ukládání v terénu)
+// a zároveň brání Supabase free-tier pauze. ~8 640 volání/měs. z limitu 125k.
+export const config = { schedule: "*/5 * * * *" };
