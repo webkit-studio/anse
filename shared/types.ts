@@ -130,6 +130,31 @@ export interface ProductTypeRow {
 
 export type DashboardCounts = Record<OrderStatus, number>;
 
+export interface StatsUserCount {
+  name: string;
+  zalozeno: number;
+  objednano: number;
+}
+
+export interface StatsMonth {
+  month: string;
+  zalozeno: number;
+  objednano: number;
+  users: StatsUserCount[];
+}
+
+export interface StatsWeekDay {
+  date: string;
+  zalozeno: number;
+  objednano: number;
+  users: StatsUserCount[];
+}
+
+export interface StatsWeek {
+  week: string;
+  days: StatsWeekDay[];
+}
+
 export interface Settings {
   admin_group_email: string;
 }

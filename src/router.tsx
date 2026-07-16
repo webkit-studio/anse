@@ -9,6 +9,7 @@ import LoginPage from "./pages/Login";
 import OrderDetailPage from "./pages/OrderDetail";
 import OrderNewPage from "./pages/OrderNew";
 import OrdersPage from "./pages/Orders";
+import StatsPage from "./pages/Stats";
 
 function RequireAuth() {
   const me = useMe();
@@ -24,7 +25,7 @@ function RequireAuth() {
   if (!me.data) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
-  return <AppLayout user={me.data} />;
+  return <Outlet />;
 }
 
 function RequireAdmin() {
@@ -39,17 +40,26 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
-      { path: "/", element: <DashboardPage /> },
-      { path: "/zakazky", element: <OrdersPage /> },
-      { path: "/zakazky/nova", element: <OrderNewPage /> },
-      { path: "/zakazky/:orderId", element: <OrderDetailPage /> },
+      // Formulář položky běží fullscreen bez app hlavičky (krok „nové okno")
       { path: "/zakazky/:orderId/polozka/nova", element: <ItemFormPage mode="new" /> },
       { path: "/zakazky/:orderId/polozka/:itemId", element: <ItemFormPage mode="edit" /> },
       {
-        element: <RequireAdmin />,
-        children: [{ path: "/admin", element: <AdminPage /> }],
+        element: <AppLayout />,
+        children: [
+          { path: "/", element: <DashboardPage /> },
+          { path: "/zakazky", element: <OrdersPage /> },
+          { path: "/zakazky/nova", element: <OrderNewPage /> },
+          { path: "/zakazky/:orderId", element: <OrderDetailPage /> },
+          {
+            element: <RequireAdmin />,
+            children: [
+              { path: "/admin", element: <AdminPage /> },
+              { path: "/statistiky", element: <StatsPage /> },
+            ],
+          },
+          { path: "*", element: <Navigate to="/" replace /> },
+        ],
       },
-      { path: "*", element: <Navigate to="/" replace /> },
     ],
   },
 ]);

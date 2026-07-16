@@ -52,25 +52,14 @@ export default function OrdersPage() {
         aria-label="Hledat v zakázkách"
       />
 
-      <div className="chips chips-scroll">
-        <button
-          type="button"
-          className={`chip ${statusParam === "" ? "chip-active" : ""}`}
-          onClick={() => setStatus("")}
-        >
-          Vše
-        </button>
-        {ORDER_STATUSES.map((s) => (
-          <button
-            key={s}
-            type="button"
-            className={`chip ${statusParam === s ? "chip-active" : ""}`}
-            onClick={() => setStatus(s)}
-          >
-            {STATUS_LABELS[s]}
+      {statusParam && (
+        <p className="muted orders-filter-note">
+          Filtr: {STATUS_LABELS[statusParam]}{" "}
+          <button type="button" className="link-btn" onClick={() => setStatus("")}>
+            zrušit
           </button>
-        ))}
-      </div>
+        </p>
+      )}
 
       {orders.isPending && <Spinner />}
       {orders.isError && (

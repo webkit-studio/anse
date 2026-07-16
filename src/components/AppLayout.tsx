@@ -1,10 +1,11 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import type { SessionUser } from "@shared/types";
-import { useLogout } from "../api/hooks";
+import { useLogout, useMe } from "../api/hooks";
 
-export function AppLayout({ user }: { user: SessionUser }) {
+export function AppLayout() {
+  const me = useMe();
   const logout = useLogout();
   const navigate = useNavigate();
+  const user = me.data;
 
   return (
     <div className="app">
@@ -13,7 +14,7 @@ export function AppLayout({ user }: { user: SessionUser }) {
           ANSE
         </Link>
         <div className="app-header-right">
-          {user.role === "admin" && (
+          {user?.role === "admin" && (
             <Link to="/admin" className="app-header-link">
               Správa
             </Link>
@@ -25,7 +26,7 @@ export function AppLayout({ user }: { user: SessionUser }) {
               logout.mutate(undefined, { onSuccess: () => navigate("/login") });
             }}
           >
-            {user.name.split(" ")[0]} · Odhlásit
+            {user?.name.split(" ")[0]} · Odhlásit
           </button>
         </div>
       </header>

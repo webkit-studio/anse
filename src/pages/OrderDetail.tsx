@@ -4,7 +4,8 @@ import type { FormDefinition } from "@shared/form-schema";
 import type { ItemRow, OrderDetail, RoomRow } from "@shared/types";
 import { useMe, useOrder, useInvalidateOrder } from "../api/hooks";
 import { api, isConflict } from "../api/client";
-import { StatusStepper } from "../components/StatusStepper";
+import { OrderAction } from "../components/OrderAction";
+import { PhoneInput } from "../components/PhoneInput";
 import { useToast } from "../components/Toast";
 import {
   Button,
@@ -13,6 +14,7 @@ import {
   ErrorBanner,
   Field,
   Spinner,
+  StatusBadge,
   TextInput,
 } from "../components/ui";
 
@@ -47,24 +49,8 @@ function RoomSection({
   detail: OrderDetail;
   onChanged: () => void;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [note, setNote] = useState(room.note);
-  const [busy, setBusy] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
-
-  async function saveNote() {
-    setBusy(true);
-    try {
-      await api(`/api/rooms/${room.id}`, { method: "PATCH", body: { note: note.trim() } });
-      setEditing(false);
-      onChanged();
-    } catch (err) {
-      toast(err instanceof Error ? err.message : "Uložení se nepodařilo.");
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function duplicate(item: ItemRow) {
     try {
@@ -103,32 +89,12 @@ function RoomSection({
   return (
     <section className="room-section">
       <div className="room-head">
-        <h2 className="room-name">{room.name}</h2>
-        <div className="room-head-actions">
-          <Button variant="ghost" onClick={() => setEditing((e) => !e)}>
-            {room.note || editing ? "Poznámka ✎" : "+ Poznámka"}
-          </Button>
-          {items.length === 0 && (
-            <ConfirmButton label="Smazat" confirmLabel="Opravdu smazat?" onConfirm={() => void removeRoom()} />
-          )}
-        </div>
+        <h3 className="room-name">{room.name}</h3>
+        {items.length === 0 && (
+          <ConfirmButton label="🗑" confirmLabel="Smazat?" onConfirm={() => void removeRoom()} />
+        )}
       </div>
-
-      {editing ? (
-        <div className="room-note-edit">
-          <TextInput
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Poznámka k místnosti…"
-            aria-label={`Poznámka k místnosti ${room.name}`}
-          />
-          <Button variant="primary" disabled={busy} onClick={() => void saveNote()}>
-            Uložit
-          </Button>
-        </div>
-      ) : (
-        room.note && <p className="room-note">{room.note}</p>
-      )}
+      {room.note && <p className="room-note">{room.note}</p>}
 
       <ul className="item-list">
         {items.map((item) => {
@@ -144,7 +110,14 @@ function RoomSection({
                 <Button variant="ghost" onClick={() => void duplicate(item)} aria-label="Duplikovat položku">
                   ⧉ Duplikovat
                 </Button>
-                <ConfirmButton label="Smazat" confirmLabel="Opravdu smazat?" onConfirm={() => void remove(item)} />
+                <Link
+                  to={`/zakazky/${item.order_id}/polozka/${item.id}`}
+                  className="btn btn-ghost"
+                  aria-label="Upravit položku"
+                >
+                  ✎ Upravit
+                </Link>
+                <ConfirmButton label="🗑" confirmLabel="Smazat?" onConfirm={() => void remove(item)} />
               </div>
             </li>
           );
@@ -154,9 +127,12 @@ function RoomSection({
   );
 }
 
-function OrderHeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => void }) {
+function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => void }) {
   const me = useMe();
-  const [form, setForm] = useState({
+  const isAdmin = me.data?.role === "admin";
+  const toast = useToast();
+
+  const [order, setOrder] = useState({
     installation_address: detail.order.installation_address,
     montage_number: detail.order.montage_number,
     order_number: detail.order.order_number,
@@ -165,32 +141,51 @@ function OrderHeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () =
     note: detail.order.note,
     invoice_number: detail.order.invoice_number,
   });
+  const [client, setClient] = useState({
+    name: detail.client.name,
+    phone: detail.client.phone,
+    email: detail.client.email,
+    address: detail.client.address,
+    delivery_address: detail.client.delivery_address,
+    contact_person: detail.client.contact_person,
+    ico: detail.client.ico,
+    dic: detail.client.dic,
+    note: detail.client.note,
+  });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const toast = useToast();
-  const isAdmin = me.data?.role === "admin";
 
   async function save() {
     setBusy(true);
     setError(null);
     try {
+      // Technik ukládá jen: místo montáže, termín vyměření, poznámku.
       const body: Record<string, unknown> = {
-        installation_address: form.installation_address,
-        montage_number: form.montage_number,
-        order_number: form.order_number,
-        measured_at: form.measured_at || null,
-        delivery_date: form.delivery_date || null,
-        note: form.note,
+        installation_address: order.installation_address,
+        measured_at: order.measured_at || null,
+        note: order.note,
         expected_updated_at: detail.order.updated_at,
       };
-      if (isAdmin) body.invoice_number = form.invoice_number;
+      if (isAdmin) {
+        body.montage_number = order.montage_number;
+        body.order_number = order.order_number;
+        body.delivery_date = order.delivery_date || null;
+        body.invoice_number = order.invoice_number;
+      }
       await api(`/api/orders/${detail.order.id}`, { method: "PATCH", body });
-      toast("Zakázka uložena.");
+
+      if (isAdmin) {
+        await api(`/api/clients/${detail.client.id}`, {
+          method: "PATCH",
+          body: { ...client, expected_updated_at: detail.client.updated_at },
+        });
+      }
+      toast("Uloženo.");
       onDone();
     } catch (err) {
       setError(
         isConflict(err)
-          ? "Zakázku mezitím upravil někdo jiný — po zavření uvidíte aktuální data."
+          ? "Data mezitím upravil někdo jiný — po zavření uvidíte aktuální stav."
           : err instanceof Error
             ? err.message
             : "Uložení se nepodařilo.",
@@ -202,59 +197,96 @@ function OrderHeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () =
 
   return (
     <div className="header-edit">
+      {isAdmin && (
+        <>
+          <h3 className="header-edit-title">Zákazník</h3>
+          <Field label="Firma / jméno a příjmení" htmlFor="c-name">
+            <TextInput id="c-name" value={client.name} onChange={(e) => setClient({ ...client, name: e.target.value })} />
+          </Field>
+          <Field label="Telefon" htmlFor="c-phone">
+            <PhoneInput id="c-phone" value={client.phone} onChange={(v) => setClient({ ...client, phone: v })} />
+          </Field>
+          <Field label="E-mail" htmlFor="c-email">
+            <TextInput
+              id="c-email"
+              type="email"
+              inputMode="email"
+              value={client.email}
+              onChange={(e) => setClient({ ...client, email: e.target.value })}
+            />
+          </Field>
+          <Field label="Adresa" htmlFor="c-address">
+            <TextInput id="c-address" value={client.address} onChange={(e) => setClient({ ...client, address: e.target.value })} />
+          </Field>
+          <div className="field-row">
+            <Field label="IČ" htmlFor="c-ico">
+              <TextInput id="c-ico" inputMode="numeric" value={client.ico} onChange={(e) => setClient({ ...client, ico: e.target.value })} />
+            </Field>
+            <Field label="DIČ" htmlFor="c-dic">
+              <TextInput id="c-dic" value={client.dic} onChange={(e) => setClient({ ...client, dic: e.target.value })} />
+            </Field>
+          </div>
+          <h3 className="header-edit-title">Zakázka</h3>
+        </>
+      )}
+
       <Field label="Místo montáže" htmlFor="e-address">
         <TextInput
           id="e-address"
-          value={form.installation_address}
-          onChange={(e) => setForm({ ...form, installation_address: e.target.value })}
+          value={order.installation_address}
+          onChange={(e) => setOrder({ ...order, installation_address: e.target.value })}
         />
       </Field>
-      <div className="field-row">
-        <Field label="Číslo montáže" htmlFor="e-montage">
-          <TextInput
-            id="e-montage"
-            value={form.montage_number}
-            onChange={(e) => setForm({ ...form, montage_number: e.target.value })}
-          />
-        </Field>
-        <Field label="Číslo zakázky" htmlFor="e-number">
-          <TextInput
-            id="e-number"
-            value={form.order_number}
-            onChange={(e) => setForm({ ...form, order_number: e.target.value })}
-          />
-        </Field>
-      </div>
-      <div className="field-row">
-        <Field label="Termín vyměření" htmlFor="e-measured">
-          <input
-            id="e-measured"
-            type="date"
-            value={form.measured_at}
-            onChange={(e) => setForm({ ...form, measured_at: e.target.value })}
-          />
-        </Field>
-        <Field label="Termín dodání" htmlFor="e-delivery">
-          <input
-            id="e-delivery"
-            type="date"
-            value={form.delivery_date}
-            onChange={(e) => setForm({ ...form, delivery_date: e.target.value })}
-          />
-        </Field>
-      </div>
-      <Field label="Poznámka" htmlFor="e-note">
-        <TextInput id="e-note" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
+      <Field label="Termín vyměření" htmlFor="e-measured">
+        <input
+          id="e-measured"
+          type="date"
+          value={order.measured_at}
+          onChange={(e) => setOrder({ ...order, measured_at: e.target.value })}
+        />
       </Field>
+      <Field label="Poznámka k zakázce" htmlFor="e-note">
+        <TextInput id="e-note" value={order.note} onChange={(e) => setOrder({ ...order, note: e.target.value })} />
+      </Field>
+
       {isAdmin && (
-        <Field label="Faktura (číslo FA)" htmlFor="e-invoice">
-          <TextInput
-            id="e-invoice"
-            value={form.invoice_number}
-            onChange={(e) => setForm({ ...form, invoice_number: e.target.value })}
-          />
-        </Field>
+        <>
+          <div className="field-row">
+            <Field label="Číslo montáže" htmlFor="e-montage">
+              <TextInput
+                id="e-montage"
+                value={order.montage_number}
+                onChange={(e) => setOrder({ ...order, montage_number: e.target.value })}
+              />
+            </Field>
+            <Field label="Číslo zakázky" htmlFor="e-number">
+              <TextInput
+                id="e-number"
+                value={order.order_number}
+                onChange={(e) => setOrder({ ...order, order_number: e.target.value })}
+              />
+            </Field>
+          </div>
+          <div className="field-row">
+            <Field label="Termín dodání" htmlFor="e-delivery">
+              <input
+                id="e-delivery"
+                type="date"
+                value={order.delivery_date}
+                onChange={(e) => setOrder({ ...order, delivery_date: e.target.value })}
+              />
+            </Field>
+            <Field label="Faktura (číslo FA)" htmlFor="e-invoice">
+              <TextInput
+                id="e-invoice"
+                value={order.invoice_number}
+                onChange={(e) => setOrder({ ...order, invoice_number: e.target.value })}
+              />
+            </Field>
+          </div>
+        </>
       )}
+
       {error && <p className="field-msg field-msg-error">{error}</p>}
       <div className="header-edit-actions">
         <Button variant="ghost" onClick={onDone}>
@@ -273,7 +305,7 @@ export default function OrderDetailPage() {
   const order = useOrder(orderId);
   const me = useMe();
   const invalidate = useInvalidateOrder();
-  const [editingHeader, setEditingHeader] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   if (order.isPending) {
     return (
@@ -304,24 +336,26 @@ export default function OrderDetailPage() {
     itemsByRoom.set(item.room_id, list);
   }
 
+  const headerMeta = [
+    detail.order.order_number && `č. ${detail.order.order_number}`,
+    detail.order.montage_number && `montáž ${detail.order.montage_number}`,
+    detail.order.measured_at && `vyměřeno ${detail.order.measured_at.split("-").reverse().join(". ")}`,
+    detail.order.delivery_date && `dodání ${detail.order.delivery_date.split("-").reverse().join(". ")}`,
+    isAdmin && detail.order.invoice_number && `FA ${detail.order.invoice_number}`,
+  ].filter(Boolean);
+
   return (
-    <div className="page">
+    <div className="page page-order">
       <div className="order-header">
         <div className="order-header-top">
-          <h1>{detail.client.name}</h1>
-          <Button variant="ghost" onClick={() => setEditingHeader((e) => !e)}>
-            {editingHeader ? "Zavřít ✕" : "Upravit ✎"}
-          </Button>
+          <div>
+            <h1>{detail.client.name}</h1>
+            <p className="muted">{detail.order.installation_address || "Místo montáže nevyplněno"}</p>
+          </div>
+          <StatusBadge status={detail.order.status} />
         </div>
-        <p className="muted">{detail.order.installation_address || "Místo montáže nevyplněno"}</p>
         <p className="muted order-header-meta">
-          {[
-            detail.order.order_number && `č. ${detail.order.order_number}`,
-            detail.order.montage_number && `montáž ${detail.order.montage_number}`,
-            detail.client.phone,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
+          {[detail.client.phone, detail.client.email].filter(Boolean).join(" · ")}
           {detail.client.phone && (
             <>
               {" "}
@@ -329,52 +363,33 @@ export default function OrderDetailPage() {
             </>
           )}
         </p>
+        {headerMeta.length > 0 && <p className="muted order-header-meta">{headerMeta.join(" · ")}</p>}
         {detail.order.note && <p className="order-note">{detail.order.note}</p>}
 
-        {editingHeader && (
-          <OrderHeaderEdit
+        <div className="order-header-actions">
+          <Button variant="ghost" onClick={() => setEditing((e) => !e)}>
+            {editing ? "Zavřít ✕" : "Upravit ✎"}
+          </Button>
+        </div>
+
+        {editing && (
+          <HeaderEdit
             detail={detail}
             onDone={() => {
-              setEditingHeader(false);
+              setEditing(false);
               refresh();
             }}
           />
         )}
-
-        <StatusStepper orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
       </div>
-
-      <Link to={`/zakazky/${orderId}/polozka/nova`} className="btn btn-primary btn-block btn-xl">
-        + Přidat produkt
-      </Link>
-
-      {detail.rooms.length === 0 && detail.items.length === 0 && (
-        <EmptyState title="Zatím žádné položky.">
-          <p className="muted">Přidejte první produkt — začíná se výběrem místnosti.</p>
-        </EmptyState>
-      )}
-
-      {detail.rooms.map((room) => (
-        <RoomSection
-          key={room.id}
-          room={room}
-          items={itemsByRoom.get(room.id) ?? []}
-          detail={detail}
-          onChanged={refresh}
-        />
-      ))}
-
-      {detail.items.length > 0 && (
-        <p className="order-total muted">
-          Celkem {detail.items.length}{" "}
-          {detail.items.length === 1 ? "položka" : detail.items.length <= 4 ? "položky" : "položek"} (ks =
-          počet položek)
-        </p>
-      )}
 
       {isAdmin && (
         <section className="admin-actions">
-          <h2 className="form-group-title">Objednání a tisk</h2>
+          <p className="admin-actions-count">
+            <strong>{detail.items.length}</strong>{" "}
+            {detail.items.length === 1 ? "kus" : detail.items.length <= 4 ? "kusy" : "kusů"} (ks = počet
+            položek)
+          </p>
           <div className="admin-actions-row">
             <Button disabled title="Připravujeme — aktivace po otestování formulářů">
               Tisk montážního listu
@@ -389,11 +404,33 @@ export default function OrderDetailPage() {
               Export Susy
             </Button>
           </div>
-          <p className="muted admin-actions-note">
-            Exporty a tisk se aktivují po otestování formulářů.
-          </p>
         </section>
       )}
+
+      <h2 className="section-title">Výpis produktů</h2>
+
+      {detail.rooms.length === 0 && detail.items.length === 0 && (
+        <EmptyState title="Zatím žádné položky.">
+          <p className="muted">Přidejte první produkt tlačítkem níže.</p>
+        </EmptyState>
+      )}
+
+      {detail.rooms.map((room) => (
+        <RoomSection
+          key={room.id}
+          room={room}
+          items={itemsByRoom.get(room.id) ?? []}
+          detail={detail}
+          onChanged={refresh}
+        />
+      ))}
+
+      <div className="order-bottom-actions">
+        <Link to={`/zakazky/${orderId}/polozka/nova`} className="btn btn-primary btn-block btn-xl">
+          + Přidat produkt
+        </Link>
+        <OrderAction orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
+      </div>
     </div>
   );
 }

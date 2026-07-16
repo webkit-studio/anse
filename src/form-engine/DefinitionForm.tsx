@@ -10,16 +10,12 @@ import {
 import {
   Button,
   Field,
-  NativeSelect,
   NumberInput,
   SelectSheet,
   Textarea,
   TextInput,
   type FieldMessage,
 } from "../components/ui";
-
-/** Nad tolik možností se místo nativního selectu otevírá sheet s hledáním. */
-const SHEET_THRESHOLD = 12;
 
 export interface DefinitionFormProps {
   definition: FormDefinition;
@@ -147,41 +143,19 @@ export function DefinitionForm({
         input
       );
     } else if (f.type === "select") {
-      const options = f.options ?? [];
-      if (options.length > SHEET_THRESHOLD) {
-        control = (
-          <SelectSheet
-            id={id}
-            value={value}
-            options={options}
-            placeholder={`${f.label} — vybrat`}
-            onChange={(v) => {
-              setValue(f.key, v);
-              markTouched(f.key);
-            }}
-          />
-        );
-      } else {
-        control = (
-          <NativeSelect
-            id={id}
-            value={value}
-            placeholder="Vyberte…"
-            autoFocus={shouldAutoFocus}
-            onChange={(e) => {
-              setValue(f.key, e.target.value);
-              markTouched(f.key);
-            }}
-            onBlur={() => markTouched(f.key)}
-          >
-            {options.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </NativeSelect>
-        );
-      }
+      // Jednotný výběr přes vlastní sheet (žádné systémové selecty).
+      control = (
+        <SelectSheet
+          id={id}
+          value={value}
+          options={f.options ?? []}
+          placeholder="Vyberte…"
+          onChange={(v) => {
+            setValue(f.key, v);
+            markTouched(f.key);
+          }}
+        />
+      );
     } else if (f.type === "textarea") {
       control = (
         <Textarea
@@ -242,10 +216,13 @@ export function DefinitionForm({
       })}
 
       <section className="form-group">
-        <h2 className="form-group-title">Poznámka</h2>
-        <Field label="Poznámka" htmlFor="f-note" messages={messagesFor("note")}>
+        <h2 className="form-group-title" id="f-note-label">
+          Poznámka
+        </h2>
+        <div className={messagesFor("note").some((m) => m.level === "error") ? "field field-invalid" : "field"}>
           <Textarea
             id="f-note"
+            aria-labelledby="f-note-label"
             value={note}
             onChange={(e) => {
               setNote(e.target.value);
@@ -254,7 +231,12 @@ export function DefinitionForm({
             onBlur={() => markTouched("note")}
             placeholder="Cokoli k této položce…"
           />
-        </Field>
+          {messagesFor("note").map((m, i) => (
+            <p key={i} className={`field-msg field-msg-${m.level}`} role={m.level === "error" ? "alert" : undefined}>
+              {m.message}
+            </p>
+          ))}
+        </div>
       </section>
 
       {generalIssues.filter((i) => i.level !== "error" || attempted).length > 0 && (

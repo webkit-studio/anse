@@ -994,6 +994,256 @@ input[type="date"] {
   font-size: 16px;
 }
 
+/* --- kolo 2: swatche, telefon, item flow, statistiky, spacing ------------- */
+
+.swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(16, 20, 19, 0.25);
+  margin-right: var(--sp-2);
+  vertical-align: -3px;
+  flex-shrink: 0;
+}
+
+.select-sheet-value {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheet-option {
+  display: flex;
+  align-items: center;
+}
+
+.phone-input {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.phone-prefix {
+  width: 128px;
+  flex-shrink: 0;
+}
+
+.phone-input input {
+  flex: 1;
+}
+
+.page-order {
+  padding-bottom: 300px; /* ať obsah nekončí nalepený na spodku obrazovky */
+}
+
+.order-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.order-action {
+  min-height: var(--tap);
+}
+
+.order-header-actions {
+  margin-top: var(--sp-2);
+}
+
+.header-edit-title {
+  font-size: 15px;
+  margin: var(--sp-3) 0;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-title {
+  font-size: 18px;
+}
+
+.admin-actions {
+  border-top: none;
+  padding-top: 0;
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.admin-actions-count {
+  margin-bottom: var(--sp-2);
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.orders-filter-note {
+  font-size: 14.5px;
+}
+
+/* zhutnění přehledu zakázky */
+.room-section {
+  padding: var(--sp-3);
+}
+
+.room-section .item-list {
+  margin-top: var(--sp-2);
+  gap: var(--sp-2);
+}
+
+.item-card-main {
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.item-card-actions {
+  padding: 0 var(--sp-1);
+}
+
+.item-card-actions .btn {
+  font-size: 14.5px;
+}
+
+/* item flow — fullscreen krok */
+.itemform-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--c-border);
+  position: sticky;
+  top: 0;
+  background: var(--c-bg);
+  z-index: 10;
+}
+
+.itemform-back {
+  text-decoration: none;
+  color: var(--c-green-dark);
+  font-weight: 600;
+  min-height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+}
+
+.itemform-title {
+  font-weight: 700;
+}
+
+/* mezery mezi šedými bloky formuláře */
+.definition-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* statistiky */
+.stats-period {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stats-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.stats-total {
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.stats-total-num {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.stats-total-label {
+  color: var(--c-text-muted);
+  font-size: 14px;
+}
+
+.stats-users,
+.stats-days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.stats-user {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+}
+
+.stats-user-counts {
+  color: var(--c-text-muted);
+}
+
+.stats-day {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-day-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.stats-day-name {
+  font-weight: 700;
+}
+
+.stats-bar-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--c-surface);
+  overflow: hidden;
+}
+
+.stats-bar {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.stats-bar-zalozeno {
+  background: var(--c-border-strong);
+}
+
+.stats-bar-objednano {
+  background: var(--c-green);
+}
+
+.stats-day-users {
+  font-size: 13.5px;
+}
+
+.stats-legend {
+  font-size: 13.5px;
+}
+
 @media (min-width: 720px) {
   .status-tiles {
     grid-template-columns: repeat(3, 1fr);

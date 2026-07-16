@@ -1,9 +1,43 @@
-import { roomUpdateBody } from "../../shared/api-contracts";
+import { roomCreateBody, roomUpdateBody } from "../../shared/api-contracts";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
 import { makeRoute, parseBody, type Route } from "../router";
 
 export const roomRoutes: Route[] = [
+  makeRoute("POST", "/api/orders/:orderId/rooms", async (req, _ctx, params) => {
+    const db = sql();
+    const body = await parseBody(req, roomCreateBody);
+
+    const [existing] = await db`
+      select id, order_id, name, note, position from rooms
+      where order_id = ${params.orderId!} and lower(name) = lower(${body.name})
+    `;
+    if (existing) return json({ room: existing });
+
+    try {
+      const [room] = await db`
+        insert into rooms (order_id, name, position)
+        values (${params.orderId!}, ${body.name},
+                coalesce((select max(position) from rooms where order_id = ${params.orderId!}), 0) + 1)
+        returning id, order_id, name, note, position
+      `;
+      return json({ room }, { status: 201 });
+    } catch (err) {
+      if ((err as { code?: string }).code === "23503") throw new ApiError(404, "Zakázka nenalezena.");
+      if ((err as { code?: string }).code === "23505") {
+        // souběh pozice — jeden retry
+        const [room] = await db`
+          insert into rooms (order_id, name, position)
+          values (${params.orderId!}, ${body.name},
+                  coalesce((select max(position) from rooms where order_id = ${params.orderId!}), 0) + 1)
+          returning id, order_id, name, note, position
+        `;
+        return json({ room }, { status: 201 });
+      }
+      throw err;
+    }
+  }),
+
   makeRoute("PATCH", "/api/rooms/:id", async (req, _ctx, params) => {
     const db = sql();
     const body = await parseBody(req, roomUpdateBody);

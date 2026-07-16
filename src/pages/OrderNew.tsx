@@ -2,17 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ClientRow } from "@shared/types";
 import { api } from "../api/client";
-import { useClientSearch } from "../api/hooks";
+import { useClientSearch, useMe } from "../api/hooks";
+import { PhoneInput, emailIssue, phoneIssue } from "../components/PhoneInput";
 import { useToast } from "../components/Toast";
 import { Button, Field, Spinner, TextInput } from "../components/ui";
 
 interface NewClientFields {
   name: string;
   phone: string;
+  email: string;
   address: string;
   delivery_address: string;
   contact_person: string;
-  email: string;
   ico: string;
   dic: string;
 }
@@ -20,15 +21,18 @@ interface NewClientFields {
 const EMPTY_CLIENT: NewClientFields = {
   name: "",
   phone: "",
+  email: "",
   address: "",
   delivery_address: "",
   contact_person: "",
-  email: "",
   ico: "",
   dic: "",
 };
 
 export default function OrderNewPage() {
+  const me = useMe();
+  const isAdmin = me.data?.role === "admin";
+
   const [mode, setMode] = useState<"new" | "existing">("new");
   const [client, setClient] = useState<NewClientFields>(EMPTY_CLIENT);
   const [moreClient, setMoreClient] = useState(false);
@@ -50,6 +54,8 @@ export default function OrderNewPage() {
   const search = useClientSearch(clientSearch.trim(), mode === "existing");
 
   const clientMissing = mode === "new" ? client.name.trim() === "" : existing === null;
+  const phoneProblem = mode === "new" ? phoneIssue(client.phone) : null;
+  const emailProblem = mode === "new" ? emailIssue(client.email) : null;
 
   function set(field: keyof NewClientFields, value: string) {
     setClient((c) => ({ ...c, [field]: value }));
@@ -58,16 +64,16 @@ export default function OrderNewPage() {
   async function submit() {
     setAttempted(true);
     setError(null);
-    if (clientMissing) return;
+    if (clientMissing || phoneProblem || emailProblem) return;
 
     setBusy(true);
     try {
       const body = {
         client: mode === "existing" && existing ? { id: existing.id } : { new: client },
         installation_address: installationAddress.trim(),
-        montage_number: montageNumber.trim(),
-        order_number: orderNumber.trim(),
-        delivery_date: deliveryDate || null,
+        montage_number: isAdmin ? montageNumber.trim() : "",
+        order_number: isAdmin ? orderNumber.trim() : "",
+        delivery_date: isAdmin && deliveryDate ? deliveryDate : null,
         note: note.trim(),
       };
       const { id } = await api<{ id: string }>("/api/orders", { method: "POST", body });
@@ -84,7 +90,7 @@ export default function OrderNewPage() {
       <h1>Nová zakázka</h1>
 
       <section className="form-group">
-        <h2 className="form-group-title">Klient</h2>
+        <h2 className="form-group-title">Zákazník</h2>
         <div className="segmented" role="tablist">
           <button
             type="button"
@@ -93,7 +99,7 @@ export default function OrderNewPage() {
             className={`segmented-btn ${mode === "new" ? "segmented-active" : ""}`}
             onClick={() => setMode("new")}
           >
-            Nový klient
+            Nový zákazník
           </button>
           <button
             type="button"
@@ -125,13 +131,24 @@ export default function OrderNewPage() {
                 onChange={(e) => set("name", e.target.value)}
               />
             </Field>
-            <Field label="Telefon" htmlFor="c-phone">
+            <Field
+              label="Telefon"
+              htmlFor="c-phone"
+              messages={attempted && phoneProblem ? [{ level: "error", message: phoneProblem }] : []}
+            >
+              <PhoneInput id="c-phone" value={client.phone} onChange={(v) => set("phone", v)} />
+            </Field>
+            <Field
+              label="E-mail"
+              htmlFor="c-email"
+              messages={attempted && emailProblem ? [{ level: "error", message: emailProblem }] : []}
+            >
               <TextInput
-                id="c-phone"
-                type="tel"
-                inputMode="tel"
-                value={client.phone}
-                onChange={(e) => set("phone", e.target.value)}
+                id="c-email"
+                type="email"
+                inputMode="email"
+                value={client.email}
+                onChange={(e) => set("email", e.target.value)}
               />
             </Field>
             <Field label="Adresa" htmlFor="c-address">
@@ -148,17 +165,19 @@ export default function OrderNewPage() {
               </Button>
             ) : (
               <>
-                <Field label="IČ" htmlFor="c-ico">
-                  <TextInput
-                    id="c-ico"
-                    inputMode="numeric"
-                    value={client.ico}
-                    onChange={(e) => set("ico", e.target.value)}
-                  />
-                </Field>
-                <Field label="DIČ" htmlFor="c-dic">
-                  <TextInput id="c-dic" value={client.dic} onChange={(e) => set("dic", e.target.value)} />
-                </Field>
+                <div className="field-row">
+                  <Field label="IČ" htmlFor="c-ico">
+                    <TextInput
+                      id="c-ico"
+                      inputMode="numeric"
+                      value={client.ico}
+                      onChange={(e) => set("ico", e.target.value)}
+                    />
+                  </Field>
+                  <Field label="DIČ" htmlFor="c-dic">
+                    <TextInput id="c-dic" value={client.dic} onChange={(e) => set("dic", e.target.value)} />
+                  </Field>
+                </div>
                 <Field label="Dodací adresa" htmlFor="c-delivery" help="Nechte prázdné, pokud je stejná.">
                   <TextInput
                     id="c-delivery"
@@ -171,15 +190,6 @@ export default function OrderNewPage() {
                     id="c-contact"
                     value={client.contact_person}
                     onChange={(e) => set("contact_person", e.target.value)}
-                  />
-                </Field>
-                <Field label="E-mail" htmlFor="c-email">
-                  <TextInput
-                    id="c-email"
-                    type="email"
-                    inputMode="email"
-                    value={client.email}
-                    onChange={(e) => set("email", e.target.value)}
                   />
                 </Field>
               </>
@@ -199,10 +209,10 @@ export default function OrderNewPage() {
         ) : (
           <>
             <Field
-              label="Vyhledat klienta"
+              label="Vyhledat zákazníka"
               htmlFor="c-search"
               messages={
-                attempted && clientMissing ? [{ level: "error", message: "Vyberte klienta." }] : []
+                attempted && clientMissing ? [{ level: "error", message: "Vyberte zákazníka." }] : []
               }
             >
               <TextInput
@@ -228,7 +238,7 @@ export default function OrderNewPage() {
                   </li>
                 ))}
                 {search.data.clients.length === 0 && (
-                  <li className="muted picker-empty">Nikdo nenalezen — založte nového klienta.</li>
+                  <li className="muted picker-empty">Nikdo nenalezen — založte nového zákazníka.</li>
                 )}
               </ul>
             )}
@@ -241,37 +251,47 @@ export default function OrderNewPage() {
         <Field
           label="Místo montáže"
           htmlFor="o-address"
-          help="Nechte prázdné, pokud je stejné jako adresa klienta."
+          help="Nechte prázdné, pokud je stejné jako adresa zákazníka."
         >
           <TextInput
             id="o-address"
             value={installationAddress}
             onChange={(e) => setInstallationAddress(e.target.value)}
-            placeholder="= adresa klienta"
-          />
-        </Field>
-        <Field label="Číslo montáže" htmlFor="o-montage">
-          <TextInput id="o-montage" value={montageNumber} onChange={(e) => setMontageNumber(e.target.value)} />
-        </Field>
-        <Field label="Číslo zakázky" htmlFor="o-number">
-          <TextInput
-            id="o-number"
-            value={orderNumber}
-            onChange={(e) => setOrderNumber(e.target.value)}
-            placeholder="např. ZAK26071"
-          />
-        </Field>
-        <Field label="Termín dodání" htmlFor="o-delivery">
-          <input
-            id="o-delivery"
-            type="date"
-            value={deliveryDate}
-            onChange={(e) => setDeliveryDate(e.target.value)}
+            placeholder="= adresa zákazníka"
           />
         </Field>
         <Field label="Poznámka k zakázce" htmlFor="o-note">
           <TextInput id="o-note" value={note} onChange={(e) => setNote(e.target.value)} />
         </Field>
+        {isAdmin && (
+          <>
+            <div className="field-row">
+              <Field label="Číslo montáže" htmlFor="o-montage">
+                <TextInput
+                  id="o-montage"
+                  value={montageNumber}
+                  onChange={(e) => setMontageNumber(e.target.value)}
+                />
+              </Field>
+              <Field label="Číslo zakázky" htmlFor="o-number">
+                <TextInput
+                  id="o-number"
+                  value={orderNumber}
+                  onChange={(e) => setOrderNumber(e.target.value)}
+                  placeholder="např. ZAK26071"
+                />
+              </Field>
+            </div>
+            <Field label="Termín dodání" htmlFor="o-delivery">
+              <input
+                id="o-delivery"
+                type="date"
+                value={deliveryDate}
+                onChange={(e) => setDeliveryDate(e.target.value)}
+              />
+            </Field>
+          </>
+        )}
       </section>
 
       {error && <p className="field-msg field-msg-error">{error}</p>}

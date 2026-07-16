@@ -1,36 +1,14 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ORDER_STATUSES, STATUS_LABELS } from "@shared/types";
-import { useDashboard } from "../api/hooks";
+import { Link } from "react-router-dom";
+import { useDashboard, useMe } from "../api/hooks";
 import { ErrorBanner, Spinner } from "../components/ui";
 
 export default function DashboardPage() {
   const dashboard = useDashboard();
-  const [search, setSearch] = useState("");
-  const navigate = useNavigate();
+  const me = useMe();
+  const isAdmin = me.data?.role === "admin";
 
   return (
     <div className="page">
-      <Link to="/zakazky/nova" className="btn btn-primary btn-block btn-xl">
-        + Nová zakázka
-      </Link>
-
-      <form
-        className="dashboard-search"
-        onSubmit={(e) => {
-          e.preventDefault();
-          navigate(`/zakazky?search=${encodeURIComponent(search.trim())}`);
-        }}
-      >
-        <input
-          type="search"
-          placeholder="Hledat: jméno, adresa, typ stínění…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          aria-label="Hledat v zakázkách"
-        />
-      </form>
-
       {dashboard.isPending && <Spinner />}
       {dashboard.isError && (
         <ErrorBanner
@@ -40,20 +18,35 @@ export default function DashboardPage() {
       )}
       {dashboard.data && (
         <div className="status-tiles">
-          {ORDER_STATUSES.map((s) => (
-            <Link key={s} to={`/zakazky?status=${s}`} className={`status-tile status-tile-${s}`}>
-              <span className="status-tile-count">{dashboard.data.counts[s]}</span>
-              <span className="status-tile-label">{STATUS_LABELS[s]}</span>
-            </Link>
-          ))}
-          <Link to="/zakazky" className="status-tile status-tile-all">
-            <span className="status-tile-count">
-              {ORDER_STATUSES.reduce((sum, s) => sum + dashboard.data.counts[s], 0)}
-            </span>
-            <span className="status-tile-label">Všechny zakázky</span>
+          <Link to="/zakazky?status=rozpracovana" className="status-tile">
+            <span className="status-tile-count">{dashboard.data.counts.rozpracovana}</span>
+            <span className="status-tile-label">Rozpracované</span>
+          </Link>
+          <Link to="/zakazky?status=k_objednani" className="status-tile status-tile-k_objednani">
+            <span className="status-tile-count">{dashboard.data.counts.k_objednani}</span>
+            <span className="status-tile-label">K objednání</span>
           </Link>
         </div>
       )}
+
+      <div className="dashboard-actions">
+        <Link to="/zakazky/nova" className="btn btn-primary btn-block btn-xl">
+          + Nová zakázka
+        </Link>
+        <Link to="/zakazky" className="btn btn-secondary btn-block">
+          Seznam zakázek
+        </Link>
+        {isAdmin && (
+          <>
+            <Link to="/statistiky" className="btn btn-secondary btn-block">
+              Statistiky
+            </Link>
+            <Link to="/admin" className="btn btn-secondary btn-block">
+              Správa účtů
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }

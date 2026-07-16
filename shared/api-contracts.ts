@@ -89,6 +89,10 @@ export const itemUpdateBody = z.object({
   expected_updated_at: z.string().min(1),
 });
 
+export const roomCreateBody = z.object({
+  name: trimmed.pipe(z.string().min(1, "Vyplňte název místnosti.")),
+});
+
 export const roomUpdateBody = z.object({
   name: trimmed.pipe(z.string().min(1, "Vyplňte název místnosti.")).optional(),
   note: trimmed.optional(),
