@@ -11,6 +11,8 @@
 
 [functions]
   node_bundler = "esbuild"
+  # šablona montážního listu pro export funkci
+  included_files = ["docs/MO_vzor-1.xlsx"]
 
 [[redirects]]
   from = "/*"

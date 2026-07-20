@@ -159,7 +159,14 @@ export function SelectSheet({
       setFilter("");
       // fokus až po vykreslení sheetu
       setTimeout(() => searchRef.current?.focus(), 50);
+      // zámek scrollu stránky pod sheetem (jinak na iOS scrolluje pozadí)
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
     }
+    return undefined;
   }, [open]);
 
   return (

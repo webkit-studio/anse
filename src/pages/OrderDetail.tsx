@@ -392,9 +392,6 @@ export default function OrderDetailPage() {
           </p>
           <div className="admin-actions-row">
             <Button disabled title="Připravujeme — aktivace po otestování formulářů">
-              Tisk montážního listu
-            </Button>
-            <Button disabled title="Připravujeme — aktivace po otestování formulářů">
               Export JackWest
             </Button>
             <Button disabled title="Připravíme později">
@@ -429,6 +426,15 @@ export default function OrderDetailPage() {
         <Link to={`/zakazky/${orderId}/polozka/nova`} className="btn btn-primary btn-block btn-xl">
           + Přidat produkt
         </Link>
+        {detail.items.length > 0 && (
+          <a
+            className="btn btn-secondary btn-block"
+            href={`/api/export/montazni-list/${orderId}`}
+            download
+          >
+            Export montážního listu (.xlsx)
+          </a>
+        )}
         <OrderAction orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
       </div>
     </div>

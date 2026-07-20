@@ -14,7 +14,6 @@ import type {
   ProductTypeRow,
   SessionUser,
   StatsMonth,
-  StatsWeek,
   UserRow,
 } from "@shared/types";
 import { api, isUnauthorized } from "./client";
@@ -133,15 +132,6 @@ export function useStatsMonth(month: string) {
   return useQuery({
     queryKey: ["stats", "month", month],
     queryFn: () => api<StatsMonth>(`/api/stats?month=${month}`),
-    staleTime: 60_000,
-    placeholderData: (prev) => prev,
-  });
-}
-
-export function useStatsWeek(monday: string) {
-  return useQuery({
-    queryKey: ["stats", "week", monday],
-    queryFn: () => api<StatsWeek>(`/api/stats?week=${monday}`),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
   });

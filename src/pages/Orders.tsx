@@ -52,14 +52,35 @@ export default function OrdersPage() {
         aria-label="Hledat v zakázkách"
       />
 
-      {statusParam && (
-        <p className="muted orders-filter-note">
-          Filtr: {STATUS_LABELS[statusParam]}{" "}
-          <button type="button" className="link-btn" onClick={() => setStatus("")}>
-            zrušit
-          </button>
-        </p>
-      )}
+      <div className="segmented segmented-3" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={statusParam === ""}
+          className={`segmented-btn ${statusParam === "" ? "segmented-active" : ""}`}
+          onClick={() => setStatus("")}
+        >
+          Vše
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={statusParam === "rozpracovana"}
+          className={`segmented-btn ${statusParam === "rozpracovana" ? "segmented-active" : ""}`}
+          onClick={() => setStatus("rozpracovana")}
+        >
+          Rozpracované
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={statusParam === "k_objednani"}
+          className={`segmented-btn ${statusParam === "k_objednani" ? "segmented-active" : ""}`}
+          onClick={() => setStatus("k_objednani")}
+        >
+          K objednání
+        </button>
+      </div>
 
       {orders.isPending && <Spinner />}
       {orders.isError && (

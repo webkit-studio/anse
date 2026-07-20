@@ -52,6 +52,9 @@
 }
 
 .page {
+  /* width 100%: uvnitř flex kontejneru by auto-marginy zrušily stretch
+     a stránka by se smrskla na šířku obsahu (bug z testování na iPhonu) */
+  width: 100%;
   max-width: 640px;
   margin: 0 auto;
   padding: var(--sp-4);
@@ -329,6 +332,11 @@ input[type="date"] {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  overscroll-behavior: contain; /* scroll nesmí protéct do stránky pod sheetem */
+}
+
+.sheet {
+  overscroll-behavior: contain;
 }
 
 .sheet-option {
@@ -677,6 +685,15 @@ input[type="date"] {
   border-radius: var(--radius);
   overflow: hidden;
   margin-bottom: var(--sp-4);
+}
+
+.segmented-3 {
+  grid-template-columns: 1fr 1.4fr 1.4fr;
+  margin-bottom: 0;
+}
+
+.segmented-3 .segmented-btn {
+  font-size: 15px;
 }
 
 .segmented-btn {
@@ -1185,47 +1202,53 @@ input[type="date"] {
 
 .stats-user {
   display: flex;
-  justify-content: space-between;
-  gap: var(--sp-2);
+  flex-direction: column;
+  gap: 6px;
   background: var(--c-bg);
   border: 1px solid var(--c-border);
   border-radius: var(--radius);
   padding: var(--sp-3);
 }
 
-.stats-user-counts {
-  color: var(--c-text-muted);
-}
-
-.stats-day {
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  padding: var(--sp-3);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stats-day-head {
+.stats-user-head {
   display: flex;
   justify-content: space-between;
   gap: var(--sp-2);
+  flex-wrap: wrap;
 }
 
-.stats-day-name {
+.stats-user-name {
   font-weight: 700;
 }
 
+.stats-user-counts {
+  font-size: 14px;
+}
+
+.stats-period-label {
+  font-size: 18px;
+  text-transform: capitalize;
+}
+
+.stats-arrow {
+  min-width: var(--tap);
+  font-size: 22px;
+}
+
+.stats-total-green {
+  background: var(--c-green-soft);
+}
+
 .stats-bar-track {
-  height: 8px;
-  border-radius: 4px;
+  height: 16px;
+  border-radius: 8px;
   background: var(--c-surface);
   overflow: hidden;
 }
 
 .stats-bar {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .stats-bar-zalozeno {
@@ -1234,14 +1257,6 @@ input[type="date"] {
 
 .stats-bar-objednano {
   background: var(--c-green);
-}
-
-.stats-day-users {
-  font-size: 13.5px;
-}
-
-.stats-legend {
-  font-size: 13.5px;
 }
 
 @media (min-width: 720px) {

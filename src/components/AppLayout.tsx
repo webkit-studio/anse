@@ -14,11 +14,6 @@ export function AppLayout() {
           ANSE
         </Link>
         <div className="app-header-right">
-          {user?.role === "admin" && (
-            <Link to="/admin" className="app-header-link">
-              Správa
-            </Link>
-          )}
           <button
             type="button"
             className="app-header-link"

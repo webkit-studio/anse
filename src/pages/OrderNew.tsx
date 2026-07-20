@@ -257,7 +257,6 @@ export default function OrderNewPage() {
             id="o-address"
             value={installationAddress}
             onChange={(e) => setInstallationAddress(e.target.value)}
-            placeholder="= adresa zákazníka"
           />
         </Field>
         <Field label="Poznámka k zakázce" htmlFor="o-note">

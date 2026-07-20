@@ -47,6 +47,13 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   await expect(page.getByRole("button", { name: /Plissé žaluzie/ })).toBeDisabled();
   await page.getByRole("button", { name: /Okenní sítě/ }).click();
 
+  // regrese: obsah na plnou šířku viewportu (auto-margin bug ve flexu)
+  const widths = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    page: document.querySelector(".page")!.getBoundingClientRect().width,
+  }));
+  expect(widths.page).toBeGreaterThanOrEqual(widths.viewport - 1);
+
   // formulář: místnost jako první volba
   await pickSheet(page, "room-select", "Kuchyně");
 
@@ -110,24 +117,37 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await page.getByLabel("Přihlašovací kód").fill("999999");
   await expect(page.getByRole("link", { name: "+ Nová zakázka" })).toBeVisible();
 
-  // seznam bez filtrů, jen hledání
-  await page.getByRole("link", { name: "Seznam zakázek" }).click();
-  await expect(page.locator(".chip")).toHaveCount(0);
+  // seznam: taby Vše / Rozpracované / K objednání (Vše default) + hledání
+  await page.getByRole("link", { name: "Zakázky" }).click();
+  await expect(page.getByRole("tab", { name: "Vše" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: "Rozpracované" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "K objednání" })).toBeVisible();
   await page.getByLabel("Hledat v zakázkách").fill("e2e novak");
   await page.getByRole("link", { name: new RegExp(CLIENT_NAME) }).first().click();
 
-  // počet kusů + deaktivované exporty hned pod hlavičkou
+  // počet kusů + deaktivované exporty výrobců hned pod hlavičkou
   await expect(page.getByText(/kusy \(ks = počet položek\)/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "Tisk montážního listu" })).toBeDisabled();
   await expect(page.getByRole("button", { name: "Export JackWest" })).toBeDisabled();
+
+  // export montážního listu: stažení xlsx (viditelné pro obě role)
+  const orderId = page.url().split("/zakazky/")[1]!;
+  await expect(page.getByRole("link", { name: /Export montážního listu/ })).toBeVisible();
+  const exportRes = await page.request.get(`/api/export/montazni-list/${orderId}`);
+  expect(exportRes.status()).toBe(200);
+  expect(exportRes.headers()["content-disposition"]).toContain("montazni-list");
+  const body = await exportRes.body();
+  expect(body.subarray(0, 2).toString()).toBe("PK"); // xlsx = zip
 
   // objednat (dvojtap)
   await page.getByRole("button", { name: "Označit jako objednáno" }).click();
   await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
   await expect(page.locator(".status-badge").first()).toHaveText("Objednáno");
 
-  // statistiky: aspoň 1 vyměřeno a 1 objednáno v aktuálním měsíci
+  // statistiky: jen měsíc (žádný týden), „Podle uživatelů", nenulové počty
   await page.goto("/statistiky");
+  await expect(page.getByRole("tab", { name: "Týden" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Podle uživatelů" })).toBeVisible();
+  await expect(page.getByText(/Vyměřeno = založení/)).toHaveCount(0);
   const zalozeno = page.locator(".stats-total").first().locator(".stats-total-num");
   const objednano = page.locator(".stats-total").nth(1).locator(".stats-total-num");
   await expect

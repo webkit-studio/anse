@@ -143,17 +143,6 @@ export interface StatsMonth {
   users: StatsUserCount[];
 }
 
-export interface StatsWeekDay {
-  date: string;
-  zalozeno: number;
-  objednano: number;
-  users: StatsUserCount[];
-}
-
-export interface StatsWeek {
-  week: string;
-  days: StatsWeekDay[];
-}
 
 export interface Settings {
   admin_group_email: string;

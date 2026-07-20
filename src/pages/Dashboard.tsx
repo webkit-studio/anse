@@ -34,7 +34,7 @@ export default function DashboardPage() {
           + Nová zakázka
         </Link>
         <Link to="/zakazky" className="btn btn-secondary btn-block">
-          Seznam zakázek
+          Zakázky
         </Link>
         {isAdmin && (
           <>

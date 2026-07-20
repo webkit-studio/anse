@@ -2,6 +2,7 @@
 // bez Netlify CLI. Vite dev server na něj proxuje /api.
 import { createServer } from "node:http";
 import { handle } from "../server/handler";
+import exportHandler from "../netlify/functions/export";
 import { loadEnv } from "./lib/env";
 
 loadEnv();
@@ -24,9 +25,15 @@ createServer(async (req, res) => {
       for await (const chunk of req) chunks.push(chunk as Buffer);
       body = Buffer.concat(chunks);
     }
-    const response = await handle(
-      new Request(url, { method, headers, body: body ? new Uint8Array(body) : undefined }),
-    );
+    const request = new Request(url, {
+      method,
+      headers,
+      body: body ? new Uint8Array(body) : undefined,
+    });
+    // /api/export/* obsluhuje oddělená funkce (jako na Netlify)
+    const response = new URL(url).pathname.startsWith("/api/export/")
+      ? await exportHandler(request)
+      : await handle(request);
     // set-cookie nesmí projít přes entries() — víc cookies by se slepilo čárkou
     const outHeaders: Record<string, string | string[]> = {};
     response.headers.forEach((value, key) => {
