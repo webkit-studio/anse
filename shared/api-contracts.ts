@@ -26,10 +26,11 @@ export const loginBody = z.object({
 export const clientFields = z.object({
   name: trimmed.pipe(z.string().min(1, "Vyplňte jméno nebo firmu.")),
   contact_person: optionalText,
-  address: optionalText,
+  // povinné dle zadání (Marek): adresa a e-mail zákazníka
+  address: trimmed.pipe(z.string().min(1, "Vyplňte adresu.")),
   delivery_address: optionalText,
   phone: optionalText,
-  email: optionalText,
+  email: trimmed.pipe(z.string().min(1, "Vyplňte e-mail.").email("Zkontrolujte formát e-mailu.")),
   ico: optionalText,
   dic: optionalText,
   note: optionalText,

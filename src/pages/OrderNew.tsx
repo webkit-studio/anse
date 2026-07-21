@@ -39,6 +39,8 @@ export default function OrderNewPage() {
   const [existing, setExisting] = useState<ClientRow | null>(null);
   const [clientSearch, setClientSearch] = useState("");
 
+  // Místo montáže: defaultně shodné s adresou zákazníka (Markovo „někdy je stejná").
+  const [sameAddress, setSameAddress] = useState(true);
   const [installationAddress, setInstallationAddress] = useState("");
   const [montageNumber, setMontageNumber] = useState("");
   const [orderNumber, setOrderNumber] = useState("");
@@ -53,9 +55,19 @@ export default function OrderNewPage() {
   const toast = useToast();
   const search = useClientSearch(clientSearch.trim(), mode === "existing");
 
+  // Povinná pole zákazníka (jen u nového; stávající se posílá jako {id}).
   const clientMissing = mode === "new" ? client.name.trim() === "" : existing === null;
+  const addressProblem = mode === "new" && client.address.trim() === "" ? "Vyplňte adresu." : null;
   const phoneProblem = mode === "new" ? phoneIssue(client.phone) : null;
-  const emailProblem = mode === "new" ? emailIssue(client.email) : null;
+  const emailProblem =
+    mode === "new"
+      ? client.email.trim() === ""
+        ? "Vyplňte e-mail."
+        : emailIssue(client.email)
+      : null;
+  // Místo montáže povinné, jen když NENÍ shodné s adresou zákazníka.
+  const installationProblem =
+    !sameAddress && installationAddress.trim() === "" ? "Vyplňte místo montáže." : null;
 
   function set(field: keyof NewClientFields, value: string) {
     setClient((c) => ({ ...c, [field]: value }));
@@ -64,13 +76,14 @@ export default function OrderNewPage() {
   async function submit() {
     setAttempted(true);
     setError(null);
-    if (clientMissing || phoneProblem || emailProblem) return;
+    if (clientMissing || addressProblem || phoneProblem || emailProblem || installationProblem) return;
 
     setBusy(true);
     try {
       const body = {
         client: mode === "existing" && existing ? { id: existing.id } : { new: client },
-        installation_address: installationAddress.trim(),
+        // shodná adresa → prázdné, server doplní adresu zákazníka
+        installation_address: sameAddress ? "" : installationAddress.trim(),
         montage_number: isAdmin ? montageNumber.trim() : "",
         order_number: isAdmin ? orderNumber.trim() : "",
         delivery_date: isAdmin && deliveryDate ? deliveryDate : null,
@@ -141,6 +154,7 @@ export default function OrderNewPage() {
             <Field
               label="E-mail"
               htmlFor="c-email"
+              required
               messages={attempted && emailProblem ? [{ level: "error", message: emailProblem }] : []}
             >
               <TextInput
@@ -151,7 +165,12 @@ export default function OrderNewPage() {
                 onChange={(e) => set("email", e.target.value)}
               />
             </Field>
-            <Field label="Adresa" htmlFor="c-address">
+            <Field
+              label="Adresa"
+              htmlFor="c-address"
+              required
+              messages={attempted && addressProblem ? [{ level: "error", message: addressProblem }] : []}
+            >
               <TextInput
                 id="c-address"
                 value={client.address}
@@ -248,17 +267,34 @@ export default function OrderNewPage() {
 
       <section className="form-group">
         <h2 className="form-group-title">Montáž</h2>
-        <Field
-          label="Místo montáže"
-          htmlFor="o-address"
-          help="Nechte prázdné, pokud je stejné jako adresa zákazníka."
-        >
-          <TextInput
-            id="o-address"
-            value={installationAddress}
-            onChange={(e) => setInstallationAddress(e.target.value)}
+        <label className="toggle toggle-block">
+          <input
+            type="checkbox"
+            checked={sameAddress}
+            onChange={(e) => setSameAddress(e.target.checked)}
           />
-        </Field>
+          Místo montáže je shodné s adresou zákazníka
+        </label>
+        {!sameAddress && (
+          <Field
+            label="Místo montáže"
+            htmlFor="o-address"
+            required
+            messages={
+              attempted && installationProblem
+                ? [{ level: "error", message: installationProblem }]
+                : []
+            }
+          >
+            <TextInput
+              id="o-address"
+              value={installationAddress}
+              autoFocus
+              onChange={(e) => setInstallationAddress(e.target.value)}
+              placeholder="Ulice č., město"
+            />
+          </Field>
+        )}
         <Field label="Poznámka k zakázce" htmlFor="o-note">
           <TextInput id="o-note" value={note} onChange={(e) => setNote(e.target.value)} />
         </Field>

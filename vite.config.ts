@@ -18,6 +18,8 @@ export default defineConfig({
       // changeOrigin: false zachovává Host hlavičku (localhost:5173),
       // aby seděl CSRF Origin check v server/router.ts.
       "/api": { target: "http://localhost:8788", changeOrigin: false },
+      // export montážního listu obsluhuje stejný dev API server (oddělená funkce)
+      "/export": { target: "http://localhost:8788", changeOrigin: false },
     },
   },
   test: {

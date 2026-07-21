@@ -34,6 +34,14 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   await page.getByLabel("Firma / jméno a příjmení").fill(CLIENT_NAME);
   await page.locator("#c-phone").fill("777123456");
   await page.getByLabel("Adresa").fill("Testovací 12, Praha");
+
+  // adresa i e-mail jsou povinné — bez e-mailu se zakázka nezaloží
+  await page.getByRole("button", { name: "Založit zakázku" }).click();
+  await expect(page.getByText("Vyplňte e-mail.")).toBeVisible();
+  await page.getByLabel("E-mail").fill("novak@example.com");
+
+  // místo montáže je defaultně shodné s adresou zákazníka (pole skryté)
+  await expect(page.locator("#o-address")).toHaveCount(0);
   await page.getByRole("button", { name: "Založit zakázku" }).click();
 
   await expect(page.getByRole("heading", { name: CLIENT_NAME })).toBeVisible();
@@ -131,8 +139,8 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
 
   // export montážního listu: stažení xlsx (viditelné pro obě role)
   const orderId = page.url().split("/zakazky/")[1]!;
-  await expect(page.getByRole("link", { name: /Export montážního listu/ })).toBeVisible();
-  const exportRes = await page.request.get(`/api/export/montazni-list/${orderId}`);
+  await expect(page.getByRole("button", { name: /Export montážního listu/ })).toBeVisible();
+  const exportRes = await page.request.get(`/export/montazni-list/${orderId}`);
   expect(exportRes.status()).toBe(200);
   expect(exportRes.headers()["content-disposition"]).toContain("montazni-list");
   const body = await exportRes.body();

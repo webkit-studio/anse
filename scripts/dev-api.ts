@@ -30,8 +30,8 @@ createServer(async (req, res) => {
       headers,
       body: body ? new Uint8Array(body) : undefined,
     });
-    // /api/export/* obsluhuje oddělená funkce (jako na Netlify)
-    const response = new URL(url).pathname.startsWith("/api/export/")
+    // /export/* obsluhuje oddělená funkce (jako na Netlify)
+    const response = new URL(url).pathname.startsWith("/export/")
       ? await exportHandler(request)
       : await handle(request);
     // set-cookie nesmí projít přes entries() — víc cookies by se slepilo čárkou

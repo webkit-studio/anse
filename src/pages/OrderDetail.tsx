@@ -300,12 +300,48 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
   );
 }
 
+/** Stáhne export přes fetch (ne prostý odkaz) — chyby serveru se ukážou česky,
+ *  místo neurčitého „unable to download" v prohlížeči. */
+function useExportDownload(orderId: string) {
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+
+  async function download() {
+    setBusy(true);
+    try {
+      const res = await fetch(`/export/montazni-list/${orderId}`, { credentials: "same-origin" });
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(payload.error ?? "Export se nepodařil.");
+      }
+      const disposition = res.headers.get("content-disposition") ?? "";
+      const filename = /filename="?([^"]+)"?/.exec(disposition)?.[1] ?? "montazni-list.xlsx";
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Export se nepodařil.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return { download, busy };
+}
+
 export default function OrderDetailPage() {
   const { orderId = "" } = useParams();
   const order = useOrder(orderId);
   const me = useMe();
   const invalidate = useInvalidateOrder();
   const [editing, setEditing] = useState(false);
+  const exportXlsx = useExportDownload(orderId);
 
   if (order.isPending) {
     return (
@@ -427,13 +463,14 @@ export default function OrderDetailPage() {
           + Přidat produkt
         </Link>
         {detail.items.length > 0 && (
-          <a
-            className="btn btn-secondary btn-block"
-            href={`/api/export/montazni-list/${orderId}`}
-            download
+          <Button
+            variant="secondary"
+            className="btn-block"
+            disabled={exportXlsx.busy}
+            onClick={() => void exportXlsx.download()}
           >
-            Export montážního listu (.xlsx)
-          </a>
+            {exportXlsx.busy ? "Generuji…" : "Export montážního listu (.xlsx)"}
+          </Button>
         )}
         <OrderAction orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
       </div>

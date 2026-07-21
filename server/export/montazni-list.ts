@@ -1,11 +1,9 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import ExcelJS from "exceljs";
 import { formDefinitionSchema, type FormDefinition } from "../../shared/form-schema";
 import { aggregateForList, totalPieces } from "../../shared/print";
 import { sql } from "../db";
 import { ApiError } from "../http";
+import { TEMPLATE_B64 } from "./template.b64";
 
 // Export montážního listu: plní šablonu docs/MO_vzor-1.xlsx (4v1 papír) —
 // styly, merge, smluvní text i podpisové bloky zůstávají 1:1 ze vzoru.
@@ -22,25 +20,6 @@ import { ApiError } from "../http";
 
 const FIRST_ITEM_ROW = 19;
 const TEMPLATE_CAPACITY = 18; // řádky 19–36, pak začínají podpisové bloky
-
-function templatePath(): string {
-  const candidates = [
-    path.join(process.cwd(), "docs/MO_vzor-1.xlsx"),
-    path.join(process.env.LAMBDA_TASK_ROOT ?? "", "docs/MO_vzor-1.xlsx"),
-  ];
-  try {
-    // lokální ESM běh (tsx); v CJS bundle Netlify není import.meta.url použitelné
-    candidates.push(
-      path.join(path.dirname(fileURLToPath(import.meta.url)), "../../docs/MO_vzor-1.xlsx"),
-    );
-  } catch {
-    // ignorovat
-  }
-  for (const p of candidates) {
-    if (p && existsSync(p)) return p;
-  }
-  throw new ApiError(500, "Šablona montážního listu nebyla nalezena.");
-}
 
 function czDate(iso: string | null): string {
   if (!iso) return "";
@@ -111,7 +90,8 @@ export async function buildMontazniList(
   );
 
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(templatePath());
+  // exceljs typuje load() staršími @types/node — přetypování na obecný Buffer
+  await workbook.xlsx.load(Buffer.from(TEMPLATE_B64, "base64") as unknown as ExcelJS.Buffer);
   const sheet = workbook.worksheets[0];
   if (!sheet) throw new ApiError(500, "Šablona montážního listu je poškozená.");
 

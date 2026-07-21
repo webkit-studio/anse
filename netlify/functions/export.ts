@@ -12,9 +12,7 @@ export default async (req: Request): Promise<Response> => {
       return json({ error: "Přihlaste se prosím." }, { status: 401 });
     }
 
-    const match = /\/api\/export\/montazni-list\/([0-9a-f-]{36})\/?$/.exec(
-      new URL(req.url).pathname,
-    );
+    const match = /\/export\/montazni-list\/([0-9a-f-]{36})\/?$/.exec(new URL(req.url).pathname);
     if (!match) return json({ error: "Nenalezeno." }, { status: 404 });
 
     const { buffer, filename } = await buildMontazniList(match[1]!);
@@ -30,4 +28,6 @@ export default async (req: Request): Promise<Response> => {
   }
 };
 
-export const config = { path: "/api/export/*" };
+// Disjunktní prefix mimo /api/* — jinak by request chytala i hlavní api funkce
+// (dvě funkce na překrývající se cestě = nejednoznačné routování → 404 → „unable to download").
+export const config = { path: "/export/*" };
