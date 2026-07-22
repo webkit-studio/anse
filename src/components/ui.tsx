@@ -111,13 +111,24 @@ export function NativeSelect({
 export interface SheetOption {
   value: string;
   label: string;
-  /** Barevná tečka (hex) — náhledy barev v číselnících. */
+  /** Barevná tečka (hex) — náhledy jednobarevných odstínů. */
   swatch?: string;
+  /** Náhled barvy jako obrázek (cesta) — reálné textury (lamely). */
+  swatchImage?: string;
 }
 
-function Swatch({ color }: { color?: string }) {
-  if (!color) return null;
-  return <span className="swatch" style={{ background: color }} aria-hidden="true" />;
+function Swatch({ opt }: { opt?: Pick<SheetOption, "swatch" | "swatchImage"> }) {
+  if (opt?.swatchImage) {
+    return (
+      <span
+        className="swatch swatch-img"
+        style={{ backgroundImage: `url(${opt.swatchImage})` }}
+        aria-hidden="true"
+      />
+    );
+  }
+  if (opt?.swatch) return <span className="swatch" style={{ background: opt.swatch }} aria-hidden="true" />;
+  return null;
 }
 
 function normalize(s: string): string {
@@ -179,7 +190,7 @@ export function SelectSheet({
         onClick={() => setOpen(true)}
       >
         <span className="select-sheet-value">
-          <Swatch color={selected?.swatch} />
+          <Swatch opt={selected} />
           {selected ? selected.label : placeholder}
         </span>
         <span aria-hidden="true" className="select-sheet-caret">
@@ -222,7 +233,7 @@ export function SelectSheet({
                     setOpen(false);
                   }}
                 >
-                  <Swatch color={o.swatch} />
+                  <Swatch opt={o} />
                   {o.label}
                 </button>
               ))}

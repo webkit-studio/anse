@@ -57,131 +57,163 @@
           "options": [
             {
               "value": "1",
-              "label": "1"
+              "label": "1",
+              "swatchImage": "/lamely/1.webp"
             },
             {
               "value": "7",
-              "label": "7"
+              "label": "7",
+              "swatchImage": "/lamely/7.webp"
             },
             {
               "value": "17",
-              "label": "17"
+              "label": "17",
+              "swatchImage": "/lamely/17.webp"
             },
             {
               "value": "58",
-              "label": "58"
+              "label": "58",
+              "swatchImage": "/lamely/58.webp"
             },
             {
               "value": "63",
-              "label": "63"
+              "label": "63",
+              "swatchImage": "/lamely/63.webp"
             },
             {
               "value": "302",
-              "label": "302"
+              "label": "302",
+              "swatchImage": "/lamely/302.webp"
             },
             {
               "value": "378",
-              "label": "378"
+              "label": "378",
+              "swatchImage": "/lamely/378.webp"
             },
             {
               "value": "502",
-              "label": "502"
+              "label": "502",
+              "swatchImage": "/lamely/502.webp"
             },
             {
               "value": "570",
-              "label": "570"
+              "label": "570",
+              "swatchImage": "/lamely/570.webp"
             },
             {
               "value": "700",
-              "label": "700"
+              "label": "700",
+              "swatchImage": "/lamely/700.webp"
             },
             {
               "value": "705",
-              "label": "705"
+              "label": "705",
+              "swatchImage": "/lamely/705.webp"
             },
             {
               "value": "707",
-              "label": "707"
+              "label": "707",
+              "swatchImage": "/lamely/707.webp"
             },
             {
               "value": "711",
-              "label": "711"
+              "label": "711",
+              "swatchImage": "/lamely/711.webp"
             },
             {
               "value": "712",
-              "label": "712"
+              "label": "712",
+              "swatchImage": "/lamely/712.webp"
             },
             {
               "value": "713",
-              "label": "713"
+              "label": "713",
+              "swatchImage": "/lamely/713.webp"
             },
             {
               "value": "714",
-              "label": "714"
+              "label": "714",
+              "swatchImage": "/lamely/714.webp"
             },
             {
               "value": "715",
-              "label": "715"
+              "label": "715",
+              "swatchImage": "/lamely/715.webp"
             },
             {
               "value": "716",
-              "label": "716"
+              "label": "716",
+              "swatchImage": "/lamely/716.webp"
             },
             {
               "value": "738",
-              "label": "738"
+              "label": "738",
+              "swatchImage": "/lamely/738.webp"
             },
             {
               "value": "872",
-              "label": "872"
+              "label": "872",
+              "swatchImage": "/lamely/872.webp"
             },
             {
               "value": "7016",
-              "label": "7016"
+              "label": "7016",
+              "swatchImage": "/lamely/7016.webp"
             },
             {
               "value": "49",
-              "label": "49 -př."
+              "label": "49 -př.",
+              "swatchImage": "/lamely/49.webp"
             },
             {
               "value": "56",
-              "label": "56 -př."
+              "label": "56 -př.",
+              "swatchImage": "/lamely/56.webp"
             },
             {
               "value": "61",
-              "label": "61 -př."
+              "label": "61 -př.",
+              "swatchImage": "/lamely/61.webp"
             },
             {
               "value": "103",
-              "label": "103 -př."
+              "label": "103 -př.",
+              "swatchImage": "/lamely/103.webp"
             },
             {
               "value": "110",
-              "label": "110 -př."
+              "label": "110 -př.",
+              "swatchImage": "/lamely/110.webp"
             },
             {
               "value": "190",
-              "label": "190 -př."
+              "label": "190 -př.",
+              "swatchImage": "/lamely/190.webp"
             },
             {
               "value": "191",
-              "label": "191 -př."
+              "label": "191 -př.",
+              "swatchImage": "/lamely/191.webp"
             },
             {
               "value": "423",
-              "label": "423 -př."
+              "label": "423 -př.",
+              "swatchImage": "/lamely/423.webp"
             },
             {
               "value": "454",
-              "label": "454 -př."
+              "label": "454 -př.",
+              "swatchImage": "/lamely/454.webp"
             },
             {
               "value": "780+",
-              "label": "780+ -př."
+              "label": "780+ -př.",
+              "swatchImage": "/lamely/780.webp"
             },
             {
               "value": "783+",
-              "label": "783+ -př."
+              "label": "783+ -př.",
+              "swatchImage": "/lamely/783.webp"
             },
             {
               "value": "814",
@@ -189,7 +221,8 @@
             },
             {
               "value": "950",
-              "label": "950 -př."
+              "label": "950 -př.",
+              "swatchImage": "/lamely/950.webp"
             },
             {
               "value": "1010",
@@ -201,15 +234,18 @@
             },
             {
               "value": "6796",
-              "label": "6796 -př."
+              "label": "6796 -př.",
+              "swatchImage": "/lamely/6796.webp"
             },
             {
               "value": "6797",
-              "label": "6797 -př."
+              "label": "6797 -př.",
+              "swatchImage": "/lamely/6797.webp"
             },
             {
               "value": "6798",
-              "label": "6798 -př."
+              "label": "6798 -př.",
+              "swatchImage": "/lamely/6798.webp"
             },
             {
               "value": "8202",
@@ -217,39 +253,48 @@
             },
             {
               "value": "8300",
-              "label": "8300 -př."
+              "label": "8300 -př.",
+              "swatchImage": "/lamely/8300.webp"
             },
             {
               "value": "9940",
-              "label": "9940 -př."
+              "label": "9940 -př.",
+              "swatchImage": "/lamely/9940.webp"
             },
             {
               "value": "9941",
-              "label": "9941 -př."
+              "label": "9941 -př.",
+              "swatchImage": "/lamely/9941.webp"
             },
             {
               "value": "9943",
-              "label": "9943 -př."
+              "label": "9943 -př.",
+              "swatchImage": "/lamely/9943.webp"
             },
             {
               "value": "9944",
-              "label": "9944 -př."
+              "label": "9944 -př.",
+              "swatchImage": "/lamely/9944.webp"
             },
             {
               "value": "9946",
-              "label": "9946 -př."
+              "label": "9946 -př.",
+              "swatchImage": "/lamely/9946.webp"
             },
             {
               "value": "9947",
-              "label": "9947 -př."
+              "label": "9947 -př.",
+              "swatchImage": "/lamely/9947.webp"
             },
             {
               "value": "9948",
-              "label": "9948 -př."
+              "label": "9948 -př.",
+              "swatchImage": "/lamely/9948.webp"
             },
             {
               "value": "9949",
-              "label": "9949 -př."
+              "label": "9949 -př.",
+              "swatchImage": "/lamely/9949.webp"
             }
           ]
         },

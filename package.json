@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "validate:definitions": "tsx scripts/validate-definitions.ts",
     "gen:template": "tsx scripts/gen-template.ts",
+    "gen:lamely": "tsx scripts/gen-lamely-thumbs.ts",
     "migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts"
   },
@@ -36,6 +37,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "sharp": "^0.35.3",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vite": "^6.0.7",

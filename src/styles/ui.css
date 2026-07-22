@@ -1031,6 +1031,15 @@ input[type="date"] {
   flex-shrink: 0;
 }
 
+/* obrázkový náhled (lamely) — o něco větší, ať je textura vidět */
+.swatch-img {
+  width: 26px;
+  height: 26px;
+  background-size: cover;
+  background-position: center;
+  vertical-align: -8px;
+}
+
 .select-sheet-value {
   display: flex;
   align-items: center;
