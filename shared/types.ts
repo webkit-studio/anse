@@ -69,6 +69,8 @@ export interface OrderRow {
   delivery_date: string | null;
   invoice_number: string;
   note: string;
+  /** Kdy zákazník podepsal (ISO) — samotný PNG podpis se do detailu nevrací. */
+  signed_at: string | null;
   created_at: string;
   updated_at: string;
 }

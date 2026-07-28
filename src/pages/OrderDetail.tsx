@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { FormDefinition } from "@shared/form-schema";
+import { missingForPdf } from "@shared/print";
 import type { ItemRow, OrderDetail, RoomRow } from "@shared/types";
 import { useMe, useOrder, useInvalidateOrder } from "../api/hooks";
 import { api, isConflict } from "../api/client";
 import { OrderAction } from "../components/OrderAction";
 import { PhoneInput } from "../components/PhoneInput";
+import { SignaturePad } from "../components/SignaturePad";
 import { useToast } from "../components/Toast";
 import {
   Button,
@@ -302,20 +304,20 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
 
 /** Stáhne export přes fetch (ne prostý odkaz) — chyby serveru se ukážou česky,
  *  místo neurčitého „unable to download" v prohlížeči. */
-function useExportDownload(orderId: string) {
+function useExportDownload(path: string, fallbackName: string) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
 
   async function download() {
     setBusy(true);
     try {
-      const res = await fetch(`/export/montazni-list/${orderId}`, { credentials: "same-origin" });
+      const res = await fetch(path, { credentials: "same-origin" });
       if (!res.ok) {
         const payload = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(payload.error ?? "Export se nepodařil.");
       }
       const disposition = res.headers.get("content-disposition") ?? "";
-      const filename = /filename="?([^"]+)"?/.exec(disposition)?.[1] ?? "montazni-list.xlsx";
+      const filename = /filename="?([^"]+)"?/.exec(disposition)?.[1] ?? fallbackName;
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -341,7 +343,9 @@ export default function OrderDetailPage() {
   const me = useMe();
   const invalidate = useInvalidateOrder();
   const [editing, setEditing] = useState(false);
-  const exportXlsx = useExportDownload(orderId);
+  const [signing, setSigning] = useState(false);
+  const exportXlsx = useExportDownload(`/export/montazni-list/${orderId}`, "montazni-list.xlsx");
+  const exportPdf = useExportDownload(`/export/montazni-list-pdf/${orderId}`, "montazni-list.pdf");
 
   if (order.isPending) {
     return (
@@ -364,6 +368,12 @@ export default function OrderDetailPage() {
   const detail = order.data;
   const isAdmin = me.data?.role === "admin";
   const refresh = () => invalidate(orderId);
+  const missingPdf = missingForPdf({
+    montage_number: detail.order.montage_number,
+    order_number: detail.order.order_number,
+    invoice_number: detail.order.invoice_number,
+    signed: Boolean(detail.order.signed_at),
+  });
 
   const itemsByRoom = new Map<string, ItemRow[]>();
   for (const item of detail.items) {
@@ -388,7 +398,17 @@ export default function OrderDetailPage() {
             <h1>{detail.client.name}</h1>
             <p className="muted">{detail.order.installation_address || "Místo montáže nevyplněno"}</p>
           </div>
-          <StatusBadge status={detail.order.status} />
+          <div className="order-badges">
+            <StatusBadge status={detail.order.status} />
+            {detail.order.signed_at && (
+              <span
+                className="signed-badge"
+                title={`Podepsáno ${new Date(detail.order.signed_at).toLocaleDateString("cs-CZ")}`}
+              >
+                ✓ Podepsáno
+              </span>
+            )}
+          </div>
         </div>
         <p className="muted order-header-meta">
           {[detail.client.phone, detail.client.email].filter(Boolean).join(" · ")}
@@ -437,6 +457,19 @@ export default function OrderDetailPage() {
               Export Susy
             </Button>
           </div>
+          <div className="pdf-export">
+            <Button
+              variant="secondary"
+              className="btn-block"
+              disabled={missingPdf.length > 0 || exportPdf.busy}
+              onClick={() => void exportPdf.download()}
+            >
+              {exportPdf.busy ? "Generuji…" : "Export PDF montážního listu (s podpisem)"}
+            </Button>
+            {missingPdf.length > 0 && (
+              <p className="muted pdf-export-hint">Doplňte nejdřív: {missingPdf.join(", ")}.</p>
+            )}
+          </div>
         </section>
       )}
 
@@ -472,8 +505,29 @@ export default function OrderDetailPage() {
             {exportXlsx.busy ? "Generuji…" : "Export montážního listu (.xlsx)"}
           </Button>
         )}
+        {detail.items.length > 0 && (
+          <Button
+            variant={detail.order.signed_at ? "ghost" : "secondary"}
+            className="btn-block"
+            onClick={() => setSigning(true)}
+          >
+            {detail.order.signed_at ? "Podepsat znovu" : "Podepsat ✍"}
+          </Button>
+        )}
         <OrderAction orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
       </div>
+
+      {signing && (
+        <SignaturePad
+          orderId={orderId}
+          clientName={detail.client.name}
+          onClose={() => setSigning(false)}
+          onSaved={() => {
+            setSigning(false);
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,9 @@
-import { orderCreateBody, orderUpdateBody, statusBody } from "../../shared/api-contracts";
+import {
+  orderCreateBody,
+  orderUpdateBody,
+  signatureBody,
+  statusBody,
+} from "../../shared/api-contracts";
 import {
   ALLOWED_TRANSITIONS,
   ORDER_STATUSES,
@@ -13,8 +18,18 @@ const ORDER_COLS = (db: ReturnType<typeof sql>) => db.unsafe(`
   o.id, o.client_id, o.installation_address, o.montage_number, o.order_number, o.status,
   to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
   to_char(o.delivery_date, 'YYYY-MM-DD') as delivery_date,
-  o.invoice_number, o.note, o.created_at, o.updated_at
+  o.invoice_number, o.note, o.signed_at, o.created_at, o.updated_at
 `);
+
+const PNG_DATA_URL_PREFIX = "data:image/png;base64,";
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+/** Jen nevalidní uuid v URL se mapuje na „nenalezeno"; ostatní chyby DB musí
+ *  propadnout do errorResponse (500 + log), ne se tiše tvářit jako 404. */
+function invalidUuidAsMissing(err: unknown): never[] {
+  if ((err as { code?: string }).code === "22P02") return [];
+  throw err;
+}
 
 export const orderRoutes: Route[] = [
   makeRoute("GET", "/api/dashboard", async () => {
@@ -104,7 +119,7 @@ export const orderRoutes: Route[] = [
     const db = sql();
     const [order] = await db`
       select ${ORDER_COLS(db)} from orders o where o.id = ${params.id!}
-    `.catch(() => []);
+    `.catch(invalidUuidAsMissing);
     if (!order) throw new ApiError(404, "Zakázka nenalezena.");
 
     const [client] = await db`
@@ -174,6 +189,32 @@ export const orderRoutes: Route[] = [
       if (!exists) throw new ApiError(404, "Zakázka nenalezena.");
       throw new ApiError(409, "Zakázku mezitím upravil někdo jiný. Načtěte ji prosím znovu.");
     }
+    return json({ order: updated });
+  }),
+
+  // Podpis zákazníka — technik i admin, přepodepsání povolené (poslední platí).
+  // Záměrně bez optimistického zámku: uložení podpisu nesmí ztroskotat na tom,
+  // že mezitím někdo upravil hlavičku. Pozor: UPDATE spustí trigger updated_at,
+  // takže souběžně otevřená editace hlavičky dostane standardní 409 (akceptováno,
+  // data se srovnají obnovením).
+  makeRoute("POST", "/api/orders/:id/signature", async (req, ctx, params) => {
+    const db = sql();
+    const body = await parseBody(req, signatureBody);
+
+    // Server nevěří klientovi: payload musí být skutečné PNG (magic bytes),
+    // jinak by poškozený „podpis" později shazoval PDF export montážního listu.
+    const bytes = Buffer.from(body.signature_png.slice(PNG_DATA_URL_PREFIX.length), "base64");
+    if (bytes.length < PNG_MAGIC.length || PNG_MAGIC.some((b, i) => bytes[i] !== b)) {
+      throw new ApiError(422, "Neplatný podpis. Zkuste ho nakreslit znovu.");
+    }
+
+    const [updated] = await db`
+      update orders o
+      set signature_png = ${body.signature_png}, signed_at = now(), signed_by = ${ctx.user.id}
+      where o.id = ${params.id!}
+      returning ${ORDER_COLS(db)}
+    `.catch(invalidUuidAsMissing);
+    if (!updated) throw new ApiError(404, "Zakázka nenalezena.");
     return json({ order: updated });
   }),
 

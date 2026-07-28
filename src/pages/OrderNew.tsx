@@ -101,6 +101,9 @@ export default function OrderNewPage() {
   return (
     <div className="page">
       <h1>Nová zakázka</h1>
+      <p className="required-legend">
+        <span className="field-required">*</span> povinný údaj
+      </p>
 
       <section className="form-group">
         <h2 className="form-group-title">Zákazník</h2>
@@ -230,6 +233,7 @@ export default function OrderNewPage() {
             <Field
               label="Vyhledat zákazníka"
               htmlFor="c-search"
+              required
               messages={
                 attempted && clientMissing ? [{ level: "error", message: "Vyberte zákazníka." }] : []
               }

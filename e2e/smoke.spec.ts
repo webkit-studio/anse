@@ -29,6 +29,7 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
 
   // nová zakázka — technik nevidí čísla montáže/zakázky ani termín dodání
   await page.getByRole("link", { name: "+ Nová zakázka" }).click();
+  await expect(page.getByText("povinný údaj")).toBeVisible(); // legenda hvězdiček
   await expect(page.locator("#o-montage")).toHaveCount(0);
   await expect(page.locator("#o-delivery")).toHaveCount(0);
   await page.getByLabel("Firma / jméno a příjmení").fill(CLIENT_NAME);
@@ -62,7 +63,8 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   }));
   expect(widths.page).toBeGreaterThanOrEqual(widths.viewport - 1);
 
-  // formulář: místnost jako první volba
+  // formulář: legenda povinných polí + místnost jako první volba
+  await expect(page.getByText("povinný údaj")).toBeVisible();
   await pickSheet(page, "room-select", "Kuchyně");
 
   const sirka = page.locator("#f-sirka");
@@ -110,6 +112,20 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   await page.getByRole("button", { name: "Uložit změny" }).click();
   await expect(page.getByRole("heading", { name: "Ložnice" })).toBeVisible();
 
+  // podpis zákazníka: fullscreen pad → tah prstem → uložit → malý štítek
+  await page.getByRole("button", { name: /^Podepsat/ }).click();
+  await expect(page.getByRole("dialog", { name: "Podpis zákazníka" })).toBeVisible();
+  await expect(page.getByText("Otočte telefon na šířku")).toBeVisible(); // mobilní viewport = na výšku
+  await expect(page.getByRole("button", { name: "Uložit podpis" })).toBeDisabled();
+  const sigBox = (await page.locator(".signature-canvas").boundingBox())!;
+  await page.mouse.move(sigBox.x + 30, sigBox.y + sigBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(sigBox.x + 110, sigBox.y + sigBox.height / 2 - 40, { steps: 6 });
+  await page.mouse.move(sigBox.x + 190, sigBox.y + sigBox.height / 2 + 30, { steps: 6 });
+  await page.mouse.up();
+  await page.getByRole("button", { name: "Uložit podpis" }).click();
+  await expect(page.getByText("✓ Podepsáno")).toBeVisible();
+
   // odeslat k objednání — dvojtap potvrzení, jen vpřed
   await page.getByRole("button", { name: "Odeslat k objednání" }).click();
   await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
@@ -145,6 +161,25 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   expect(exportRes.headers()["content-disposition"]).toContain("montazni-list");
   const body = await exportRes.body();
   expect(body.subarray(0, 2).toString()).toBe("PK"); // xlsx = zip
+
+  // PDF export: zamčený, dokud chybí čísla + faktura (podpis už je z technik testu)
+  const pdfButton = page.getByRole("button", { name: /Export PDF/ });
+  await expect(pdfButton).toBeDisabled();
+  await expect(
+    page.getByText("Doplňte nejdřív: číslo montáže, číslo zakázky, číslo faktury."),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Upravit ✎" }).click();
+  await page.locator("#e-montage").fill("E2E-MON-1");
+  await page.locator("#e-number").fill("E2E-ZAK-1");
+  await page.locator("#e-invoice").fill("E2E-FA-1");
+  await page.getByRole("button", { name: "Uložit" }).click();
+  await expect(pdfButton).toBeEnabled();
+
+  const pdfRes = await page.request.get(`/export/montazni-list-pdf/${orderId}`);
+  expect(pdfRes.status()).toBe(200);
+  expect(pdfRes.headers()["content-type"]).toBe("application/pdf");
+  expect((await pdfRes.body()).subarray(0, 5).toString()).toBe("%PDF-");
 
   // objednat (dvojtap)
   await page.getByRole("button", { name: "Označit jako objednáno" }).click();

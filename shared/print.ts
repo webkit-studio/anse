@@ -120,3 +120,22 @@ export function aggregateForList(
 export function totalPieces(groups: RoomGroup[]): number {
   return groups.reduce((sum, g) => sum + g.rows.reduce((s, r) => s + r.ks, 0), 0);
 }
+
+/**
+ * Co brání PDF exportu montážního listu — prázdné pole = může se generovat.
+ * Stejnou logiku vyhodnocuje server (tvrdé hlídání) i UI (disabled tlačítko
+ * s nápovědou); popisky odpovídají polím v aplikaci.
+ */
+export function missingForPdf(order: {
+  montage_number: string;
+  order_number: string;
+  invoice_number: string;
+  signed: boolean;
+}): string[] {
+  const missing: string[] = [];
+  if (!order.montage_number) missing.push("číslo montáže");
+  if (!order.order_number) missing.push("číslo zakázky");
+  if (!order.invoice_number) missing.push("číslo faktury");
+  if (!order.signed) missing.push("podpis zákazníka");
+  return missing;
+}

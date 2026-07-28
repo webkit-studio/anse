@@ -21,20 +21,20 @@ import { TEMPLATE_B64 } from "./template.b64";
 const FIRST_ITEM_ROW = 19;
 const TEMPLATE_CAPACITY = 18; // řádky 19–36, pak začínají podpisové bloky
 
-function czDate(iso: string | null): string {
+export function czDate(iso: string | null): string {
   if (!iso) return "";
   const [y, m, d] = iso.split("-");
   return `${Number(d)}. ${Number(m)}. ${y}`;
 }
 
 /** Jméno souboru bez diakritiky a mezer. */
-export function exportFilename(orderNumber: string, orderId: string): string {
+export function exportFilename(orderNumber: string, orderId: string, ext = "xlsx"): string {
   const base = (orderNumber || orderId.slice(0, 8))
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-zA-Z0-9-]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return `montazni-list-${base || "zakazka"}.xlsx`;
+  return `montazni-list-${base || "zakazka"}.${ext}`;
 }
 
 export async function buildMontazniList(

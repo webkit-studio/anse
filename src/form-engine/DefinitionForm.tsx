@@ -204,6 +204,9 @@ export function DefinitionForm({
         handleSubmit();
       }}
     >
+      <p className="required-legend">
+        <span className="field-required">*</span> povinný údaj
+      </p>
       {definition.groups.map((g, gi) => {
         const visible = g.fields.filter((f) => isFieldVisible(f, params));
         if (visible.length === 0) return null;

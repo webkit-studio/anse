@@ -69,6 +69,17 @@ export const statusBody = z.object({
   expected: z.enum(ORDER_STATUSES as [string, ...string[]]),
 });
 
+/**
+ * Digitální podpis zákazníka — PNG z canvas jako data-URL. Limit 700 kB
+ * (podpisový tah na 2× canvasu je řádově desítky kB; limit chrání DB).
+ */
+export const signatureBody = z.object({
+  signature_png: z
+    .string()
+    .max(700_000, "Podpis je příliš velký. Zkuste ho nakreslit znovu.")
+    .regex(/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/, "Neplatný formát podpisu."),
+});
+
 const paramsSchema = z.record(z.string(), z.union([z.string(), z.number()]));
 
 export const itemCreateBody = z.object({
