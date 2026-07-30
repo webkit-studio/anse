@@ -344,7 +344,6 @@ export default function OrderDetailPage() {
   const invalidate = useInvalidateOrder();
   const [editing, setEditing] = useState(false);
   const [signing, setSigning] = useState(false);
-  const exportXlsx = useExportDownload(`/export/montazni-list/${orderId}`, "montazni-list.xlsx");
   const exportPdf = useExportDownload(`/export/montazni-list-pdf/${orderId}`, "montazni-list.pdf");
 
   if (order.isPending) {
@@ -439,6 +438,40 @@ export default function OrderDetailPage() {
         )}
       </div>
 
+      <h2 className="section-title">Výpis produktů</h2>
+
+      {detail.rooms.length === 0 && detail.items.length === 0 && (
+        <EmptyState title="Zatím žádné položky.">
+          <p className="muted">Přidejte první produkt tlačítkem níže.</p>
+        </EmptyState>
+      )}
+
+      {detail.rooms.map((room) => (
+        <RoomSection
+          key={room.id}
+          room={room}
+          items={itemsByRoom.get(room.id) ?? []}
+          detail={detail}
+          onChanged={refresh}
+        />
+      ))}
+
+      <div className="order-bottom-actions">
+        <Link to={`/zakazky/${orderId}/polozka/nova`} className="btn btn-primary btn-block btn-xl">
+          + Přidat produkt
+        </Link>
+        {detail.items.length > 0 && (
+          <Button
+            variant={detail.order.signed_at ? "ghost" : "secondary"}
+            className="btn-block"
+            onClick={() => setSigning(true)}
+          >
+            {detail.order.signed_at ? "Podepsat znovu" : "Podepsat ✍"}
+          </Button>
+        )}
+        <OrderAction orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
+      </div>
+
       {isAdmin && (
         <section className="admin-actions">
           <p className="admin-actions-count">
@@ -472,50 +505,6 @@ export default function OrderDetailPage() {
           </div>
         </section>
       )}
-
-      <h2 className="section-title">Výpis produktů</h2>
-
-      {detail.rooms.length === 0 && detail.items.length === 0 && (
-        <EmptyState title="Zatím žádné položky.">
-          <p className="muted">Přidejte první produkt tlačítkem níže.</p>
-        </EmptyState>
-      )}
-
-      {detail.rooms.map((room) => (
-        <RoomSection
-          key={room.id}
-          room={room}
-          items={itemsByRoom.get(room.id) ?? []}
-          detail={detail}
-          onChanged={refresh}
-        />
-      ))}
-
-      <div className="order-bottom-actions">
-        <Link to={`/zakazky/${orderId}/polozka/nova`} className="btn btn-primary btn-block btn-xl">
-          + Přidat produkt
-        </Link>
-        {detail.items.length > 0 && (
-          <Button
-            variant="secondary"
-            className="btn-block"
-            disabled={exportXlsx.busy}
-            onClick={() => void exportXlsx.download()}
-          >
-            {exportXlsx.busy ? "Generuji…" : "Export montážního listu (.xlsx)"}
-          </Button>
-        )}
-        {detail.items.length > 0 && (
-          <Button
-            variant={detail.order.signed_at ? "ghost" : "secondary"}
-            className="btn-block"
-            onClick={() => setSigning(true)}
-          >
-            {detail.order.signed_at ? "Podepsat znovu" : "Podepsat ✍"}
-          </Button>
-        )}
-        <OrderAction orderId={orderId} status={detail.order.status} role={me.data?.role ?? "technik"} />
-      </div>
 
       {signing && (
         <SignaturePad

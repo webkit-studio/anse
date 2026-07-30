@@ -5,13 +5,12 @@ import { aggregateForList, missingForPdf, totalPieces } from "../../shared/print
 import { sql } from "../db";
 import { ApiError } from "../http";
 import { FONT_BOLD_B64, FONT_REGULAR_B64 } from "./font.b64";
-import { czDate, exportFilename } from "./montazni-list";
 
-// Finální montážní list jako PDF — stejná data jako xlsx export, navíc vlepený
-// digitální podpis zákazníka. Generuje se až po montáži: server pouští export
-// jen s vyplněným číslem montáže, objednávky a faktury a s podpisem (viz
-// missingForPdf). Rozvržení zrcadlí papírový vzor 4v1 (docs/MO_vzor-1.xlsx);
-// ceny zůstávají prázdné pro ruční doplnění, stejně jako v xlsx.
+// Finální montážní list jako PDF s vlepeným digitálním podpisem zákazníka.
+// Generuje se až po montáži: server pouští export jen s vyplněným číslem
+// montáže, objednávky a faktury a s podpisem (viz missingForPdf).
+// Rozvržení zrcadlí papírový vzor 4v1 (docs/MO_vzor-1.xlsx); ceny zůstávají
+// prázdné pro ruční doplnění.
 
 const PAGE_W = 595.28; // A4 na výšku
 const PAGE_H = 841.89;
@@ -61,6 +60,22 @@ const COLS = [
   { key: "ovladani", label: "ovládání", w: 60 },
   { key: "poznamka", label: "poznámky", w: CONTENT_W - 320 },
 ] as const;
+
+function czDate(iso: string | null): string {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return `${Number(d)}. ${Number(m)}. ${y}`;
+}
+
+/** Jméno souboru bez diakritiky a mezer. */
+export function exportFilename(orderNumber: string, orderId: string): string {
+  const base = (orderNumber || orderId.slice(0, 8))
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-zA-Z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `montazni-list-${base || "zakazka"}.pdf`;
+}
 
 interface PdfOrder {
   id: string;
@@ -346,7 +361,7 @@ export async function buildMontazniListPdf(
     definitions,
   );
 
-  // Místnost jde do poznámky prvního řádku skupiny — stejně jako v xlsx exportu.
+  // Místnost jde do poznámky prvního řádku skupiny (jak je zvykem na papíře).
   const tableRows: TableRow[] = groups.flatMap((g) =>
     g.rows.map((row, idx) => ({
       stineni: row.stineni,
@@ -540,6 +555,6 @@ export async function buildMontazniListPdf(
   const bytes = await doc.save();
   return {
     buffer: Buffer.from(bytes),
-    filename: exportFilename(order.order_number, order.id, "pdf"),
+    filename: exportFilename(order.order_number, order.id),
   };
 }

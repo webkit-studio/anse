@@ -149,18 +149,22 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await page.getByLabel("Hledat v zakázkách").fill("e2e novak");
   await page.getByRole("link", { name: new RegExp(CLIENT_NAME) }).first().click();
 
-  // počet kusů + deaktivované exporty výrobců hned pod hlavičkou
+  // rámeček exportů (počet kusů + deaktivovaní výrobci) je na spodu stránky
   await expect(page.getByText(/kusy \(ks = počet položek\)/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Export JackWest" })).toBeDisabled();
+  const boxY = await page
+    .locator(".admin-actions")
+    .evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const listY = await page
+    .locator(".room-section")
+    .first()
+    .evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  expect(boxY).toBeGreaterThan(listY);
 
-  // export montážního listu: stažení xlsx (viditelné pro obě role)
+  // xlsx export je odstraněný — žádné tlačítko, routa 404
   const orderId = page.url().split("/zakazky/")[1]!;
-  await expect(page.getByRole("button", { name: /Export montážního listu/ })).toBeVisible();
-  const exportRes = await page.request.get(`/export/montazni-list/${orderId}`);
-  expect(exportRes.status()).toBe(200);
-  expect(exportRes.headers()["content-disposition"]).toContain("montazni-list");
-  const body = await exportRes.body();
-  expect(body.subarray(0, 2).toString()).toBe("PK"); // xlsx = zip
+  await expect(page.getByRole("button", { name: /xlsx/ })).toHaveCount(0);
+  expect((await page.request.get(`/export/montazni-list/${orderId}`)).status()).toBe(404);
 
   // PDF export: zamčený, dokud chybí čísla + faktura (podpis už je z technik testu)
   const pdfButton = page.getByRole("button", { name: /Export PDF/ });
