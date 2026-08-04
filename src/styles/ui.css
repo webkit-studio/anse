@@ -802,6 +802,15 @@ input[type="date"] {
 
 .item-card-type {
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.item-card-icon {
+  display: inline-flex;
+  color: var(--c-green-deep);
+  flex-shrink: 0;
 }
 
 .item-card-summary {
@@ -1019,6 +1028,23 @@ input[type="date"] {
 .type-tile-active {
   border-color: var(--c-green-dark);
   background: var(--c-green-soft);
+}
+
+/* Ikona typu produktu v zeleném chipu (styl feature ikon). */
+.type-tile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--c-green-soft);
+  color: var(--c-green-deep);
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--sp-1);
+}
+
+.type-tile:disabled .type-tile-icon {
+  background: rgba(14, 21, 19, 0.05);
+  color: var(--c-text-muted);
 }
 
 .type-tile-name {

@@ -7,6 +7,7 @@ import { useMe, useOrder, useInvalidateOrder } from "../api/hooks";
 import { api, isConflict } from "../api/client";
 import { OrderAction } from "../components/OrderAction";
 import { PhoneInput, emailIssue, phoneIssue } from "../components/PhoneInput";
+import { ProductIcon } from "../components/ProductIcon";
 import { SignaturePad } from "../components/SignaturePad";
 import { useToast } from "../components/Toast";
 import {
@@ -104,7 +105,12 @@ function RoomSection({
           return (
             <li key={item.id} className="item-card">
               <Link to={`/zakazky/${item.order_id}/polozka/${item.id}`} className="item-card-main">
-                <span className="item-card-type">{item.product_type_name}</span>
+                <span className="item-card-type">
+                  <span className="item-card-icon" aria-hidden="true">
+                    <ProductIcon name={item.product_type_name} size={18} />
+                  </span>
+                  {item.product_type_name}
+                </span>
                 <span className="item-card-summary">{itemSummary(item, def)}</span>
                 {item.note && <span className="item-card-note">{item.note}</span>}
               </Link>

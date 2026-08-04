@@ -6,6 +6,7 @@ import type { FormDefinition, Params } from "@shared/form-schema";
 import { ROOM_PRESETS, type OrderDetail, type RoomRow } from "@shared/types";
 import { ApiFetchError, api, isConflict } from "../api/client";
 import { useInvalidateOrder, useOrder, useProductTypes } from "../api/hooks";
+import { ProductIcon } from "../components/ProductIcon";
 import { useToast } from "../components/Toast";
 import { ErrorBanner, Field, SelectSheet, Spinner, TextInput } from "../components/ui";
 import { DefinitionForm } from "../form-engine/DefinitionForm";
@@ -204,6 +205,9 @@ function NewItem({ orderId, detail }: { orderId: string; detail: OrderDetail }) 
                   disabled={!t.active}
                   onClick={() => setTypeId(t.id)}
                 >
+                  <span className="type-tile-icon" aria-hidden="true">
+                    <ProductIcon name={t.name} />
+                  </span>
                   <span className="type-tile-name">{t.name}</span>
                   <span className="type-tile-code">{t.active ? t.code : "Připravujeme"}</span>
                 </button>
