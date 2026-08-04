@@ -21,12 +21,13 @@ jobs:
             exit 0
           fi
           # pg_dump odmítá zálohovat novější server, než je sám (Supabase 17.x
-          # vs. klient 16.x na runneru) — zjistíme verzi serveru a doinstalujeme
-          # odpovídajícího klienta z PGDG (na runneru už je nakonfigurovaný).
-          sudo apt-get -yq install postgresql-client >/dev/null
+          # vs. klient 16.x na runneru) — zjistíme verzi serveru, povolíme
+          # PGDG repozitář (v základních zdrojích runneru novější klient není)
+          # a doinstalujeme klienta ve verzi serveru.
+          sudo apt-get -yq install postgresql-client postgresql-common >/dev/null
           SERVER_MAJOR=$(psql "$DIRECT_DATABASE_URL" -t -A -c "show server_version_num" | cut -c1-2)
           echo "Postgres na serveru: major $SERVER_MAJOR"
-          sudo apt-get update -yq >/dev/null 2>&1 || true
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
           sudo apt-get -yq install "postgresql-client-$SERVER_MAJOR" >/dev/null
           "/usr/lib/postgresql/$SERVER_MAJOR/bin/pg_dump" "$DIRECT_DATABASE_URL" \
             --no-owner --no-privileges \
