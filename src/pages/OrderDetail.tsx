@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { FormDefinition } from "@shared/form-schema";
 import { missingForPdf } from "@shared/print";
-import type { ItemRow, OrderDetail, RoomRow } from "@shared/types";
+import type { ClientRow, ItemRow, OrderDetail, OrderRow, RoomRow } from "@shared/types";
 import { useMe, useOrder, useInvalidateOrder } from "../api/hooks";
 import { api, isConflict } from "../api/client";
 import { OrderAction } from "../components/OrderAction";
-import { PhoneInput } from "../components/PhoneInput";
+import { PhoneInput, emailIssue, phoneIssue } from "../components/PhoneInput";
 import { SignaturePad } from "../components/SignaturePad";
 import { useToast } from "../components/Toast";
 import {
@@ -155,9 +155,26 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
     note: detail.client.note,
   });
   const [busy, setBusy] = useState(false);
+  const [attempted, setAttempted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Optimistické zámky obou PATCHů. Ukládá se dvěma requesty (zakázka, pak
+  // karta zákazníka) — po každém úspěchu si zapamatujeme nový updated_at,
+  // jinak by druhý pokus (např. po chybě validace karty) narazil na vlastní
+  // předchozí uložení a skončil falešným 409.
+  const expectedRef = useRef({ order: detail.order.updated_at, client: detail.client.updated_at });
+
+  // Povinná pole karty zákazníka — validace před odesláním (zrcadlí server).
+  const nameProblem = client.name.trim() === "" ? "Vyplňte jméno nebo firmu." : null;
+  const phoneProblem = phoneIssue(client.phone);
+  const emailProblem = client.email.trim() === "" ? "Vyplňte e-mail." : emailIssue(client.email);
+  const addressProblem = client.address.trim() === "" ? "Vyplňte adresu." : null;
+
   async function save() {
+    if (isAdmin && (nameProblem || phoneProblem || emailProblem || addressProblem)) {
+      setAttempted(true);
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -166,7 +183,7 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
         installation_address: order.installation_address,
         measured_at: order.measured_at || null,
         note: order.note,
-        expected_updated_at: detail.order.updated_at,
+        expected_updated_at: expectedRef.current.order,
       };
       if (isAdmin) {
         body.montage_number = order.montage_number;
@@ -174,13 +191,21 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
         body.delivery_date = order.delivery_date || null;
         body.invoice_number = order.invoice_number;
       }
-      await api(`/api/orders/${detail.order.id}`, { method: "PATCH", body });
+      const { order: savedOrder } = await api<{ order: OrderRow }>(`/api/orders/${detail.order.id}`, {
+        method: "PATCH",
+        body,
+      });
+      expectedRef.current.order = savedOrder.updated_at;
 
       if (isAdmin) {
-        await api(`/api/clients/${detail.client.id}`, {
-          method: "PATCH",
-          body: { ...client, expected_updated_at: detail.client.updated_at },
-        });
+        const { client: savedClient } = await api<{ client: ClientRow }>(
+          `/api/clients/${detail.client.id}`,
+          {
+            method: "PATCH",
+            body: { ...client, expected_updated_at: expectedRef.current.client },
+          },
+        );
+        expectedRef.current.client = savedClient.updated_at;
       }
       toast("Uloženo.");
       onDone();
@@ -202,13 +227,30 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
       {isAdmin && (
         <>
           <h3 className="header-edit-title">Zákazník</h3>
-          <Field label="Firma / jméno a příjmení" htmlFor="c-name">
+          <p className="required-legend">
+            <span className="field-required">*</span> povinný údaj
+          </p>
+          <Field
+            label="Firma / jméno a příjmení"
+            htmlFor="c-name"
+            required
+            messages={attempted && nameProblem ? [{ level: "error", message: nameProblem }] : []}
+          >
             <TextInput id="c-name" value={client.name} onChange={(e) => setClient({ ...client, name: e.target.value })} />
           </Field>
-          <Field label="Telefon" htmlFor="c-phone">
+          <Field
+            label="Telefon"
+            htmlFor="c-phone"
+            messages={attempted && phoneProblem ? [{ level: "error", message: phoneProblem }] : []}
+          >
             <PhoneInput id="c-phone" value={client.phone} onChange={(v) => setClient({ ...client, phone: v })} />
           </Field>
-          <Field label="E-mail" htmlFor="c-email">
+          <Field
+            label="E-mail"
+            htmlFor="c-email"
+            required
+            messages={attempted && emailProblem ? [{ level: "error", message: emailProblem }] : []}
+          >
             <TextInput
               id="c-email"
               type="email"
@@ -217,7 +259,12 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
               onChange={(e) => setClient({ ...client, email: e.target.value })}
             />
           </Field>
-          <Field label="Adresa" htmlFor="c-address">
+          <Field
+            label="Adresa"
+            htmlFor="c-address"
+            required
+            messages={attempted && addressProblem ? [{ level: "error", message: addressProblem }] : []}
+          >
             <TextInput id="c-address" value={client.address} onChange={(e) => setClient({ ...client, address: e.target.value })} />
           </Field>
           <div className="field-row">
@@ -342,9 +389,22 @@ export default function OrderDetailPage() {
   const order = useOrder(orderId);
   const me = useMe();
   const invalidate = useInvalidateOrder();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [editing, setEditing] = useState(false);
   const [signing, setSigning] = useState(false);
   const exportPdf = useExportDownload(`/export/montazni-list-pdf/${orderId}`, "montazni-list.pdf");
+
+  async function removeOrder() {
+    try {
+      await api(`/api/orders/${orderId}`, { method: "DELETE" });
+      invalidate(orderId);
+      toast("Zakázka smazána.");
+      navigate("/zakazky", { replace: true });
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Smazání se nepodařilo.");
+    }
+  }
 
   if (order.isPending) {
     return (
@@ -500,9 +560,27 @@ export default function OrderDetailPage() {
               {exportPdf.busy ? "Generuji…" : "Export PDF montážního listu (s podpisem)"}
             </Button>
             {missingPdf.length > 0 && (
-              <p className="muted pdf-export-hint">Doplňte nejdřív: {missingPdf.join(", ")}.</p>
+              <>
+                <p className="muted pdf-export-hint">Doplňte nejdřív: {missingPdf.join(", ")}.</p>
+                <Button
+                  variant="ghost"
+                  className="btn-block"
+                  onClick={() => {
+                    setEditing(true);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  Upravit ✎
+                </Button>
+              </>
             )}
           </div>
+          <ConfirmButton
+            label="Smazat zakázku 🗑"
+            confirmLabel="Opravdu smazat? Nejde vrátit"
+            className="btn-block order-delete"
+            onConfirm={() => void removeOrder()}
+          />
         </section>
       )}
 

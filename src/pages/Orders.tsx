@@ -105,7 +105,14 @@ export default function OrdersPage() {
                 <Link to={`/zakazky/${o.id}`} className="order-card">
                   <div className="order-card-top">
                     <span className="order-card-name">{o.client_name}</span>
-                    <StatusBadge status={o.status} />
+                    <span className="order-card-badges">
+                      <StatusBadge status={o.status} />
+                      {o.signed_at ? (
+                        <span className="signed-badge">✓ Podepsáno</span>
+                      ) : (
+                        <span className="unsigned-badge">Chybí podpis</span>
+                      )}
+                    </span>
                   </div>
                   <div className="order-card-sub">
                     {o.installation_address || "Bez adresy"}

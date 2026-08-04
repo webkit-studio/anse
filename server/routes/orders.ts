@@ -55,7 +55,7 @@ export const orderRoutes: Route[] = [
     const rows = await db`
       select
         o.id, o.status, o.installation_address, o.montage_number, o.order_number,
-        o.updated_at,
+        o.signed_at, o.updated_at,
         c.name as client_name,
         (select count(*)::int from items i where i.order_id = o.id) as item_count
       from orders o
@@ -191,6 +191,22 @@ export const orderRoutes: Route[] = [
     }
     return json({ order: updated });
   }),
+
+  // Smazání zakázky — jen admin, nevratné. Místnosti, položky i historie stavů
+  // odchází kaskádou (FK on delete cascade); karta klienta zůstává.
+  makeRoute(
+    "DELETE",
+    "/api/orders/:id",
+    async (_req, _ctx, params) => {
+      const db = sql();
+      const [deleted] = await db`
+        delete from orders where id = ${params.id!} returning id
+      `.catch(invalidUuidAsMissing);
+      if (!deleted) throw new ApiError(404, "Zakázka nenalezena.");
+      return json({ ok: true });
+    },
+    { adminOnly: true },
+  ),
 
   // Podpis zákazníka — technik i admin, přepodepsání povolené (poslední platí).
   // Záměrně bez optimistického zámku: uložení podpisu nesmí ztroskotat na tom,

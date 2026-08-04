@@ -126,11 +126,14 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   await page.getByRole("button", { name: "Uložit podpis" }).click();
   await expect(page.getByText("✓ Podepsáno")).toBeVisible();
 
-  // odeslat k objednání — dvojtap potvrzení, jen vpřed
-  await page.getByRole("button", { name: "Odeslat k objednání" }).click();
+  // technik nemá mazání zakázky (jen admin)
+  await expect(page.getByRole("button", { name: /Smazat zakázku/ })).toHaveCount(0);
+
+  // připraveno k objednání — dvojtap potvrzení, jen vpřed
+  await page.getByRole("button", { name: "Připraveno k objednání" }).click();
   await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
   await expect(page.locator(".status-badge").first()).toHaveText("K objednání");
-  await expect(page.getByRole("button", { name: "Odeslat k objednání" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Připraveno k objednání" })).toHaveCount(0);
 
   await page.getByRole("button", { name: /Odhlásit/ }).click();
   await expect(page).toHaveURL(/\/login/);
@@ -147,7 +150,10 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await expect(page.getByRole("tab", { name: "Rozpracované" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "K objednání" })).toBeVisible();
   await page.getByLabel("Hledat v zakázkách").fill("e2e novak");
-  await page.getByRole("link", { name: new RegExp(CLIENT_NAME) }).first().click();
+  // štítek podpisu je vidět už v seznamu (zakázka podepsaná z technik testu)
+  const card = page.getByRole("link", { name: new RegExp(CLIENT_NAME) }).first();
+  await expect(card).toContainText("✓ Podepsáno");
+  await card.click();
 
   // rámeček exportů (počet kusů + deaktivovaní výrobci) je na spodu stránky
   await expect(page.getByText(/kusy \(ks = počet položek\)/)).toBeVisible();
@@ -173,12 +179,21 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
     page.getByText("Doplňte nejdřív: číslo montáže, číslo zakázky, číslo faktury."),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Upravit ✎" }).click();
+  // REGRESE (hlášeno z produkce): povinná pole karty zákazníka se hlídají
+  // PŘED odesláním — dřív prošel PATCH zakázky, karta spadla na validaci
+  // a druhý pokus o uložení skončil falešným 409 „upravil někdo jiný".
+  // Vstup přes nové tlačítko Upravit přímo pod PDF exportem.
+  await page.locator(".pdf-export").getByRole("button", { name: "Upravit ✎" }).click();
+  await page.locator("#c-address").fill("");
   await page.locator("#e-montage").fill("E2E-MON-1");
   await page.locator("#e-number").fill("E2E-ZAK-1");
   await page.locator("#e-invoice").fill("E2E-FA-1");
   await page.getByRole("button", { name: "Uložit" }).click();
-  await expect(pdfButton).toBeEnabled();
+  await expect(page.getByText("Vyplňte adresu.")).toBeVisible();
+  await page.locator("#c-address").fill("Testovací 12, Praha");
+  await page.getByRole("button", { name: "Uložit" }).click();
+  await expect(pdfButton).toBeEnabled(); // uložení prošlo (onDone + refresh), žádný 409
+  await expect(page.locator("#c-address")).toHaveCount(0); // editor se zavřel
 
   const pdfRes = await page.request.get(`/export/montazni-list-pdf/${orderId}`);
   expect(pdfRes.status()).toBe(200);
@@ -201,4 +216,12 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
     .poll(async () => Number(await zalozeno.textContent()), { timeout: 10_000 })
     .toBeGreaterThan(0);
   expect(Number(await objednano.textContent())).toBeGreaterThan(0);
+
+  // admin smaže zakázku (dvojtap) → návrat na seznam, zakázka pryč
+  await page.goto(`/zakazky/${orderId}`);
+  await page.getByRole("button", { name: /Smazat zakázku/ }).click();
+  await page.getByRole("button", { name: /Opravdu smazat/ }).click();
+  await expect(page).toHaveURL(/\/zakazky$/);
+  await page.getByLabel("Hledat v zakázkách").fill(CLIENT_NAME);
+  await expect(page.getByRole("link", { name: new RegExp(CLIENT_NAME) })).toHaveCount(0);
 });

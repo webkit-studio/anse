@@ -1314,6 +1314,26 @@ input[type="date"] {
   white-space: nowrap;
 }
 
+.unsigned-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border-strong);
+  color: var(--c-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Štítky na kartě v seznamu: stav + podpis pod sebou, zarovnané doprava. */
+.order-card-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .pdf-export {
   display: grid;
   gap: 6px;
@@ -1323,6 +1343,11 @@ input[type="date"] {
 .pdf-export-hint {
   font-size: 13px;
   margin: 0;
+}
+
+.order-delete {
+  margin-top: 10px;
+  color: var(--c-error);
 }
 
 /* --- Podpisový pad (fullscreen) ----------------------------------------- */

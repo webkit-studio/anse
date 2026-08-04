@@ -24,7 +24,7 @@ export function OrderAction({
 
   const action =
     status === "rozpracovana"
-      ? { to: "k_objednani" as OrderStatus, label: "Odeslat k objednání", done: "Odesláno k objednání." }
+      ? { to: "k_objednani" as OrderStatus, label: "Připraveno k objednání", done: "Odesláno k objednání." }
       : status === "k_objednani" && role === "admin"
         ? { to: "objednano" as OrderStatus, label: "Označit jako objednáno", done: "Zakázka objednána." }
         : null;

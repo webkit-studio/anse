@@ -83,6 +83,7 @@ export interface OrderListRow {
   montage_number: string;
   order_number: string;
   item_count: number;
+  signed_at: string | null;
   updated_at: string;
 }
 
