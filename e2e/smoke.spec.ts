@@ -59,7 +59,8 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   // přidat produkt: nejdřív jen typ (fullscreen s návratem na zakázku)
   await page.getByRole("link", { name: "+ Přidat produkt" }).click();
   await expect(page.getByRole("link", { name: "← Zakázka" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Plissé žaluzie/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: /Plissé žaluzie/ })).toBeEnabled();
+  await expect(page.getByRole("button", { name: /Venkovní rolety/ })).toBeDisabled();
   await page.getByRole("button", { name: /Okenní sítě/ }).click();
 
   // regrese: obsah na plnou šířku viewportu (auto-margin bug ve flexu)
@@ -117,6 +118,31 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   await pickSheet(page, "room-select", "Ložnice");
   await page.getByRole("button", { name: "Uložit změny" }).click();
   await expect(page.getByRole("heading", { name: "Ložnice" })).toBeVisible();
+
+  // Plissé (3. produkt): podmíněná pole — DaN → spodní látka; vynášecí set × BM
+  await page.getByRole("link", { name: "+ Přidat produkt" }).click();
+  await page.getByRole("button", { name: /Plissé žaluzie/ }).click();
+  await pickSheet(page, "room-select", "Kuchyně");
+  await page.locator("#f-sirka").fill("800");
+  await page.locator("#f-vyska").fill("1200");
+  await expect(page.locator("#f-cislo_latky_spodni")).toHaveCount(0);
+  await pickSheet(page, "f-provedeni", /^DaN$/);
+  await expect(page.locator("#f-cislo_latky_spodni")).toBeVisible(); // DaN → spodní látka
+  await pickSheet(page, "f-barva_profilu", "Bílá RAL 9003");
+  await page.locator("#f-cislo_latky_horni").fill("10306");
+  await page.locator("#f-cislo_latky_spodni").fill("10307");
+  await expect(page.locator("#f-barva_vs")).toHaveCount(0);
+  await pickSheet(page, "f-vynaseci_set", /^Ano$/);
+  await expect(page.locator("#f-barva_vs")).toBeVisible();
+  await expect(page.locator("#f-bm")).toHaveCount(0); // VS a BM se vylučují
+  await pickSheet(page, "f-barva_vs", "Šedá");
+  await pickSheet(page, "f-madlo", "Klasické");
+  await pickSheet(page, "f-pocet_madel", /^2$/);
+  await pickSheet(page, "f-str_uchyceni", "Žádné");
+  await pickSheet(page, "f-ovladaci_tyc", /^Ne$/);
+  await page.getByRole("button", { name: "Uložit položku" }).click();
+  await expect(page.getByRole("heading", { name: "Výpis produktů" })).toBeVisible();
+  await expect(page.getByText("Plissé žaluzie")).toBeVisible();
 
   // podpis zákazníka: fullscreen pad → tah prstem → uložit → malý štítek
   await page.getByRole("button", { name: /^Podepsat/ }).click();

@@ -86,6 +86,19 @@ async function seedUsers() {
 async function seedProductTypes() {
   const { types, definitions } = await loadAndValidate();
 
+  // Úklid opuštěných placeholderů (přejmenování kódu, např. PLISSE-TBD → PLISSE):
+  // smaže se jen typ, který už v seznamu není, nemá žádné položky ani definice —
+  // nic ostrého tím zmizet nemůže.
+  const keptCodes = types.map((t) => t.code);
+  const removed = await sql`
+    delete from product_types pt
+    where pt.code <> all(${keptCodes})
+      and not exists (select 1 from items i where i.product_type_id = pt.id)
+      and not exists (select 1 from form_definitions fd where fd.product_type_id = pt.id)
+    returning pt.code
+  `;
+  for (const r of removed) console.log(`Odstraněn opuštěný placeholder typu: ${r.code}`);
+
   for (const t of types) {
     await sql`
       insert into product_types (code, name, manufacturer, active, sort)

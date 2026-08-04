@@ -16,11 +16,12 @@
     "definitionFile": "definitions/esd.v1.json"
   },
   {
-    "code": "PLISSE-TBD",
+    "code": "PLISSE",
     "name": "Plissé žaluzie",
     "manufacturer": "jackwest",
-    "active": false,
-    "sort": 3
+    "active": true,
+    "sort": 3,
+    "definitionFile": "definitions/plisse.v1.json"
   },
   {
     "code": "VZ-TBD",

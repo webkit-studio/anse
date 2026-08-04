@@ -1,0 +1,237 @@
+{
+  "groups": [
+    {
+      "key": "zakladni",
+      "label": "Základní údaje",
+      "fields": [
+        {
+          "key": "sirka",
+          "label": "Šířka",
+          "type": "number",
+          "unit": "mm",
+          "required": true,
+          "step": 1,
+          "min": null,
+          "max": null,
+          "warnMin": null,
+          "warnMax": null,
+          "summary": true
+        },
+        {
+          "key": "vyska",
+          "label": "Výška",
+          "type": "number",
+          "unit": "mm",
+          "required": true,
+          "step": 1,
+          "min": null,
+          "max": null,
+          "warnMin": null,
+          "warnMax": null,
+          "summary": true
+        },
+        {
+          "key": "provedeni",
+          "label": "Provedení",
+          "type": "select",
+          "required": true,
+          "summary": true,
+          "options": [
+            { "value": "Klasik", "label": "Klasik" },
+            { "value": "DaN", "label": "DaN" },
+            { "value": "DaN EXTRA", "label": "DaN EXTRA" }
+          ]
+        },
+        {
+          "key": "barva_profilu",
+          "label": "Barva profilu",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "Bílá RAL 9003", "label": "Bílá RAL 9003", "swatch": "#f4f4f4" },
+            { "value": "Stříbrný elox", "label": "Stříbrný elox", "swatch": "#c8cacb" },
+            { "value": "Slonová kost RAL 1015", "label": "Slonová kost RAL 1015", "swatch": "#e6d2b5" },
+            { "value": "Mahagonově hnědá RAL 8016", "label": "Mahagonově hnědá RAL 8016", "swatch": "#4a2f27" },
+            { "value": "Bílá MAT přípl.", "label": "Bílá MAT přípl.", "swatch": "#f2f2f0" },
+            { "value": "Antracit MAT přípl.", "label": "Antracit MAT přípl.", "swatch": "#383e42" },
+            { "value": "Černá MAT přípl.", "label": "Černá MAT přípl.", "swatch": "#1e1e1e" },
+            { "value": "ID bahenní dub přípl.", "label": "ID bahenní dub přípl." },
+            { "value": "ID borovice přípl.", "label": "ID borovice přípl." },
+            { "value": "ID mahagon přípl.", "label": "ID mahagon přípl." },
+            { "value": "ID ořech přípl.", "label": "ID ořech přípl." },
+            { "value": "ID winchester přípl.", "label": "ID winchester přípl." },
+            { "value": "ID zlatý dub přípl.", "label": "ID zlatý dub přípl." },
+            { "value": "RAL", "label": "RAL" }
+          ]
+        },
+        {
+          "key": "ral",
+          "label": "RAL",
+          "type": "text",
+          "required": true,
+          "visibleIf": { "field": "barva_profilu", "op": "eq", "value": "RAL" },
+          "placeholder": "např. 7035"
+        }
+      ]
+    },
+    {
+      "key": "latka",
+      "label": "Látka",
+      "fields": [
+        {
+          "key": "cislo_latky_horni",
+          "label": "Číslo látky (horní)",
+          "type": "text",
+          "required": true,
+          "summary": true,
+          "help": "Číslo ze vzorníku. Výběr s náhledy látek doplníme, až budou podklady.",
+          "placeholder": "např. 10306"
+        },
+        {
+          "key": "skupina_horni",
+          "label": "Skupina (horní)",
+          "type": "select",
+          "tbd": true,
+          "help": "Dopočítá se z čísla látky."
+        },
+        {
+          "key": "cislo_latky_spodni",
+          "label": "Číslo látky (spodní)",
+          "type": "text",
+          "required": true,
+          "visibleIf": { "field": "provedeni", "op": "in", "values": ["DaN", "DaN EXTRA"] },
+          "placeholder": "např. 10306"
+        },
+        {
+          "key": "skupina_spodni",
+          "label": "Skupina (spodní)",
+          "type": "select",
+          "tbd": true,
+          "visibleIf": { "field": "provedeni", "op": "in", "values": ["DaN", "DaN EXTRA"] },
+          "help": "Dopočítá se z čísla látky."
+        }
+      ]
+    },
+    {
+      "key": "ostatni",
+      "label": "Ostatní",
+      "fields": [
+        {
+          "key": "vynaseci_set",
+          "label": "Vynášecí set",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "Ne", "label": "Ne" },
+            { "value": "Ano", "label": "Ano" }
+          ]
+        },
+        {
+          "key": "barva_vs",
+          "label": "Barva VS",
+          "type": "select",
+          "required": true,
+          "visibleIf": { "field": "vynaseci_set", "op": "eq", "value": "Ano" },
+          "options": [
+            { "value": "Bílá", "label": "Bílá", "swatch": "#f4f4f4" },
+            { "value": "Černá", "label": "Černá", "swatch": "#1a1a1a" },
+            { "value": "Dub bahenní", "label": "Dub bahenní" },
+            { "value": "Šedá", "label": "Šedá", "swatch": "#8c8c8c" },
+            { "value": "Zlatý Dub", "label": "Zlatý Dub" }
+          ]
+        },
+        {
+          "key": "bm",
+          "label": "BM",
+          "type": "select",
+          "required": true,
+          "visibleIf": { "field": "vynaseci_set", "op": "eq", "value": "Ne" },
+          "options": [
+            { "value": "Ne", "label": "Ne" },
+            { "value": "Ano", "label": "Ano" }
+          ]
+        },
+        {
+          "key": "barva_bm",
+          "label": "Barva BM",
+          "type": "select",
+          "required": true,
+          "visibleIf": { "field": "bm", "op": "eq", "value": "Ano" },
+          "options": [
+            { "value": "Bílá", "label": "Bílá", "swatch": "#f4f4f4" },
+            { "value": "Hnědá", "label": "Hnědá", "swatch": "#5a4033" },
+            { "value": "Černá", "label": "Černá", "swatch": "#1a1a1a" }
+          ]
+        },
+        {
+          "key": "madlo",
+          "label": "Madlo",
+          "type": "select",
+          "required": true,
+          "options": [{ "value": "Klasické", "label": "Klasické" }]
+        },
+        {
+          "key": "pocet_madel",
+          "label": "Počet madel",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "1", "label": "1" },
+            { "value": "2", "label": "2" }
+          ]
+        },
+        {
+          "key": "str_uchyceni",
+          "label": "Střední uchycení",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "Střed. magnet", "label": "Střed. magnet" },
+            { "value": "Příchytka", "label": "Příchytka" },
+            { "value": "Žádné", "label": "Žádné" }
+          ]
+        },
+        {
+          "key": "barva_prich",
+          "label": "Barva příchytky",
+          "type": "select",
+          "tbd": true,
+          "visibleIf": { "field": "str_uchyceni", "op": "eq", "value": "Příchytka" }
+        },
+        {
+          "key": "pocet_str_uchyc",
+          "label": "Počet středních uchycení / 1 ks",
+          "type": "number",
+          "step": 1,
+          "min": null,
+          "max": null,
+          "warnMin": null,
+          "warnMax": null,
+          "visibleIf": {
+            "field": "str_uchyceni",
+            "op": "in",
+            "values": ["Střed. magnet", "Příchytka"]
+          }
+        },
+        {
+          "key": "ovladaci_tyc",
+          "label": "Ovládací tyč",
+          "type": "select",
+          "required": true,
+          "options": [
+            { "value": "Ne", "label": "Ne" },
+            { "value": "Ano", "label": "Ano" }
+          ]
+        }
+      ]
+    }
+  ],
+  "rules": [],
+  "printMap": {
+    "sirka": "sirka",
+    "vyska": "vyska",
+    "barva": "cislo_latky_horni",
+    "strana": null,
+    "ovladani": "madlo"
+  }
+}
