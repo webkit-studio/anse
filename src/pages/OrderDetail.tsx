@@ -134,14 +134,12 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
   const isAdmin = me.data?.role === "admin";
   const toast = useToast();
 
+  // Jen údaje z terénu (Jakubovy) + karta zákazníka — čísla, termín dodání,
+  // faktura a částky se editují zvlášť v „Údaje pro export" u PDF exportu.
   const [order, setOrder] = useState({
     installation_address: detail.order.installation_address,
-    montage_number: detail.order.montage_number,
-    order_number: detail.order.order_number,
     measured_at: detail.order.measured_at ?? "",
-    delivery_date: detail.order.delivery_date ?? "",
     note: detail.order.note,
-    invoice_number: detail.order.invoice_number,
   });
   const [client, setClient] = useState({
     name: detail.client.name,
@@ -178,19 +176,12 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
     setBusy(true);
     setError(null);
     try {
-      // Technik ukládá jen: místo montáže, termín vyměření, poznámku.
       const body: Record<string, unknown> = {
         installation_address: order.installation_address,
         measured_at: order.measured_at || null,
         note: order.note,
         expected_updated_at: expectedRef.current.order,
       };
-      if (isAdmin) {
-        body.montage_number = order.montage_number;
-        body.order_number = order.order_number;
-        body.delivery_date = order.delivery_date || null;
-        body.invoice_number = order.invoice_number;
-      }
       const { order: savedOrder } = await api<{ order: OrderRow }>(`/api/orders/${detail.order.id}`, {
         method: "PATCH",
         body,
@@ -298,43 +289,118 @@ function HeaderEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => voi
         <TextInput id="e-note" value={order.note} onChange={(e) => setOrder({ ...order, note: e.target.value })} />
       </Field>
 
-      {isAdmin && (
-        <>
-          <div className="field-row">
-            <Field label="Číslo montáže" htmlFor="e-montage">
-              <TextInput
-                id="e-montage"
-                value={order.montage_number}
-                onChange={(e) => setOrder({ ...order, montage_number: e.target.value })}
-              />
-            </Field>
-            <Field label="Číslo zakázky" htmlFor="e-number">
-              <TextInput
-                id="e-number"
-                value={order.order_number}
-                onChange={(e) => setOrder({ ...order, order_number: e.target.value })}
-              />
-            </Field>
-          </div>
-          <div className="field-row">
-            <Field label="Termín dodání" htmlFor="e-delivery">
-              <input
-                id="e-delivery"
-                type="date"
-                value={order.delivery_date}
-                onChange={(e) => setOrder({ ...order, delivery_date: e.target.value })}
-              />
-            </Field>
-            <Field label="Faktura (číslo FA)" htmlFor="e-invoice">
-              <TextInput
-                id="e-invoice"
-                value={order.invoice_number}
-                onChange={(e) => setOrder({ ...order, invoice_number: e.target.value })}
-              />
-            </Field>
-          </div>
-        </>
-      )}
+      {error && <p className="field-msg field-msg-error">{error}</p>}
+      <div className="header-edit-actions">
+        <Button variant="ghost" onClick={onDone}>
+          Zavřít
+        </Button>
+        <Button variant="primary" disabled={busy} onClick={() => void save()}>
+          Uložit
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** Údaje pro export montážního listu (jen admin): čísla, faktura, termín
+ *  dodání, částky a montér. Ukládat jde i rozpracované — PDF export se odemkne
+ *  až s kompletem (missingForPdf), takže tenhle formulář nic nevynucuje. */
+function ExportEdit({ detail, onDone }: { detail: OrderDetail; onDone: () => void }) {
+  const toast = useToast();
+  const [data, setData] = useState({
+    montage_number: detail.order.montage_number,
+    order_number: detail.order.order_number,
+    invoice_number: detail.order.invoice_number,
+    delivery_date: detail.order.delivery_date ?? "",
+    price_ex_vat: detail.order.price_ex_vat,
+    price_vat: detail.order.price_vat,
+    price_montage: detail.order.price_montage,
+    price_total: detail.order.price_total,
+    price_deposit: detail.order.price_deposit,
+    price_balance: detail.order.price_balance,
+    montage_by: detail.order.montage_by,
+  });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const set = (key: keyof typeof data) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setData({ ...data, [key]: e.target.value });
+
+  async function save() {
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/api/orders/${detail.order.id}`, {
+        method: "PATCH",
+        body: {
+          ...data,
+          delivery_date: data.delivery_date || null,
+          expected_updated_at: detail.order.updated_at,
+        },
+      });
+      toast("Uloženo.");
+      onDone();
+    } catch (err) {
+      setError(
+        isConflict(err)
+          ? "Data mezitím upravil někdo jiný — po zavření uvidíte aktuální stav."
+          : err instanceof Error
+            ? err.message
+            : "Uložení se nepodařilo.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="header-edit">
+      <div className="field-row">
+        <Field label="Číslo montáže" htmlFor="x-montage">
+          <TextInput id="x-montage" value={data.montage_number} onChange={set("montage_number")} />
+        </Field>
+        <Field label="Číslo zakázky" htmlFor="x-number">
+          <TextInput id="x-number" value={data.order_number} onChange={set("order_number")} />
+        </Field>
+      </div>
+      <div className="field-row">
+        <Field label="Faktura (číslo FA)" htmlFor="x-invoice">
+          <TextInput id="x-invoice" value={data.invoice_number} onChange={set("invoice_number")} />
+        </Field>
+        <Field label="Termín dodání" htmlFor="x-delivery">
+          <input id="x-delivery" type="date" value={data.delivery_date} onChange={set("delivery_date")} />
+        </Field>
+      </div>
+      <div className="field-row">
+        <Field label="Cena bez DPH" htmlFor="x-price-ex">
+          <TextInput id="x-price-ex" placeholder="12 500 Kč" value={data.price_ex_vat} onChange={set("price_ex_vat")} />
+        </Field>
+        <Field label="DPH" htmlFor="x-price-vat">
+          <TextInput id="x-price-vat" value={data.price_vat} onChange={set("price_vat")} />
+        </Field>
+      </div>
+      <div className="field-row">
+        <Field label="Montáž (cena)" htmlFor="x-price-montage">
+          <TextInput id="x-price-montage" value={data.price_montage} onChange={set("price_montage")} />
+        </Field>
+        <Field label="Cena celkem" htmlFor="x-price-total">
+          <TextInput id="x-price-total" value={data.price_total} onChange={set("price_total")} />
+        </Field>
+      </div>
+      <div className="field-row">
+        <Field label="Záloha" htmlFor="x-price-deposit">
+          <TextInput id="x-price-deposit" value={data.price_deposit} onChange={set("price_deposit")} />
+        </Field>
+        <Field label="Doplatek" htmlFor="x-price-balance">
+          <TextInput id="x-price-balance" value={data.price_balance} onChange={set("price_balance")} />
+        </Field>
+      </div>
+      <Field label="Montáž provedl" htmlFor="x-montage-by">
+        <TextInput id="x-montage-by" value={data.montage_by} onChange={set("montage_by")} />
+      </Field>
+      <p className="muted pdf-export-hint">
+        Uložit jde i rozpracované — export PDF se odemkne, až bude vyplněné vše včetně podpisu.
+      </p>
 
       {error && <p className="field-msg field-msg-error">{error}</p>}
       <div className="header-edit-actions">
@@ -392,6 +458,7 @@ export default function OrderDetailPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [editing, setEditing] = useState(false);
+  const [editingExport, setEditingExport] = useState(false);
   const [signing, setSigning] = useState(false);
   const exportPdf = useExportDownload(`/export/montazni-list-pdf/${orderId}`, "montazni-list.pdf");
 
@@ -427,12 +494,7 @@ export default function OrderDetailPage() {
   const detail = order.data;
   const isAdmin = me.data?.role === "admin";
   const refresh = () => invalidate(orderId);
-  const missingPdf = missingForPdf({
-    montage_number: detail.order.montage_number,
-    order_number: detail.order.order_number,
-    invoice_number: detail.order.invoice_number,
-    signed: Boolean(detail.order.signed_at),
-  });
+  const missingPdf = missingForPdf({ ...detail.order, signed: Boolean(detail.order.signed_at) });
 
   const itemsByRoom = new Map<string, ItemRow[]>();
   for (const item of detail.items) {
@@ -560,19 +622,19 @@ export default function OrderDetailPage() {
               {exportPdf.busy ? "Generuji…" : "Export PDF montážního listu (s podpisem)"}
             </Button>
             {missingPdf.length > 0 && (
-              <>
-                <p className="muted pdf-export-hint">Doplňte nejdřív: {missingPdf.join(", ")}.</p>
-                <Button
-                  variant="ghost"
-                  className="btn-block"
-                  onClick={() => {
-                    setEditing(true);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  Upravit ✎
-                </Button>
-              </>
+              <p className="muted pdf-export-hint">Doplňte nejdřív: {missingPdf.join(", ")}.</p>
+            )}
+            <Button variant="ghost" className="btn-block" onClick={() => setEditingExport((e) => !e)}>
+              {editingExport ? "Zavřít ✕" : "Údaje pro export ✎"}
+            </Button>
+            {editingExport && (
+              <ExportEdit
+                detail={detail}
+                onDone={() => {
+                  setEditingExport(false);
+                  refresh();
+                }}
+              />
             )}
           </div>
           <ConfirmButton

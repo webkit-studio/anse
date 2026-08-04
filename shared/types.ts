@@ -68,6 +68,14 @@ export interface OrderRow {
   measured_at: string | null;
   delivery_date: string | null;
   invoice_number: string;
+  /** Údaje pro export montážního listu (částky volným textem, montér). */
+  price_ex_vat: string;
+  price_vat: string;
+  price_montage: string;
+  price_total: string;
+  price_deposit: string;
+  price_balance: string;
+  montage_by: string;
   note: string;
   /** Kdy zákazník podepsal (ISO) — samotný PNG podpis se do detailu nevrací. */
   signed_at: string | null;

@@ -1347,6 +1347,11 @@ input[type="date"] {
 
 .order-delete {
   margin-top: 10px;
+}
+
+/* Červený text jen v klidovém (ghost) stavu — v ozbrojeném stavu je tlačítko
+   btn-danger s červeným pozadím a text musí zůstat bílý (jinak je nečitelné). */
+.btn-ghost.order-delete {
   color: var(--c-error);
 }
 

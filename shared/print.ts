@@ -121,21 +121,41 @@ export function totalPieces(groups: RoomGroup[]): number {
   return groups.reduce((sum, g) => sum + g.rows.reduce((s, r) => s + r.ks, 0), 0);
 }
 
-/**
- * Co brání PDF exportu montážního listu — prázdné pole = může se generovat.
- * Stejnou logiku vyhodnocuje server (tvrdé hlídání) i UI (disabled tlačítko
- * s nápovědou); popisky odpovídají polím v aplikaci.
- */
-export function missingForPdf(order: {
+/** Vstup kontroly kompletnosti pro PDF — podmnožina zakázky + příznak podpisu. */
+export interface PdfReadinessInput {
   montage_number: string;
   order_number: string;
   invoice_number: string;
+  delivery_date: string | null;
+  price_ex_vat: string;
+  price_vat: string;
+  price_montage: string;
+  price_total: string;
+  price_deposit: string;
+  price_balance: string;
+  montage_by: string;
   signed: boolean;
-}): string[] {
+}
+
+/**
+ * Co brání PDF exportu montážního listu — prázdné pole = může se generovat.
+ * Údaje pro export jde ukládat po částech, ale finální list musí být kompletní
+ * (rozhodnutí Lukáš 4. 8.). Stejnou logiku vyhodnocuje server (tvrdé hlídání)
+ * i UI (disabled tlačítko s nápovědou); popisky odpovídají polím v aplikaci.
+ */
+export function missingForPdf(order: PdfReadinessInput): string[] {
   const missing: string[] = [];
   if (!order.montage_number) missing.push("číslo montáže");
   if (!order.order_number) missing.push("číslo zakázky");
   if (!order.invoice_number) missing.push("číslo faktury");
+  if (!order.delivery_date) missing.push("termín dodání");
+  if (!order.price_ex_vat) missing.push("cena bez DPH");
+  if (!order.price_vat) missing.push("DPH");
+  if (!order.price_montage) missing.push("cena za montáž");
+  if (!order.price_total) missing.push("cena celkem");
+  if (!order.price_deposit) missing.push("záloha");
+  if (!order.price_balance) missing.push("doplatek");
+  if (!order.montage_by) missing.push("montáž provedl");
   if (!order.signed) missing.push("podpis zákazníka");
   return missing;
 }

@@ -59,8 +59,16 @@ export const orderUpdateBody = z.object({
   measured_at: dateString,
   delivery_date: dateString,
   note: trimmed.optional(),
-  /** Jen admin. */
+  /** Údaje pro export montážního listu — jen admin. Částky jako volný text
+   *  (na papíře se píší i s měnou), aplikace s nimi nepočítá. */
   invoice_number: trimmed.optional(),
+  price_ex_vat: trimmed.optional(),
+  price_vat: trimmed.optional(),
+  price_montage: trimmed.optional(),
+  price_total: trimmed.optional(),
+  price_deposit: trimmed.optional(),
+  price_balance: trimmed.optional(),
+  montage_by: trimmed.optional(),
   expected_updated_at: z.string().min(1),
 });
 

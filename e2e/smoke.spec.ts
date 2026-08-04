@@ -172,28 +172,45 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await expect(page.getByRole("button", { name: /xlsx/ })).toHaveCount(0);
   expect((await page.request.get(`/export/montazni-list/${orderId}`)).status()).toBe(404);
 
-  // PDF export: zamčený, dokud chybí čísla + faktura (podpis už je z technik testu)
+  // PDF export: zamčený, dokud chybí exportní údaje (podpis už je z technik testu)
   const pdfButton = page.getByRole("button", { name: /Export PDF/ });
   await expect(pdfButton).toBeDisabled();
   await expect(
-    page.getByText("Doplňte nejdřív: číslo montáže, číslo zakázky, číslo faktury."),
+    page.getByText(/Doplňte nejdřív: číslo montáže, číslo zakázky, číslo faktury, termín dodání/),
   ).toBeVisible();
 
   // REGRESE (hlášeno z produkce): povinná pole karty zákazníka se hlídají
   // PŘED odesláním — dřív prošel PATCH zakázky, karta spadla na validaci
   // a druhý pokus o uložení skončil falešným 409 „upravil někdo jiný".
-  // Vstup přes nové tlačítko Upravit přímo pod PDF exportem.
-  await page.locator(".pdf-export").getByRole("button", { name: "Upravit ✎" }).click();
+  await page.getByRole("button", { name: "Upravit ✎" }).click();
   await page.locator("#c-address").fill("");
-  await page.locator("#e-montage").fill("E2E-MON-1");
-  await page.locator("#e-number").fill("E2E-ZAK-1");
-  await page.locator("#e-invoice").fill("E2E-FA-1");
   await page.getByRole("button", { name: "Uložit" }).click();
   await expect(page.getByText("Vyplňte adresu.")).toBeVisible();
   await page.locator("#c-address").fill("Testovací 12, Praha");
   await page.getByRole("button", { name: "Uložit" }).click();
-  await expect(pdfButton).toBeEnabled(); // uložení prošlo (onDone + refresh), žádný 409
-  await expect(page.locator("#c-address")).toHaveCount(0); // editor se zavřel
+  await expect(page.locator("#c-address")).toHaveCount(0); // editor se zavřel, žádný 409
+
+  // údaje pro export: samostatný formulář pod PDF tlačítkem; uložit jde i rozpracované
+  await page.getByRole("button", { name: "Údaje pro export ✎" }).click();
+  await page.locator("#x-montage").fill("E2E-MON-1");
+  await page.locator("#x-number").fill("E2E-ZAK-1");
+  await page.getByRole("button", { name: "Uložit" }).click();
+  await expect(page.locator("#x-montage")).toHaveCount(0);
+  await expect(pdfButton).toBeDisabled(); // pořád nekompletní
+  await expect(page.getByText(/Doplňte nejdřív: číslo faktury, termín dodání/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Údaje pro export ✎" }).click();
+  await page.locator("#x-invoice").fill("E2E-FA-1");
+  await page.locator("#x-delivery").fill("2026-08-20");
+  await page.locator("#x-price-ex").fill("10 000 Kč");
+  await page.locator("#x-price-vat").fill("2 100 Kč");
+  await page.locator("#x-price-montage").fill("1 500 Kč");
+  await page.locator("#x-price-total").fill("13 600 Kč");
+  await page.locator("#x-price-deposit").fill("9 520 Kč");
+  await page.locator("#x-price-balance").fill("4 080 Kč");
+  await page.locator("#x-montage-by").fill("Jakub Svoboda");
+  await page.getByRole("button", { name: "Uložit" }).click();
+  await expect(pdfButton).toBeEnabled();
 
   const pdfRes = await page.request.get(`/export/montazni-list-pdf/${orderId}`);
   expect(pdfRes.status()).toBe(200);

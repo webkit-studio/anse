@@ -18,8 +18,22 @@ const ORDER_COLS = (db: ReturnType<typeof sql>) => db.unsafe(`
   o.id, o.client_id, o.installation_address, o.montage_number, o.order_number, o.status,
   to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
   to_char(o.delivery_date, 'YYYY-MM-DD') as delivery_date,
-  o.invoice_number, o.note, o.signed_at, o.created_at, o.updated_at
+  o.invoice_number, o.price_ex_vat, o.price_vat, o.price_montage, o.price_total,
+  o.price_deposit, o.price_balance, o.montage_by,
+  o.note, o.signed_at, o.created_at, o.updated_at
 `);
+
+/** Pole exportních údajů — mění je jen admin (viz PATCH). */
+const ADMIN_ONLY_FIELDS = [
+  "invoice_number",
+  "price_ex_vat",
+  "price_vat",
+  "price_montage",
+  "price_total",
+  "price_deposit",
+  "price_balance",
+  "montage_by",
+] as const;
 
 const PNG_DATA_URL_PREFIX = "data:image/png;base64,";
 const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
@@ -160,8 +174,8 @@ export const orderRoutes: Route[] = [
     const db = sql();
     const body = await parseBody(req, orderUpdateBody);
 
-    if (body.invoice_number !== undefined && ctx.user.role !== "admin") {
-      throw new ApiError(403, "Číslo faktury může měnit jen administrátor.");
+    if (ctx.user.role !== "admin" && ADMIN_ONLY_FIELDS.some((k) => body[k] !== undefined)) {
+      throw new ApiError(403, "Údaje pro export může měnit jen administrátor.");
     }
 
     const patch: Record<string, string | null> = {};
@@ -170,7 +184,7 @@ export const orderRoutes: Route[] = [
       "montage_number",
       "order_number",
       "note",
-      "invoice_number",
+      ...ADMIN_ONLY_FIELDS,
     ] as const) {
       if (body[key] !== undefined) patch[key] = body[key];
     }

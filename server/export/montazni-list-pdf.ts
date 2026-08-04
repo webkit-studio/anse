@@ -83,6 +83,13 @@ interface PdfOrder {
   montage_number: string;
   order_number: string;
   invoice_number: string;
+  price_ex_vat: string;
+  price_vat: string;
+  price_montage: string;
+  price_total: string;
+  price_deposit: string;
+  price_balance: string;
+  montage_by: string;
   measured_at: string | null;
   delivery_date: string | null;
   signature_png: string | null;
@@ -305,6 +312,8 @@ export async function buildMontazniListPdf(
 
   const [order] = (await db`
     select o.id, o.installation_address, o.montage_number, o.order_number, o.invoice_number,
+           o.price_ex_vat, o.price_vat, o.price_montage, o.price_total,
+           o.price_deposit, o.price_balance, o.montage_by,
            to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
            to_char(o.delivery_date, 'YYYY-MM-DD') as delivery_date,
            o.signature_png,
@@ -323,6 +332,14 @@ export async function buildMontazniListPdf(
     montage_number: order.montage_number,
     order_number: order.order_number,
     invoice_number: order.invoice_number,
+    delivery_date: order.delivery_date,
+    price_ex_vat: order.price_ex_vat,
+    price_vat: order.price_vat,
+    price_montage: order.price_montage,
+    price_total: order.price_total,
+    price_deposit: order.price_deposit,
+    price_balance: order.price_balance,
+    montage_by: order.montage_by,
     signed: Boolean(order.signature_png),
   });
   if (missing.length > 0) {
@@ -455,24 +472,30 @@ export async function buildMontazniListPdf(
   drawText(ctx, totalText, MARGIN + CONTENT_W - totalW, 9, { bold: true });
   ctx.y -= 18;
 
-  // --- ceny (prázdné, ruční doplnění) + FA ---------------------------------
+  // --- ceny + FA ------------------------------------------------------------
+  // Hodnoty z aplikace (gating zaručuje vyplnění); prázdné pole → tečkovaná
+  // linka k ručnímu doplnění (obrana pro historická data).
   ensure(ctx, 66);
   const priceLabels: Array<[string, string]> = [
-    ["cena bez DPH", ""],
-    ["DPH", ""],
-    ["montáž", ""],
-    ["cena celkem", ""],
-    ["záloha", ""],
-    ["doplatek", ""],
+    ["cena bez DPH", order.price_ex_vat],
+    ["DPH", order.price_vat],
+    ["montáž", order.price_montage],
+    ["cena celkem", order.price_total],
+    ["záloha", order.price_deposit],
+    ["doplatek", order.price_balance],
   ];
   const priceTop = ctx.y;
   const priceColW = CONTENT_W / 3;
-  for (const [i, [label]] of priceLabels.entries()) {
+  for (const [i, [label, value]] of priceLabels.entries()) {
     const x = MARGIN + (i % 3) * priceColW;
     const rowY = priceTop - Math.floor(i / 3) * 24;
     ctx.page.drawText(`${label}:`, { x, y: rowY - 9, size: 8.5, font: regular, color: GRAY });
     const labelW = regular.widthOfTextAtSize(`${label}:`, 8.5);
-    dottedLine(ctx, x + labelW + 6, x + priceColW - 14, rowY - 9);
+    if (value) {
+      ctx.page.drawText(value, { x: x + labelW + 6, y: rowY - 9, size: 9, font: bold, color: INK });
+    } else {
+      dottedLine(ctx, x + labelW + 6, x + priceColW - 14, rowY - 9);
+    }
   }
   ctx.y = priceTop - 48;
   ctx.page.drawText(`FA č.: ${order.invoice_number}`, {
@@ -529,7 +552,17 @@ export async function buildMontazniListPdf(
 
   ctx.y = sigTop;
   drawText(ctx, "montáž provedl:", MARGIN, 8.5, { color: GRAY });
-  dottedLine(ctx, MARGIN + 70, MARGIN + 270, ctx.y - 9);
+  if (order.montage_by) {
+    ctx.page.drawText(order.montage_by, {
+      x: MARGIN + regular.widthOfTextAtSize("montáž provedl:", 8.5) + 6,
+      y: ctx.y - 8.5,
+      size: 8.5,
+      font: bold,
+      color: INK,
+    });
+  } else {
+    dottedLine(ctx, MARGIN + 70, MARGIN + 270, ctx.y - 9);
+  }
   ctx.y -= 26;
   drawText(ctx, "převzal dne/podpis:", MARGIN, 8.5, { color: GRAY });
   dottedLine(ctx, MARGIN + 84, MARGIN + 270, ctx.y - 9);
