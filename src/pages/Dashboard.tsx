@@ -33,19 +33,30 @@ export default function DashboardPage() {
         <Link to="/zakazky/nova" className="btn btn-primary btn-block btn-xl">
           + Nová zakázka
         </Link>
-        <Link to="/zakazky" className="btn btn-secondary btn-block">
-          Zakázky
-        </Link>
-        {isAdmin && (
-          <>
-            <Link to="/statistiky" className="btn btn-secondary btn-block">
-              Statistiky
-            </Link>
-            <Link to="/admin" className="btn btn-secondary btn-block">
-              Správa účtů
-            </Link>
-          </>
-        )}
+        <nav className="menu-card" aria-label="Hlavní nabídka">
+          <Link to="/zakazky" className="menu-row">
+            <span>Zakázky</span>
+            <span className="menu-chevron" aria-hidden="true">
+              ›
+            </span>
+          </Link>
+          {isAdmin && (
+            <>
+              <Link to="/statistiky" className="menu-row">
+                <span>Statistiky</span>
+                <span className="menu-chevron" aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+              <Link to="/admin" className="menu-row">
+                <span>Správa účtů</span>
+                <span className="menu-chevron" aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            </>
+          )}
+        </nav>
       </div>
     </div>
   );

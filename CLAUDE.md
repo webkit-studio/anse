@@ -53,8 +53,9 @@ uživatelem, port 5433, DB `anse` — connection string
 - UI texty **výhradně česky**, chybové hlášky přímo u pole. Touch targety
   min. 48 px (`--tap`), číselná pole `inputmode="numeric"/"decimal"`,
   fonty inputů min. 16 px (jinak iOS zoomuje).
-- Zelená `--c-green` (#17C6A3) se nepoužívá jako barva textu na bílé
-  (nedostatečný kontrast) — jen plochy/akcenty; text na zelené je `--c-ink`.
+- Zelená `--c-green` (#0DC28B) se nepoužívá jako barva textu na bílé
+  (nedostatečný kontrast) — jen plochy/akcenty; text na zelené je `--c-ink`,
+  zelený text/odkazy řeší tmavá `--c-green-deep`.
 
 ## Jak přidat / upravit typ produktu (bez zásahu do kódu)
 

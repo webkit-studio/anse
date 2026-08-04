@@ -32,6 +32,12 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   await expect(page.getByText("povinný údaj")).toBeVisible(); // legenda hvězdiček
   await expect(page.locator("#o-montage")).toHaveCount(0);
   await expect(page.locator("#o-delivery")).toHaveCount(0);
+
+  // technik ve výběru „Stávající" nemá úpravy ani mazání zákazníků (jen admin)
+  await page.getByRole("tab", { name: "Stávající" }).click();
+  await expect(page.getByLabel("Vyhledat zákazníka")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Smazat zákazníka/ })).toHaveCount(0);
+  await page.getByRole("tab", { name: "Nový zákazník" }).click();
   await page.getByLabel("Firma / jméno a příjmení").fill(CLIENT_NAME);
   await page.locator("#c-phone").fill("777123456");
   await page.getByLabel("Adresa").fill("Testovací 12, Praha");
@@ -241,4 +247,20 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await expect(page).toHaveURL(/\/zakazky$/);
   await page.getByLabel("Hledat v zakázkách").fill(CLIENT_NAME);
   await expect(page.getByRole("link", { name: new RegExp(CLIENT_NAME) })).toHaveCount(0);
+
+  // správa zákazníků ve výběru Stávající (jen admin): tužka otevře editaci,
+  // koš (dvojtap) archivuje — zákazník zmizí ze seznamu, zakázky ho drží dál
+  await page.goto("/zakazky/nova");
+  await page.getByRole("tab", { name: "Stávající" }).click();
+  await page.getByLabel("Vyhledat zákazníka").fill(CLIENT_NAME);
+  const clientRow = page.locator(".picker-row", { hasText: CLIENT_NAME });
+  await expect(clientRow).toHaveCount(1);
+
+  await clientRow.getByRole("button", { name: /Upravit zákazníka/ }).click();
+  await expect(page.getByRole("dialog", { name: /Upravit zákazníka/ })).toBeVisible();
+  await page.locator(".client-edit-sheet .sheet-close").click();
+
+  await clientRow.getByRole("button", { name: /Smazat zákazníka/ }).click();
+  await clientRow.getByRole("button", { name: "Opravdu?" }).click();
+  await expect(page.locator(".picker-row", { hasText: CLIENT_NAME })).toHaveCount(0);
 });

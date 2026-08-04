@@ -314,11 +314,14 @@ export function ConfirmButton({
   confirmLabel = "Opravdu?",
   onConfirm,
   className = "",
+  ariaLabel,
 }: {
   label: ReactNode;
   confirmLabel?: string;
   onConfirm: () => void;
   className?: string;
+  /** Přístupný název, když je label jen ikona (🗑). */
+  ariaLabel?: string;
 }) {
   const [arming, setArming] = useState(false);
 
@@ -332,6 +335,7 @@ export function ConfirmButton({
     <button
       type="button"
       className={`btn ${arming ? "btn-danger" : "btn-ghost"} ${className}`}
+      aria-label={arming ? undefined : ariaLabel}
       onClick={() => {
         if (arming) {
           setArming(false);

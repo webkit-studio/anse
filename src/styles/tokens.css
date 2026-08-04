@@ -1,13 +1,15 @@
 /* Design tokeny — prémiový světlý vzhled (vlna „UI upgrade", srpen 2026):
    porcelánové pozadí, bílé karty s měkkou elevací, velké rádiusy, Inter +
    Space Grotesk (self-host přes @fontsource, žádné CDN).
-   Kontrast: zelená #17C6A3 NIKDY jako barva textu na bílé (2,3:1) — jen
-   plochy/akcenty, text na zelené vždy inkoustový (--c-ink, ~10:1). */
+   Kontrast: zelená --c-green NIKDY jako barva textu na bílé — jen
+   plochy/akcenty, text na zelené vždy inkoustový (--c-ink); odkazy a zelený
+   text řeší tmavá --c-green-deep. */
 :root {
-  --c-green: #17c6a3;
-  --c-green-dark: #0e9c80;
-  --c-green-deep: #0b7a65;
-  --c-green-soft: #e0f7f1;
+  /* Sytější smaragdová místo mentolové (feedback Lukáš 4. 8. — „revolutovější"). */
+  --c-green: #0dc28b;
+  --c-green-dark: #0aa578;
+  --c-green-deep: #077a58;
+  --c-green-soft: #e2f8f0;
 
   --c-ink: #0e1513;
   --c-text: #1b201f;
@@ -39,8 +41,8 @@
   --shadow-card: 0 1px 2px rgba(14, 21, 19, 0.04), 0 10px 30px rgba(14, 21, 19, 0.06);
   --shadow-raised: 0 1px 2px rgba(14, 21, 19, 0.06), 0 4px 12px rgba(14, 21, 19, 0.08);
   --shadow-pop: 0 18px 50px rgba(14, 21, 19, 0.18);
-  --shadow-green: 0 6px 18px rgba(23, 198, 163, 0.35);
-  --focus-ring: 0 0 0 3px rgba(23, 198, 163, 0.38);
+  --shadow-green: 0 6px 16px rgba(13, 194, 139, 0.28);
+  --focus-ring: 0 0 0 3px rgba(13, 194, 139, 0.38);
 
   /* Glass — jen lišty, sheets a overlay (rozhodnutí „prémiově decentní"). */
   --glass-bg: rgba(248, 251, 250, 0.78);

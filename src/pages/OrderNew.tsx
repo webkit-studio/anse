@@ -1,11 +1,169 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ClientRow } from "@shared/types";
-import { api } from "../api/client";
+import { api, isConflict } from "../api/client";
 import { useClientSearch, useMe } from "../api/hooks";
 import { PhoneInput, emailIssue, phoneIssue } from "../components/PhoneInput";
 import { useToast } from "../components/Toast";
-import { Button, Field, Spinner, TextInput } from "../components/ui";
+import { Button, ConfirmButton, Field, Spinner, TextInput } from "../components/ui";
+
+/** Úprava karty zákazníka přímo z výběru „Stávající" (jen admin). */
+function ClientEditSheet({
+  client,
+  onClose,
+  onSaved,
+}: {
+  client: ClientRow;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const toast = useToast();
+  const [data, setData] = useState({
+    name: client.name,
+    phone: client.phone,
+    email: client.email,
+    address: client.address,
+    delivery_address: client.delivery_address,
+    contact_person: client.contact_person,
+    ico: client.ico,
+    dic: client.dic,
+    note: client.note,
+  });
+  const [attempted, setAttempted] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const nameProblem = data.name.trim() === "" ? "Vyplňte jméno nebo firmu." : null;
+  const phoneProblem = phoneIssue(data.phone);
+  const emailProblem = data.email.trim() === "" ? "Vyplňte e-mail." : emailIssue(data.email);
+  const addressProblem = data.address.trim() === "" ? "Vyplňte adresu." : null;
+
+  // zámek scrollu stránky pod sheetem (stejně jako SelectSheet)
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
+  const set = (key: keyof typeof data) => (value: string) => setData({ ...data, [key]: value });
+
+  async function save() {
+    if (nameProblem || phoneProblem || emailProblem || addressProblem) {
+      setAttempted(true);
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/api/clients/${client.id}`, {
+        method: "PATCH",
+        body: { ...data, expected_updated_at: client.updated_at },
+      });
+      toast("Zákazník upraven.");
+      onSaved();
+    } catch (err) {
+      setError(
+        isConflict(err)
+          ? "Zákazníka mezitím upravil někdo jiný — zavřete a otevřete znovu."
+          : err instanceof Error
+            ? err.message
+            : "Uložení se nepodařilo.",
+      );
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="sheet-backdrop" onClick={onClose}>
+      <div
+        className="sheet client-edit-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Upravit zákazníka ${client.name}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="sheet-head">
+          <span className="sheet-title">Upravit zákazníka</span>
+          <button type="button" className="sheet-close" onClick={onClose} aria-label="Zavřít">
+            ✕
+          </button>
+        </div>
+        <div className="client-edit-fields">
+          <Field
+            label="Firma / jméno a příjmení"
+            htmlFor="ce-name"
+            required
+            messages={attempted && nameProblem ? [{ level: "error", message: nameProblem }] : []}
+          >
+            <TextInput id="ce-name" value={data.name} onChange={(e) => set("name")(e.target.value)} />
+          </Field>
+          <Field
+            label="Telefon"
+            htmlFor="ce-phone"
+            messages={attempted && phoneProblem ? [{ level: "error", message: phoneProblem }] : []}
+          >
+            <PhoneInput id="ce-phone" value={data.phone} onChange={set("phone")} />
+          </Field>
+          <Field
+            label="E-mail"
+            htmlFor="ce-email"
+            required
+            messages={attempted && emailProblem ? [{ level: "error", message: emailProblem }] : []}
+          >
+            <TextInput
+              id="ce-email"
+              type="email"
+              inputMode="email"
+              value={data.email}
+              onChange={(e) => set("email")(e.target.value)}
+            />
+          </Field>
+          <Field
+            label="Adresa"
+            htmlFor="ce-address"
+            required
+            messages={attempted && addressProblem ? [{ level: "error", message: addressProblem }] : []}
+          >
+            <TextInput id="ce-address" value={data.address} onChange={(e) => set("address")(e.target.value)} />
+          </Field>
+          <div className="field-row">
+            <Field label="IČ" htmlFor="ce-ico">
+              <TextInput id="ce-ico" inputMode="numeric" value={data.ico} onChange={(e) => set("ico")(e.target.value)} />
+            </Field>
+            <Field label="DIČ" htmlFor="ce-dic">
+              <TextInput id="ce-dic" value={data.dic} onChange={(e) => set("dic")(e.target.value)} />
+            </Field>
+          </div>
+          <Field label="Dodací adresa" htmlFor="ce-delivery" help="Nechte prázdné, pokud je stejná.">
+            <TextInput
+              id="ce-delivery"
+              value={data.delivery_address}
+              onChange={(e) => set("delivery_address")(e.target.value)}
+            />
+          </Field>
+          <Field label="Kontaktní osoba" htmlFor="ce-contact">
+            <TextInput
+              id="ce-contact"
+              value={data.contact_person}
+              onChange={(e) => set("contact_person")(e.target.value)}
+            />
+          </Field>
+        </div>
+        {error && <p className="field-msg field-msg-error">{error}</p>}
+        <div className="header-edit-actions">
+          <Button variant="ghost" onClick={onClose}>
+            Zavřít
+          </Button>
+          <Button variant="primary" disabled={busy} onClick={() => void save()}>
+            Uložit
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface NewClientFields {
   name: string;
@@ -37,6 +195,7 @@ export default function OrderNewPage() {
   const [client, setClient] = useState<NewClientFields>(EMPTY_CLIENT);
   const [moreClient, setMoreClient] = useState(false);
   const [existing, setExisting] = useState<ClientRow | null>(null);
+  const [editingClient, setEditingClient] = useState<ClientRow | null>(null);
   const [clientSearch, setClientSearch] = useState("");
 
   // Místo montáže: defaultně shodné s adresou zákazníka (Markovo „někdy je stejná").
@@ -54,6 +213,16 @@ export default function OrderNewPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const search = useClientSearch(clientSearch.trim(), mode === "existing");
+
+  async function archiveClient(c: ClientRow) {
+    try {
+      await api(`/api/clients/${c.id}`, { method: "DELETE" });
+      toast("Zákazník odstraněn ze seznamu.");
+      void search.refetch();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Smazání se nepodařilo.");
+    }
+  }
 
   // Povinná pole zákazníka (jen u nového; stávající se posílá jako {id}).
   const clientMissing = mode === "new" ? client.name.trim() === "" : existing === null;
@@ -251,13 +420,32 @@ export default function OrderNewPage() {
             {search.data && (
               <ul className="picker-list">
                 {search.data.clients.map((c) => (
-                  <li key={c.id}>
+                  <li key={c.id} className="picker-row">
                     <button type="button" className="picker-item" onClick={() => setExisting(c)}>
                       <strong>{c.name}</strong>
                       {(c.address || c.phone) && (
                         <span className="muted">{[c.address, c.phone].filter(Boolean).join(" · ")}</span>
                       )}
                     </button>
+                    {isAdmin && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          className="picker-icon"
+                          aria-label={`Upravit zákazníka ${c.name}`}
+                          onClick={() => setEditingClient(c)}
+                        >
+                          ✎
+                        </Button>
+                        <ConfirmButton
+                          label="🗑"
+                          confirmLabel="Opravdu?"
+                          ariaLabel={`Smazat zákazníka ${c.name}`}
+                          className="picker-icon picker-trash"
+                          onConfirm={() => void archiveClient(c)}
+                        />
+                      </>
+                    )}
                   </li>
                 ))}
                 {search.data.clients.length === 0 && (
@@ -340,6 +528,17 @@ export default function OrderNewPage() {
           {busy ? "Zakládám…" : "Založit zakázku"}
         </Button>
       </div>
+
+      {editingClient && (
+        <ClientEditSheet
+          client={editingClient}
+          onClose={() => setEditingClient(null)}
+          onSaved={() => {
+            setEditingClient(null);
+            void search.refetch();
+          }}
+        />
+      )}
     </div>
   );
 }

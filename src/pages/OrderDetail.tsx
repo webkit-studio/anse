@@ -531,16 +531,25 @@ export default function OrderDetailPage() {
             )}
           </div>
         </div>
-        <p className="muted order-header-meta">
-          {[detail.client.phone, detail.client.email].filter(Boolean).join(" · ")}
+        <div className="order-contact">
+          <span className="muted">
+            {[detail.client.phone, detail.client.email].filter(Boolean).join(" · ")}
+          </span>
           {detail.client.phone && (
-            <>
-              {" "}
-              <a href={`tel:${detail.client.phone.replace(/\s/g, "")}`}>Zavolat</a>
-            </>
+            <a className="call-chip" href={`tel:${detail.client.phone.replace(/\s/g, "")}`}>
+              Zavolat
+            </a>
           )}
-        </p>
-        {headerMeta.length > 0 && <p className="muted order-header-meta">{headerMeta.join(" · ")}</p>}
+        </div>
+        {headerMeta.length > 0 && (
+          <div className="meta-chips">
+            {(headerMeta as string[]).map((m) => (
+              <span key={m} className="meta-chip">
+                {m}
+              </span>
+            ))}
+          </div>
+        )}
         {detail.order.note && <p className="order-note">{detail.order.note}</p>}
 
         <div className="order-header-actions">
