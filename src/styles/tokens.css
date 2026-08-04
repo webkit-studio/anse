@@ -1,19 +1,24 @@
-/* Design tokeny — bílá/černá + zelená Anse, systémová Helvetica.
-   Zelená #17C6A3 převzata z placeholderu (z loga); po dodání loga případně doladit.
-   Kontrast: zelená NIKDY jako barva textu na bílé (2,3:1) — jen plochy/akcenty,
-   text na zelené vždy inkoustový (--c-ink, ~10:1). */
+/* Design tokeny — prémiový světlý vzhled (vlna „UI upgrade", srpen 2026):
+   porcelánové pozadí, bílé karty s měkkou elevací, velké rádiusy, Inter +
+   Space Grotesk (self-host přes @fontsource, žádné CDN).
+   Kontrast: zelená #17C6A3 NIKDY jako barva textu na bílé (2,3:1) — jen
+   plochy/akcenty, text na zelené vždy inkoustový (--c-ink, ~10:1). */
 :root {
   --c-green: #17c6a3;
-  --c-green-dark: #0fa385;
-  --c-green-soft: #e3f8f2;
+  --c-green-dark: #0e9c80;
+  --c-green-deep: #0b7a65;
+  --c-green-soft: #e0f7f1;
 
-  --c-ink: #101413;
+  --c-ink: #0e1513;
   --c-text: #1b201f;
-  --c-text-muted: #56605d;
+  --c-text-muted: #5b6663;
+
+  /* Stránka je jemně tónovaná, karty a inputy čistě bílé. */
+  --c-page: #f2f6f5;
   --c-bg: #ffffff;
-  --c-surface: #f4f7f6;
-  --c-border: #d4dcda;
-  --c-border-strong: #a8b5b2;
+  --c-surface: #f2f6f5;
+  --c-border: #e4eae8;
+  --c-border-strong: #c9d4d1;
 
   --c-error: #c62828;
   --c-error-soft: #fdeaea;
@@ -22,13 +27,27 @@
   --c-info: #135ba1;
   --c-info-soft: #e8f1fb;
 
-  --font: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font: "Inter Variable", "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui,
+    sans-serif;
+  --font-display: "Space Grotesk Variable", var(--font);
 
-  --tap: 48px;           /* minimální touch target */
-  --radius: 10px;
-  --radius-lg: 14px;
-  --shadow-card: 0 1px 3px rgba(16, 20, 19, 0.1);
-  --focus-ring: 0 0 0 3px rgba(23, 198, 163, 0.45);
+  --tap: 48px; /* minimální touch target */
+  --radius: 14px; /* inputy, tlačítka */
+  --radius-lg: 20px; /* karty */
+  --radius-xl: 26px; /* sheets, velké panely */
+
+  --shadow-card: 0 1px 2px rgba(14, 21, 19, 0.04), 0 10px 30px rgba(14, 21, 19, 0.06);
+  --shadow-raised: 0 1px 2px rgba(14, 21, 19, 0.06), 0 4px 12px rgba(14, 21, 19, 0.08);
+  --shadow-pop: 0 18px 50px rgba(14, 21, 19, 0.18);
+  --shadow-green: 0 6px 18px rgba(23, 198, 163, 0.35);
+  --focus-ring: 0 0 0 3px rgba(23, 198, 163, 0.38);
+
+  /* Glass — jen lišty, sheets a overlay (rozhodnutí „prémiově decentní"). */
+  --glass-bg: rgba(248, 251, 250, 0.78);
+  --glass-blur: saturate(1.5) blur(14px);
+
+  --t-fast: 140ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  --t-med: 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
 
   --sp-1: 4px;
   --sp-2: 8px;

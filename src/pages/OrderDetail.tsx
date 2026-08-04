@@ -544,7 +544,7 @@ export default function OrderDetailPage() {
         {detail.order.note && <p className="order-note">{detail.order.note}</p>}
 
         <div className="order-header-actions">
-          <Button variant="ghost" onClick={() => setEditing((e) => !e)}>
+          <Button variant="secondary" onClick={() => setEditing((e) => !e)}>
             {editing ? "Zavřít ✕" : "Upravit ✎"}
           </Button>
         </div>
@@ -595,7 +595,8 @@ export default function OrderDetailPage() {
       </div>
 
       {isAdmin && (
-        <section className="admin-actions">
+        <section className="admin-actions" aria-label="Administrace zakázky">
+          <h2 className="admin-actions-title">Administrace</h2>
           <p className="admin-actions-count">
             <strong>{detail.items.length}</strong>{" "}
             {detail.items.length === 1 ? "kus" : detail.items.length <= 4 ? "kusy" : "kusů"} (ks = počet
@@ -612,6 +613,7 @@ export default function OrderDetailPage() {
               Export Susy
             </Button>
           </div>
+          <p className="admin-actions-note muted">Exporty výrobcům připravujeme — zatím neaktivní.</p>
           <div className="pdf-export">
             <Button
               variant="secondary"

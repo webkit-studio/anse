@@ -1,5 +1,6 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useLogout, useMe } from "../api/hooks";
+import { Logo } from "./Logo";
 
 export function AppLayout() {
   const me = useMe();
@@ -11,7 +12,7 @@ export function AppLayout() {
     <div className="app">
       <header className="app-header">
         <Link to="/" className="app-logo" aria-label="Domů">
-          ANSE
+          <Logo height={20} />
         </Link>
         <div className="app-header-right">
           <button

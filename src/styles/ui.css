@@ -1,4 +1,6 @@
-/* Komponenty a stránky — mobile-first, touch targety min. 48px (--tap). */
+/* Komponenty a stránky — mobile-first, touch targety min. 48px (--tap).
+   Vizuální systém „prémiově decentní": porcelánové pozadí, bílé karty
+   s měkkou elevací, glass jen na lištách/sheets/overlay, jemné přechody. */
 
 /* --- layout ------------------------------------------------------------- */
 
@@ -13,20 +15,22 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--sp-2) var(--sp-4);
-  border-bottom: 1px solid var(--c-border);
-  background: var(--c-bg);
+  border-bottom: 1px solid rgba(14, 21, 19, 0.06);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .app-logo {
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: var(--c-green-dark);
+  display: inline-flex;
+  align-items: center;
+  color: var(--c-ink);
   text-decoration: none;
-  font-size: 18px;
   padding: var(--sp-2) 0;
+  min-height: var(--tap);
 }
 
 .app-header-right {
@@ -37,13 +41,21 @@
 
 .app-header-link {
   color: var(--c-text-muted);
-  font-size: 15px;
+  font-size: 14.5px;
+  font-weight: 500;
   text-decoration: none;
-  padding: var(--sp-2) var(--sp-2);
-  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
-  border-radius: var(--radius);
+  border-radius: 999px;
+  background: rgba(14, 21, 19, 0.05);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.app-header-link:active {
+  background: rgba(14, 21, 19, 0.1);
+  color: var(--c-ink);
 }
 
 .app-main {
@@ -57,15 +69,16 @@
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: var(--sp-4);
+  padding: var(--sp-4) var(--sp-4) var(--sp-6);
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
 }
 
 .page h1 {
-  font-size: 22px;
-  line-height: 1.25;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
 }
 
 .page-head {
@@ -88,7 +101,7 @@
 .link-btn {
   background: none;
   border: none;
-  color: var(--c-green-dark);
+  color: var(--c-green-deep);
   text-decoration: underline;
   min-height: auto;
   padding: 0;
@@ -110,32 +123,50 @@
   text-decoration: none;
   text-align: center;
   border: 1.5px solid transparent;
+  transition: background var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast),
+    border-color var(--t-fast), color var(--t-fast);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
 }
 
 .btn-primary {
-  background: var(--c-green);
+  background: linear-gradient(180deg, #1fd6b1 0%, var(--c-green) 55%, #12b795 100%);
   color: var(--c-ink);
+  box-shadow: var(--shadow-green);
 }
 
 .btn-primary:active {
   background: var(--c-green-dark);
+  box-shadow: 0 3px 10px rgba(23, 198, 163, 0.3);
 }
 
 .btn-secondary {
   background: var(--c-bg);
-  border-color: var(--c-border-strong);
+  border-color: var(--c-border);
   color: var(--c-text);
+  box-shadow: var(--shadow-raised);
+}
+
+.btn-secondary:active {
+  background: var(--c-surface);
 }
 
 .btn-ghost {
   background: none;
-  color: var(--c-green-dark);
-  padding: 0 var(--sp-2);
+  color: var(--c-green-deep);
+  padding: 0 var(--sp-3);
+}
+
+.btn-ghost:active {
+  background: var(--c-green-soft);
 }
 
 .btn-danger {
   background: var(--c-error);
   color: #fff;
+  box-shadow: 0 6px 16px rgba(198, 40, 40, 0.3);
 }
 
 .btn-block {
@@ -143,8 +174,9 @@
 }
 
 .btn-xl {
-  min-height: 56px;
+  min-height: 58px;
   font-size: 17px;
+  border-radius: 16px;
 }
 
 /* --- formuláře ------------------------------------------------------------ */
@@ -158,7 +190,8 @@
 
 .field-label {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14.5px;
+  color: var(--c-ink);
 }
 
 .field-required {
@@ -230,15 +263,17 @@
 }
 
 .form-group {
-  background: var(--c-surface);
+  background: var(--c-bg);
   border-radius: var(--radius-lg);
   padding: var(--sp-4);
+  box-shadow: var(--shadow-card);
 }
 
 .form-group-title {
   font-size: 16px;
   margin-bottom: var(--sp-4);
   color: var(--c-ink);
+  font-weight: 700;
 }
 
 .form-group .field:last-child {
@@ -258,7 +293,7 @@
 select,
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2356605d' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b6663' stroke-width='2' fill='none'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 36px;
@@ -269,23 +304,24 @@ select,
 }
 
 input[type="date"] {
-  min-height: var(--tap);
+  min-height: 50px;
 }
 
 /* --- select sheet ----------------------------------------------------------- */
 
 .select-sheet-trigger {
   width: 100%;
-  min-height: var(--tap);
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--sp-3);
+  padding: 0 var(--sp-4);
   border: 1.5px solid var(--c-border-strong);
   border-radius: var(--radius);
   background: var(--c-bg);
   font-size: 16px;
   text-align: left;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 
 .select-sheet-caret {
@@ -295,21 +331,55 @@ input[type="date"] {
 .sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(16, 20, 19, 0.5);
+  background: rgba(10, 16, 14, 0.4);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   z-index: 50;
   display: flex;
   align-items: flex-end;
+  animation: fade-in var(--t-med) both;
 }
 
 .sheet {
   background: var(--c-bg);
   width: 100%;
   max-height: 85dvh;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   display: flex;
   flex-direction: column;
-  padding: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
   gap: var(--sp-3);
+  box-shadow: var(--shadow-pop);
+  animation: sheet-in var(--t-med) both;
+  overscroll-behavior: contain;
+}
+
+/* úchyt sheetu — vizuální vodítko „dá se zavřít tahem/tapnutím" */
+.sheet::before {
+  content: "";
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--c-border-strong);
+  margin: 0 auto;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(32px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .sheet-head {
@@ -320,12 +390,28 @@ input[type="date"] {
 
 .sheet-title {
   font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 17px;
 }
 
 .sheet-close {
   min-width: var(--tap);
   min-height: var(--tap);
-  font-size: 18px;
+  font-size: 16px;
+  border-radius: 999px;
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.sheet-close:active {
+  background: var(--c-border);
+  color: var(--c-ink);
+}
+
+.sheet-search {
+  background: var(--c-surface);
+  border-color: transparent;
 }
 
 .sheet-options {
@@ -335,10 +421,6 @@ input[type="date"] {
   overscroll-behavior: contain; /* scroll nesmí protéct do stránky pod sheetem */
 }
 
-.sheet {
-  overscroll-behavior: contain;
-}
-
 .sheet-option {
   min-height: var(--tap);
   text-align: left;
@@ -346,11 +428,22 @@ input[type="date"] {
   font-size: 16px;
   border-bottom: 1px solid var(--c-border);
   border-radius: 0;
+  transition: background var(--t-fast);
+}
+
+.sheet-option:last-child {
+  border-bottom: none;
+}
+
+.sheet-option:active {
+  background: var(--c-surface);
 }
 
 .sheet-option-selected {
   background: var(--c-green-soft);
   font-weight: 700;
+  border-radius: var(--radius);
+  border-bottom-color: transparent;
 }
 
 .sheet-empty {
@@ -382,6 +475,7 @@ input[type="date"] {
   font-size: 15px;
   white-space: nowrap;
   flex-shrink: 0;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
 }
 
 .chip-active {
@@ -398,7 +492,7 @@ input[type="date"] {
   align-items: center;
   padding: 4px 12px;
   border-radius: 999px;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -460,28 +554,37 @@ input[type="date"] {
   gap: 2px;
   padding: var(--sp-4);
   border-radius: var(--radius-lg);
-  background: var(--c-surface);
+  background: var(--c-bg);
   text-decoration: none;
   color: var(--c-text);
-  border: 1.5px solid var(--c-border);
-  min-height: 84px;
+  border: 1px solid rgba(14, 21, 19, 0.04);
+  box-shadow: var(--shadow-card);
+  min-height: 92px;
   justify-content: center;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+
+.status-tile:active {
+  transform: scale(0.985);
 }
 
 .status-tile-count {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
+  font-family: var(--font-display);
   color: var(--c-ink);
+  line-height: 1.1;
 }
 
 .status-tile-label {
   font-size: 14px;
   color: var(--c-text-muted);
+  font-weight: 500;
 }
 
 .status-tile-k_objednani {
-  border-color: var(--c-green);
-  background: var(--c-green-soft);
+  background: linear-gradient(160deg, #e9fbf6 0%, #d7f6ec 100%);
+  border-color: rgba(23, 198, 163, 0.35);
 }
 
 /* --- seznam zakázek -------------------------------------------------------------- */
@@ -500,12 +603,17 @@ input[type="date"] {
   flex-direction: column;
   gap: 4px;
   background: var(--c-bg);
-  border: 1.5px solid var(--c-border);
+  border: 1px solid rgba(14, 21, 19, 0.04);
   border-radius: var(--radius-lg);
   padding: var(--sp-4);
   text-decoration: none;
   color: var(--c-text);
   box-shadow: var(--shadow-card);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+
+.order-card:active {
+  transform: scale(0.99);
 }
 
 .order-card-top {
@@ -517,7 +625,7 @@ input[type="date"] {
 
 .order-card-name {
   font-weight: 700;
-  font-size: 17px;
+  font-size: 16.5px;
 }
 
 .order-card-sub {
@@ -528,14 +636,16 @@ input[type="date"] {
 .order-card-numbers {
   color: var(--c-text-muted);
   font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- detail zakázky ---------------------------------------------------------------- */
 
 .order-header {
-  background: var(--c-surface);
+  background: var(--c-bg);
   border-radius: var(--radius-lg);
   padding: var(--sp-4);
+  box-shadow: var(--shadow-card);
 }
 
 .order-header-top {
@@ -546,7 +656,7 @@ input[type="date"] {
 }
 
 .order-header-meta a {
-  color: var(--c-green-dark);
+  color: var(--c-green-deep);
   font-weight: 600;
 }
 
@@ -570,9 +680,11 @@ input[type="date"] {
 }
 
 .room-section {
-  border: 1.5px solid var(--c-border);
+  background: var(--c-bg);
+  border: 1px solid rgba(14, 21, 19, 0.04);
   border-radius: var(--radius-lg);
-  padding: var(--sp-4);
+  padding: var(--sp-3) var(--sp-3) var(--sp-3);
+  box-shadow: var(--shadow-card);
 }
 
 .room-head {
@@ -583,7 +695,9 @@ input[type="date"] {
 }
 
 .room-name {
-  font-size: 17px;
+  font-size: 16px;
+  font-weight: 700;
+  padding-left: var(--sp-1);
 }
 
 .room-head-actions {
@@ -595,6 +709,7 @@ input[type="date"] {
   color: var(--c-text-muted);
   font-size: 14.5px;
   margin-top: var(--sp-1);
+  padding-left: var(--sp-1);
 }
 
 .room-note-edit {
@@ -605,17 +720,17 @@ input[type="date"] {
 
 .item-list {
   list-style: none;
-  margin: var(--sp-3) 0 0;
+  margin: var(--sp-2) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
 }
 
 .item-card {
-  border: 1px solid var(--c-border);
+  border: none;
   border-radius: var(--radius);
-  background: var(--c-bg);
+  background: var(--c-surface);
 }
 
 .item-card-main {
@@ -643,10 +758,14 @@ input[type="date"] {
 
 .item-card-actions {
   display: flex;
-  border-top: 1px solid var(--c-border);
+  border-top: 1px solid rgba(14, 21, 19, 0.06);
   justify-content: flex-end;
   gap: var(--sp-1);
   padding: 2px var(--sp-2);
+}
+
+.item-card-actions .btn {
+  font-size: 14.5px;
 }
 
 .order-total {
@@ -654,9 +773,28 @@ input[type="date"] {
   font-size: 14px;
 }
 
+/* --- administrace zakázky (exporty, mazání) --------------------------------- */
+
 .admin-actions {
-  border-top: 1px solid var(--c-border);
-  padding-top: var(--sp-4);
+  background: var(--c-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.admin-actions-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+.admin-actions-count {
+  margin: 0;
 }
 
 .admin-actions-row {
@@ -667,13 +805,15 @@ input[type="date"] {
 
 .admin-actions-row .btn {
   background: var(--c-surface);
-  border: 1.5px solid var(--c-border);
+  border: 1px solid var(--c-border);
   color: var(--c-text-muted);
+  box-shadow: none;
+  font-size: 14.5px;
 }
 
 .admin-actions-note {
   font-size: 13.5px;
-  margin-top: var(--sp-2);
+  margin: 0;
 }
 
 /* --- nová zakázka -------------------------------------------------------------------- */
@@ -681,9 +821,10 @@ input[type="date"] {
 .segmented {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border: 1.5px solid var(--c-border-strong);
+  background: rgba(14, 21, 19, 0.06);
   border-radius: var(--radius);
-  overflow: hidden;
+  padding: 3px;
+  gap: 3px;
   margin-bottom: var(--sp-4);
 }
 
@@ -693,20 +834,24 @@ input[type="date"] {
 }
 
 .segmented-3 .segmented-btn {
-  font-size: 15px;
+  font-size: 14.5px;
 }
 
 .segmented-btn {
-  min-height: var(--tap);
-  font-size: 16px;
-  background: var(--c-bg);
-  border-radius: 0;
+  min-height: 42px;
+  font-size: 15.5px;
+  font-weight: 500;
+  background: transparent;
+  border-radius: calc(var(--radius) - 3px);
+  color: var(--c-text-muted);
+  transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
 }
 
 .segmented-active {
-  background: var(--c-ink);
-  color: #fff;
+  background: var(--c-bg);
+  color: var(--c-ink);
   font-weight: 700;
+  box-shadow: var(--shadow-raised);
 }
 
 .picker-list {
@@ -728,6 +873,11 @@ input[type="date"] {
   border-bottom: 1px solid var(--c-border);
   border-radius: 0;
   font-size: 15.5px;
+  transition: background var(--t-fast);
+}
+
+.picker-item:active {
+  background: var(--c-surface);
 }
 
 .picker-empty {
@@ -757,12 +907,23 @@ input[type="date"] {
   flex-direction: column;
   gap: 4px;
   align-items: flex-start;
-  padding: var(--sp-3);
-  min-height: 72px;
-  border: 1.5px solid var(--c-border-strong);
+  padding: var(--sp-4);
+  min-height: 76px;
+  border: 1px solid rgba(14, 21, 19, 0.04);
   border-radius: var(--radius-lg);
   background: var(--c-bg);
+  box-shadow: var(--shadow-card);
   text-align: left;
+  transition: transform var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+
+.type-tile:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.type-tile:disabled {
+  background: var(--c-surface);
+  box-shadow: none;
 }
 
 .type-tile-active {
@@ -795,26 +956,35 @@ input[type="date"] {
   display: grid;
   place-items: center;
   padding: var(--sp-4);
+  background:
+    radial-gradient(600px 360px at 50% -60px, rgba(23, 198, 163, 0.14), transparent 70%),
+    var(--c-page);
 }
 
 .login-card {
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
   text-align: center;
+  background: var(--c-bg);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-6) var(--sp-5);
+  box-shadow: var(--shadow-pop);
 }
 
 .login-logo {
-  color: var(--c-green-dark);
-  letter-spacing: 4px;
-  font-size: 32px;
+  color: var(--c-ink);
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-1);
 }
 
 .login-subtitle {
   color: var(--c-text-muted);
   margin-bottom: var(--sp-4);
+  font-size: 14.5px;
 }
 
 .login-card .field-label {
@@ -827,6 +997,7 @@ input[type="date"] {
   text-align: center;
   letter-spacing: 12px;
   font-variant-numeric: tabular-nums;
+  font-family: var(--font-display);
 }
 
 .login-hint {
@@ -846,12 +1017,13 @@ input[type="date"] {
 
 .user-card {
   background: var(--c-bg);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  padding: var(--sp-3);
+  border: 1px solid rgba(14, 21, 19, 0.04);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3) var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+  box-shadow: var(--shadow-card);
 }
 
 .user-card-inactive {
@@ -956,15 +1128,29 @@ input[type="date"] {
 }
 
 .toast {
-  background: var(--c-ink);
+  background: rgba(16, 23, 21, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   color: #fff;
-  border-radius: var(--radius);
+  border-radius: 16px;
   padding: var(--sp-3) var(--sp-4);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: var(--sp-3);
-  box-shadow: 0 4px 16px rgba(16, 20, 19, 0.3);
+  box-shadow: var(--shadow-pop);
+  animation: toast-in var(--t-med) both;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .toast-action {
@@ -1018,7 +1204,7 @@ input[type="date"] {
   font-size: 16px;
 }
 
-/* --- kolo 2: swatche, telefon, item flow, statistiky, spacing ------------- */
+/* --- swatche, telefon, item flow, statistiky ------------------------------ */
 
 .swatch {
   display: inline-block;
@@ -1083,31 +1269,28 @@ input[type="date"] {
 }
 
 .order-header-actions {
-  margin-top: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.order-header-actions .btn {
+  min-height: 42px;
+  font-size: 15px;
 }
 
 .header-edit-title {
-  font-size: 15px;
+  font-size: 13px;
   margin: var(--sp-3) 0;
   color: var(--c-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-family: var(--font);
 }
 
 .section-title {
   font-size: 18px;
-}
-
-.admin-actions {
-  border-top: none;
-  padding-top: 0;
-  background: var(--c-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-3) var(--sp-4);
-}
-
-.admin-actions-count {
-  margin-bottom: var(--sp-2);
+  font-weight: 700;
+  padding-left: var(--sp-1);
 }
 
 .dashboard-actions {
@@ -1120,44 +1303,24 @@ input[type="date"] {
   font-size: 14.5px;
 }
 
-/* zhutnění přehledu zakázky */
-.room-section {
-  padding: var(--sp-3);
-}
-
-.room-section .item-list {
-  margin-top: var(--sp-2);
-  gap: var(--sp-2);
-}
-
-.item-card-main {
-  padding: var(--sp-2) var(--sp-3);
-}
-
-.item-card-actions {
-  padding: 0 var(--sp-1);
-}
-
-.item-card-actions .btn {
-  font-size: 14.5px;
-}
-
 /* item flow — fullscreen krok */
 .itemform-topbar {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
   padding: var(--sp-2) var(--sp-4);
-  border-bottom: 1px solid var(--c-border);
+  border-bottom: 1px solid rgba(14, 21, 19, 0.06);
   position: sticky;
   top: 0;
-  background: var(--c-bg);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   z-index: 10;
 }
 
 .itemform-back {
   text-decoration: none;
-  color: var(--c-green-dark);
+  color: var(--c-green-deep);
   font-weight: 600;
   min-height: var(--tap);
   display: inline-flex;
@@ -1166,9 +1329,10 @@ input[type="date"] {
 
 .itemform-title {
   font-weight: 700;
+  font-family: var(--font-display);
 }
 
-/* mezery mezi šedými bloky formuláře */
+/* mezery mezi bloky formuláře */
 .definition-form {
   display: flex;
   flex-direction: column;
@@ -1189,16 +1353,19 @@ input[type="date"] {
 }
 
 .stats-total {
-  background: var(--c-surface);
+  background: var(--c-bg);
   border-radius: var(--radius-lg);
   padding: var(--sp-4);
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-card);
 }
 
 .stats-total-num {
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
+  font-family: var(--font-display);
+  line-height: 1.15;
 }
 
 .stats-total-label {
@@ -1221,9 +1388,10 @@ input[type="date"] {
   flex-direction: column;
   gap: 6px;
   background: var(--c-bg);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  padding: var(--sp-3);
+  border: 1px solid rgba(14, 21, 19, 0.04);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-3) var(--sp-4);
+  box-shadow: var(--shadow-card);
 }
 
 .stats-user-head {
@@ -1244,27 +1412,33 @@ input[type="date"] {
 .stats-period-label {
   font-size: 18px;
   text-transform: capitalize;
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
 .stats-arrow {
   min-width: var(--tap);
-  font-size: 22px;
+  font-size: 20px;
+  border-radius: 999px;
+  background: var(--c-bg);
+  box-shadow: var(--shadow-raised);
 }
 
 .stats-total-green {
-  background: var(--c-green-soft);
+  background: linear-gradient(160deg, #e9fbf6 0%, #d7f6ec 100%);
 }
 
 .stats-bar-track {
-  height: 16px;
-  border-radius: 8px;
+  height: 14px;
+  border-radius: 999px;
   background: var(--c-surface);
   overflow: hidden;
 }
 
 .stats-bar {
   height: 100%;
-  border-radius: 8px;
+  border-radius: 999px;
+  transition: width var(--t-med);
 }
 
 .stats-bar-zalozeno {
@@ -1272,7 +1446,7 @@ input[type="date"] {
 }
 
 .stats-bar-objednano {
-  background: var(--c-green);
+  background: linear-gradient(90deg, var(--c-green) 0%, #12b795 100%);
 }
 
 @media (min-width: 720px) {
@@ -1305,18 +1479,19 @@ input[type="date"] {
 
 .signed-badge {
   display: inline-block;
-  padding: 2px 10px;
+  padding: 3px 10px;
   border-radius: 999px;
   background: var(--c-green);
   color: var(--c-ink);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(23, 198, 163, 0.3);
 }
 
 .unsigned-badge {
   display: inline-block;
-  padding: 2px 10px;
+  padding: 3px 10px;
   border-radius: 999px;
   border: 1px solid var(--c-border-strong);
   color: var(--c-text-muted);
@@ -1336,8 +1511,9 @@ input[type="date"] {
 
 .pdf-export {
   display: grid;
-  gap: 6px;
-  margin-top: 10px;
+  gap: var(--sp-2);
+  border-top: 1px solid var(--c-border);
+  padding-top: var(--sp-3);
 }
 
 .pdf-export-hint {
@@ -1346,7 +1522,7 @@ input[type="date"] {
 }
 
 .order-delete {
-  margin-top: 10px;
+  margin-top: var(--sp-1);
 }
 
 /* Červený text jen v klidovém (ghost) stavu — v ozbrojeném stavu je tlačítko
@@ -1363,10 +1539,11 @@ input[type="date"] {
   z-index: 60;
   display: flex;
   flex-direction: column;
-  background: var(--c-bg);
+  background: var(--c-page);
   padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
     max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   gap: 8px;
+  animation: fade-in var(--t-med) both;
 }
 
 .signature-head {
@@ -1379,6 +1556,7 @@ input[type="date"] {
 .signature-title {
   font-weight: 700;
   font-size: 15px;
+  font-family: var(--font-display);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1387,8 +1565,8 @@ input[type="date"] {
 .signature-hint {
   margin: 0;
   padding: 6px 12px;
-  border-radius: var(--radius);
-  background: var(--c-surface);
+  border-radius: 999px;
+  background: rgba(14, 21, 19, 0.06);
   color: var(--c-text-muted);
   font-size: 13.5px;
   text-align: center;
@@ -1399,9 +1577,10 @@ input[type="date"] {
   flex: 1;
   min-height: 0;
   border: 1.5px dashed var(--c-border-strong);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: #fff;
   overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 
 .signature-canvas {

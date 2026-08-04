@@ -14,8 +14,10 @@ body {
   margin: 0;
   font-family: var(--font);
   color: var(--c-text);
-  background: var(--c-bg);
+  background: var(--c-page);
   line-height: 1.45;
+  font-size: 15.5px;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -23,6 +25,12 @@ h2,
 h3,
 p {
   margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 /* Formulářové prvky: 16px+ (iOS jinak zoomuje), výška = touch target */
@@ -37,21 +45,22 @@ button {
 
 input,
 select {
-  height: var(--tap);
+  height: 50px;
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  padding: 0 var(--sp-3);
+  padding: 0 var(--sp-4);
   border: 1.5px solid var(--c-border-strong);
   border-radius: var(--radius);
   background: var(--c-bg);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 
 textarea {
-  padding: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
   min-height: 88px;
   resize: vertical;
 }
@@ -83,4 +92,14 @@ button:disabled {
 
 a {
   color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

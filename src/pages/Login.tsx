@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLogin, useMe } from "../api/hooks";
+import { Logo } from "../components/Logo";
 
 export default function LoginPage() {
   const [code, setCode] = useState("");
@@ -38,7 +39,9 @@ export default function LoginPage() {
   return (
     <main className="login-page">
       <div className="login-card">
-        <h1 className="login-logo">ANSE</h1>
+        <h1 className="login-logo" aria-label="Anse">
+          <Logo height={26} />
+        </h1>
         <p className="login-subtitle">Interní aplikace pro zakázky</p>
 
         <label className="field-label" htmlFor="login-code">
