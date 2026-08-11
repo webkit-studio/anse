@@ -11,6 +11,7 @@ import {
   type OrderStatus,
 } from "../../shared/types";
 import { sql } from "../db";
+import { parseRecipients, sendStatusMail } from "../email";
 import { ApiError, json } from "../http";
 import { makeRoute, parseBody, type Route } from "../router";
 
@@ -43,6 +44,50 @@ const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 function invalidUuidAsMissing(err: unknown): never[] {
   if ((err as { code?: string }).code === "22P02") return [];
   throw err;
+}
+
+/**
+ * Notifikace o změně stavu na adresu z nastavení. Doplní data zakázky a odešle;
+ * chyba odesílání se jen zaloguje — změna stavu už je uložená a nesmí se kvůli
+ * e-mailu vrátit zpět.
+ */
+async function notifyStatusChange(
+  req: Request,
+  change: { orderId: string; from: OrderStatus; to: OrderStatus; userName: string },
+): Promise<void> {
+  try {
+    const db = sql();
+    const [row] = await db`
+      select
+        c.name as client_name, o.installation_address, o.order_number, o.montage_number,
+        (select count(*)::int from items i where i.order_id = o.id) as item_count,
+        (select value from settings where key = 'admin_group_email') as admin_group_email,
+        to_char(now() at time zone 'Europe/Prague', 'FMDD. FMMM. YYYY HH24:MI') as changed_at
+      from orders o join clients c on c.id = o.client_id
+      where o.id = ${change.orderId}
+    `;
+    if (!row) return;
+
+    const recipients = parseRecipients(String(row.admin_group_email ?? ""));
+    if (recipients.length === 0) return;
+
+    const origin = process.env.APP_URL ?? new URL(req.url).origin;
+    await sendStatusMail(recipients, {
+      orderId: change.orderId,
+      clientName: row.client_name,
+      installationAddress: row.installation_address,
+      orderNumber: row.order_number,
+      montageNumber: row.montage_number,
+      itemCount: row.item_count,
+      from: change.from,
+      to: change.to,
+      userName: change.userName,
+      changedAt: row.changed_at,
+      orderUrl: `${origin}/zakazky/${change.orderId}`,
+    });
+  } catch (err) {
+    console.error("Notifikace o změně stavu selhala:", err instanceof Error ? err.message : err);
+  }
 }
 
 export const orderRoutes: Route[] = [
@@ -282,6 +327,13 @@ export const orderRoutes: Route[] = [
       insert into order_events (order_id, user_id, from_status, to_status)
       values (${params.id!}, ${ctx.user.id}, ${expected}, ${to})
     `;
+
+    await notifyStatusChange(req, {
+      orderId: params.id!,
+      from: expected,
+      to,
+      userName: ctx.user.name,
+    });
 
     return json({ order: updated });
   }),

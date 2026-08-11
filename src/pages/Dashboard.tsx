@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
+import type { OrderStatus } from "@shared/types";
+import { STATUS_LABELS } from "@shared/types";
 import { useDashboard, useMe } from "../api/hooks";
 import { ErrorBanner, Spinner } from "../components/ui";
+
+/** Dlaždice na dashboardu: rozpracované fáze (hotové zakázky se nehlídají). */
+const ACTIVE_STATUSES: OrderStatus[] = [
+  "rozpracovana",
+  "k_naceneni",
+  "k_objednavce",
+  "k_montazi",
+];
 
 export default function DashboardPage() {
   const dashboard = useDashboard();
@@ -18,14 +28,16 @@ export default function DashboardPage() {
       )}
       {dashboard.data && (
         <div className="status-tiles">
-          <Link to="/zakazky?status=rozpracovana" className="status-tile">
-            <span className="status-tile-count">{dashboard.data.counts.rozpracovana}</span>
-            <span className="status-tile-label">Rozpracované</span>
-          </Link>
-          <Link to="/zakazky?status=k_objednani" className="status-tile status-tile-k_objednani">
-            <span className="status-tile-count">{dashboard.data.counts.k_objednani}</span>
-            <span className="status-tile-label">K objednání</span>
-          </Link>
+          {ACTIVE_STATUSES.map((s) => (
+            <Link
+              key={s}
+              to={`/zakazky?status=${s}`}
+              className={`status-tile status-tile-${s}`}
+            >
+              <span className="status-tile-count">{dashboard.data.counts[s]}</span>
+              <span className="status-tile-label">{STATUS_LABELS[s]}</span>
+            </Link>
+          ))}
         </div>
       )}
 

@@ -52,34 +52,29 @@ export default function OrdersPage() {
         aria-label="Hledat v zakázkách"
       />
 
-      <div className="segmented segmented-3" role="tablist">
+      {/* 5 fází se do segmentu nevejde — posuvná řada chipů (palcem projedeš). */}
+      <div className="chips chips-scroll" role="tablist" aria-label="Filtr podle stavu">
         <button
           type="button"
           role="tab"
           aria-selected={statusParam === ""}
-          className={`segmented-btn ${statusParam === "" ? "segmented-active" : ""}`}
+          className={`chip ${statusParam === "" ? "chip-active" : ""}`}
           onClick={() => setStatus("")}
         >
           Vše
         </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={statusParam === "rozpracovana"}
-          className={`segmented-btn ${statusParam === "rozpracovana" ? "segmented-active" : ""}`}
-          onClick={() => setStatus("rozpracovana")}
-        >
-          Rozpracované
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={statusParam === "k_objednani"}
-          className={`segmented-btn ${statusParam === "k_objednani" ? "segmented-active" : ""}`}
-          onClick={() => setStatus("k_objednani")}
-        >
-          K objednání
-        </button>
+        {ORDER_STATUSES.map((s) => (
+          <button
+            key={s}
+            type="button"
+            role="tab"
+            aria-selected={statusParam === s}
+            className={`chip ${statusParam === s ? "chip-active" : ""}`}
+            onClick={() => setStatus(s)}
+          >
+            {STATUS_LABELS[s]}
+          </button>
+        ))}
       </div>
 
       {orders.isPending && <Spinner />}

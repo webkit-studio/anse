@@ -226,9 +226,9 @@ export default function AdminPage() {
       <section className="form-group">
         <h2 className="form-group-title">Notifikace</h2>
         <Field
-          label="Admin e-mail pro notifikace"
+          label="E-mail pro notifikace"
           htmlFor="s-email"
-          help={"Na tuto adresu půjde upozornění při přepnutí zakázky na „K objednání“. Odesílání se aktivuje po otestování formulářů."}
+          help={"Na tyto adresy chodí upozornění při každé změně stavu zakázky. Více adres oddělte čárkou. Prázdné pole = notifikace se neposílají."}
         >
           <TextInput
             id="s-email"

@@ -2,27 +2,45 @@ import type { FormDefinition, Params } from "./form-schema";
 
 export type Role = "technik" | "admin";
 
-export type OrderStatus = "rozpracovana" | "k_objednani" | "objednano";
+export type OrderStatus =
+  | "rozpracovana"
+  | "k_naceneni"
+  | "k_objednavce"
+  | "k_montazi"
+  | "hotovo";
 
-export const ORDER_STATUSES: OrderStatus[] = ["rozpracovana", "k_objednani", "objednano"];
+export const ORDER_STATUSES: OrderStatus[] = [
+  "rozpracovana",
+  "k_naceneni",
+  "k_objednavce",
+  "k_montazi",
+  "hotovo",
+];
 
 export const STATUS_LABELS: Record<OrderStatus, string> = {
   rozpracovana: "Rozpracovaná",
-  k_objednani: "K objednání",
-  objednano: "Objednáno",
+  k_naceneni: "K nacenění",
+  k_objednavce: "K objednávce",
+  k_montazi: "K montáži",
+  hotovo: "Hotovo",
 };
 
 /**
  * Povolené přechody stavů per role — JEN VPŘED (rozhodnutí 16. 7. večer).
- * Technik nikdy nenastaví „Objednáno"; vracení stavů není (omyl řeší podpora).
+ * Technik posouvá to, co dělá v terénu: zaměřeno → k nacenění a po montáži
+ * → hotovo. Nacenění a objednání je práce kanceláře (admin).
+ * Vracení stavů není (omyl řeší podpora).
  */
 export const ALLOWED_TRANSITIONS: Record<Role, Partial<Record<OrderStatus, OrderStatus[]>>> = {
   technik: {
-    rozpracovana: ["k_objednani"],
+    rozpracovana: ["k_naceneni"],
+    k_montazi: ["hotovo"],
   },
   admin: {
-    rozpracovana: ["k_objednani"],
-    k_objednani: ["objednano"],
+    rozpracovana: ["k_naceneni"],
+    k_naceneni: ["k_objednavce"],
+    k_objednavce: ["k_montazi"],
+    k_montazi: ["hotovo"],
   },
 };
 

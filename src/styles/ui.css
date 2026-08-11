@@ -499,27 +499,29 @@ input[type="date"] {
   white-space: nowrap;
 }
 
-.status-k_vymereni {
-  background: var(--c-info-soft);
-  color: var(--c-info);
-}
-
+/* Pět fází zakázky: rozpracovaná (jantar) → k nacenění (modrá) →
+   k objednávce (fialová) → k montáži (zelená) → hotovo (šedá). */
 .status-rozpracovana {
   background: var(--c-warn-soft);
   color: var(--c-warn);
 }
 
-.status-k_objednani {
-  background: #fde7cf;
-  color: #8a4b00;
+.status-k_naceneni {
+  background: var(--c-info-soft);
+  color: var(--c-info);
 }
 
-.status-objednano {
+.status-k_objednavce {
+  background: #ede7fb;
+  color: #5b3ba8;
+}
+
+.status-k_montazi {
   background: var(--c-green-soft);
   color: #0b6b57;
 }
 
-.status-namontovano {
+.status-hotovo {
   background: #e7e9e9;
   color: var(--c-text-muted);
 }
@@ -584,7 +586,37 @@ input[type="date"] {
   font-weight: 500;
 }
 
-.status-tile-k_objednani {
+/* Dlaždice na dashboardu — barevný proužek nahoře podle fáze. */
+.status-tile {
+  position: relative;
+  overflow: hidden;
+}
+
+.status-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--c-border-strong);
+}
+
+.status-tile-rozpracovana::before {
+  background: #e0a33c;
+}
+
+.status-tile-k_naceneni::before {
+  background: #3f83c9;
+}
+
+.status-tile-k_objednavce::before {
+  background: #7a5bd0;
+}
+
+.status-tile-k_montazi::before {
+  background: var(--c-green);
+}
+
+.status-tile-k_montazi {
   background: linear-gradient(160deg, #e7fbf3 0%, #d4f6e9 100%);
   border-color: rgba(13, 194, 139, 0.35);
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { OrderStatus, Role } from "@shared/types";
+import { ALLOWED_TRANSITIONS } from "@shared/types";
 import { api, isConflict } from "../api/client";
 import { useInvalidateOrder } from "../api/hooks";
 import { useToast } from "./Toast";
@@ -22,12 +23,21 @@ export function OrderAction({
   const invalidate = useInvalidateOrder();
   const toast = useToast();
 
-  const action =
-    status === "rozpracovana"
-      ? { to: "k_objednani" as OrderStatus, label: "Připraveno k objednání", done: "Odesláno k objednání." }
-      : status === "k_objednani" && role === "admin"
-        ? { to: "objednano" as OrderStatus, label: "Označit jako objednáno", done: "Zakázka objednána." }
-        : null;
+  // Popisky akcí per stav — tlačítko je vždy jen jedno (jen vpřed).
+  const ACTIONS: Partial<Record<OrderStatus, { to: OrderStatus; label: string; done: string }>> = {
+    rozpracovana: {
+      to: "k_naceneni",
+      label: "Zaměřeno — předat k nacenění",
+      done: "Předáno k nacenění.",
+    },
+    k_naceneni: { to: "k_objednavce", label: "Naceněno — k objednávce", done: "Předáno k objednávce." },
+    k_objednavce: { to: "k_montazi", label: "Objednáno — k montáži", done: "Zakázka objednána." },
+    k_montazi: { to: "hotovo", label: "Namontováno — hotovo", done: "Zakázka dokončena." },
+  };
+
+  const candidate = ACTIONS[status];
+  const allowed = ALLOWED_TRANSITIONS[role][status] ?? [];
+  const action = candidate && allowed.includes(candidate.to) ? candidate : null;
 
   if (!action) return null;
 

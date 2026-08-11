@@ -47,9 +47,15 @@ uživatelem, port 5433, DB `anse` — connection string
 - Server **nikdy nevěří klientovi**: params se revalidují proti připnuté verzi
   definice, `position` a `product_type_id` přiděluje server, role se kontroluje
   per routa.
+- Stavy zakázky (jen vpřed, žádné vracení): `rozpracovana` → `k_naceneni` →
+  `k_objednavce` → `k_montazi` → `hotovo`. Technik posouvá terénní kroky
+  (zaměřeno, namontováno), nacenění a objednávku dělá admin — viz
+  `ALLOWED_TRANSITIONS` v `shared/types.ts`.
 - Přechody stavů zakázky jsou compare-and-swap (`WHERE status = $expected`),
   editace hlavičky/položek optimistický zámek přes `updated_at` → při konfliktu
   409 a klient nabídne obnovení.
+- Každá změna stavu posílá notifikaci na adresy z nastavení (`server/email.ts`,
+  Resend). Odeslání nikdy neshodí požadavek — bez `RESEND_API_KEY` se přeskočí.
 - UI texty **výhradně česky**, chybové hlášky přímo u pole. Touch targety
   min. 48 px (`--tap`), číselná pole `inputmode="numeric"/"decimal"`,
   fonty inputů min. 16 px (jinak iOS zoomuje).

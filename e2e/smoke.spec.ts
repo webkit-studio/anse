@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 // Kolo 2 flow: dashboard bez hledání → nová zakázka (technik: jen místo +
 // poznámka) → typ produktu → fullscreen formulář s místností → duplikace →
-// EDITACE KOPIE (regrese na 409) → přesun místnosti → K objednání → admin
+// EDITACE KOPIE (regrese na 409) → přesun místnosti → k nacenění → admin
 // objedná → statistiky.
 
 const CLIENT_NAME = `E2E Novák ${Date.now()}`;
@@ -15,16 +15,16 @@ async function pickSheet(page: Page, triggerId: string, optionLabel: string | Re
   await page.locator(".sheet-option", { hasText: optionLabel }).first().click();
 }
 
-test("technik: zakázka → produkt → duplikace → editace kopie → přesun → k objednání", async ({
+test("technik: zakázka → produkt → duplikace → editace kopie → přesun → k nacenění", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByLabel("Přihlašovací kód").fill("111111");
 
-  // dashboard: 2 dlaždice, bez vyhledávání
+  // dashboard: dlaždice fází, bez vyhledávání
   await expect(page.getByRole("link", { name: "+ Nová zakázka" })).toBeVisible();
-  await expect(page.getByText("Rozpracované")).toBeVisible();
-  await expect(page.getByText("K objednání")).toBeVisible();
+  await expect(page.getByText("Rozpracovaná")).toBeVisible();
+  await expect(page.getByText("K nacenění")).toBeVisible();
   await expect(page.locator("input[type=search]")).toHaveCount(0);
 
   // nová zakázka — technik nevidí čísla montáže/zakázky ani termín dodání
@@ -161,11 +161,12 @@ test("technik: zakázka → produkt → duplikace → editace kopie → přesun 
   // technik nemá mazání zakázky (jen admin)
   await expect(page.getByRole("button", { name: /Smazat zakázku/ })).toHaveCount(0);
 
-  // připraveno k objednání — dvojtap potvrzení, jen vpřed
-  await page.getByRole("button", { name: "Připraveno k objednání" }).click();
+  // zaměřeno → k nacenění (dvojtap potvrzení, jen vpřed); další fáze je na adminovi
+  await page.getByRole("button", { name: /Zaměřeno/ }).click();
   await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
-  await expect(page.locator(".status-badge").first()).toHaveText("K objednání");
-  await expect(page.getByRole("button", { name: "Připraveno k objednání" })).toHaveCount(0);
+  await expect(page.locator(".status-badge").first()).toHaveText("K nacenění");
+  await expect(page.getByRole("button", { name: /Zaměřeno/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Naceněno/ })).toHaveCount(0); // technik nenacení
 
   await page.getByRole("button", { name: /Odhlásit/ }).click();
   await expect(page).toHaveURL(/\/login/);
@@ -176,11 +177,13 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await page.getByLabel("Přihlašovací kód").fill("999999");
   await expect(page.getByRole("link", { name: "+ Nová zakázka" })).toBeVisible();
 
-  // seznam: taby Vše / Rozpracované / K objednání (Vše default) + hledání
+  // seznam: filtr stavů jako chipy (Vše default) + hledání
   await page.getByRole("link", { name: "Zakázky" }).click();
   await expect(page.getByRole("tab", { name: "Vše" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tab", { name: "Rozpracované" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "K objednání" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Rozpracovaná" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "K nacenění" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "K montáži" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Hotovo" })).toBeVisible();
   await page.getByLabel("Hledat v zakázkách").fill("e2e novak");
   // štítek podpisu je vidět už v seznamu (zakázka podepsaná z technik testu)
   const card = page.getByRole("link", { name: new RegExp(CLIENT_NAME) }).first();
@@ -249,10 +252,16 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   expect(pdfRes.headers()["content-type"]).toBe("application/pdf");
   expect((await pdfRes.body()).subarray(0, 5).toString()).toBe("%PDF-");
 
-  // objednat (dvojtap)
-  await page.getByRole("button", { name: "Označit jako objednáno" }).click();
-  await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
-  await expect(page.locator(".status-badge").first()).toHaveText("Objednáno");
+  // admin protlačí zbývající fáze: nacenění → objednávka → montáž → hotovo
+  for (const [label, expected] of [
+    [/Naceněno/, "K objednávce"],
+    [/Objednáno/, "K montáži"],
+    [/Namontováno/, "Hotovo"],
+  ] as const) {
+    await page.getByRole("button", { name: label }).click();
+    await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
+    await expect(page.locator(".status-badge").first()).toHaveText(expected);
+  }
 
   // statistiky: jen měsíc (žádný týden), „Podle uživatelů", nenulové počty
   await page.goto("/statistiky");

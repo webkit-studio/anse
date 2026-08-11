@@ -47,7 +47,7 @@ export const statsRoutes: Route[] = [
         const objednano = await db`
           select u.name, count(distinct e.order_id)::int as n
           from order_events e join users u on u.id = e.user_id
-          where e.to_status = 'objednano'
+          where e.to_status = 'k_objednavce'
             and e.created_at >= (${start}::timestamp at time zone ${TZ})
             and e.created_at < ((${start}::date + interval '1 month') at time zone ${TZ})
           group by u.name
