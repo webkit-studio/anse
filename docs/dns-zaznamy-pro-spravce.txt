@@ -1,0 +1,67 @@
+Dobrý den,
+
+prosím o přidání tří nových DNS záznamů do zóny anse.cz. Slouží k tomu, aby interní
+aplikace mohla odesílat systémové e-maily z adresy zakazky@anse.cz.
+
+DŮLEŽITÉ: nic se nemaže a nic neupravuje. Stávající záznamy (A, MX na
+mail.svethostingu.cz, imap, pop3, smtp, sh512._domainkey i hvězdičkový wildcard *)
+zůstávají přesně tak, jak jsou. Příchozí ani odchozí pošta na @anse.cz se tím nijak
+nemění — všechny tři nové záznamy jsou na subdoménách, ne na kořeni domény.
+
+
+ZÁZNAM 1 — TXT
+  Název:   resend._domainkey
+  Typ:     TXT
+  Hodnota: p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1Y+vBoxLVFxikG2rVx82kXoxuJ78Mjfffv4O2HsInQPi8CE3ewbMPM1exjbXcJHQ70MweV3nYLW2PLqDiZLL5hMNbovMlZ/LFc1nQGcGFI2i1D8Su7ovE83d4RM5eo9fH4r6+y/VAG+n1+/fjBLbtkgbapFsVMAWyx8Ued6a6sQIDAQAB
+
+ZÁZNAM 2 — MX
+  Název:   send
+  Typ:     MX
+  Priorita: 10
+  Hodnota: feedback-smtp.eu-west-1.amazonses.com
+
+ZÁZNAM 3 — TXT
+  Název:   send
+  Typ:     TXT
+  Hodnota: v=spf1 include:amazonses.com ~all
+
+
+NA CO SI DÁT POZOR
+
+1) Názvy jsou relativní k doméně. Do pole „Název" napište přesně "resend._domainkey"
+   resp. "send" — NE "send.anse.cz". (Kdyby panel vyžadoval plný tvar, pak
+   "send.anse.cz." včetně tečky na konci.)
+
+2) Záznamy zakládejte přímo v editoru DNS záznamů. Nepoužívejte prosím funkci
+   „vytvořit subdoménu" pro "send" — vznikl by tam CNAME, který by MX i TXT
+   znefunkčnil.
+
+3) Hodnotu záznamu 1 vložte celou a na jeden řádek, bez uvozovek a bez zalomení.
+   Je dlouhá, ale do jednoho TXT záznamu se vejde.
+
+4) Hvězdičkový záznam * (wildcard) NEMAŽTE ani neupravujte — drží www.anse.cz.
+   Nové záznamy nad ním mají automaticky přednost, není potřeba nic rušit.
+
+5) Na kořen domény (@) prosím nepřidávejte žádný TXT ani SPF záznam.
+
+6) Nepoužívejte prosím vestavěnou funkci DKIM v administraci hostingu — ta spravuje
+   jiný záznam (sh512._domainkey) a ten necháváme být.
+
+
+KONTROLA (prosím spusťte před odpovědí, ať víme, že je vše správně)
+
+  dig +short TXT resend._domainkey.anse.cz
+     → musí vrátit dlouhý řetězec začínající p=MIGf...
+     → pokud vrátí "anse.cz." nebo IP adresu, záznam se nezaložil
+
+  dig +short MX send.anse.cz
+     → musí vrátit: 10 feedback-smtp.eu-west-1.amazonses.com.
+     → pokud vrátí mail.svethostingu.cz, záznam se nezaložil
+
+  dig +short TXT send.anse.cz
+     → musí vrátit: v=spf1 include:amazonses.com ~all
+
+  dig +short MX anse.cz
+     → musí dál vracet: 10 mail.svethostingu.cz.   (kontrola, že je pošta v pořádku)
+
+Děkuji a dejte prosím vědět, až budou záznamy přidané.
