@@ -140,6 +140,8 @@ export default function AdminPage() {
 
   const [email, setEmail] = useState<string | null>(null);
   const [savingEmail, setSavingEmail] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   const refreshUsers = () => void qc.invalidateQueries({ queryKey: ["users"] });
 
@@ -169,11 +171,31 @@ export default function AdminPage() {
         body: { admin_group_email: (email ?? settings.data?.admin_group_email ?? "").trim() },
       });
       toast("Nastavení uloženo.");
+      setTestResult(null);
       void qc.invalidateQueries({ queryKey: ["settings"] });
     } catch (err) {
       toast(err instanceof Error ? err.message : "Uložení se nepodařilo.");
     } finally {
       setSavingEmail(false);
+    }
+  }
+
+  /** Zkušební notifikace — ukáže konkrétní důvod, proč e-maily (ne)chodí. */
+  async function sendTest() {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await api<{ ok: boolean; message: string }>("/api/settings/test-email", {
+        method: "POST",
+      });
+      setTestResult(res);
+    } catch (err) {
+      setTestResult({
+        ok: false,
+        message: err instanceof Error ? err.message : "Zkušební e-mail se nepodařilo odeslat.",
+      });
+    } finally {
+      setTesting(false);
     }
   }
 
@@ -239,9 +261,23 @@ export default function AdminPage() {
             placeholder="objednavky@anse.cz"
           />
         </Field>
-        <Button variant="primary" disabled={savingEmail} onClick={() => void saveEmail()}>
-          Uložit nastavení
-        </Button>
+        <div className="settings-actions">
+          <Button variant="primary" disabled={savingEmail} onClick={() => void saveEmail()}>
+            Uložit nastavení
+          </Button>
+          <Button variant="secondary" disabled={testing} onClick={() => void sendTest()}>
+            {testing ? "Odesílám…" : "Poslat zkušební e-mail"}
+          </Button>
+        </div>
+        {testResult && (
+          <p
+            className={`field-msg ${testResult.ok ? "settings-test-ok" : "field-msg-error"}`}
+            role="status"
+          >
+            {testResult.ok ? "✅ " : "⚠️ "}
+            {testResult.message}
+          </p>
+        )}
       </section>
     </div>
   );

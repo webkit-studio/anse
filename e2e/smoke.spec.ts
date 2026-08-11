@@ -298,4 +298,17 @@ test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page 
   await clientRow.getByRole("button", { name: /Smazat zákazníka/ }).click();
   await clientRow.getByRole("button", { name: "Opravdu?" }).click();
   await expect(page.locator(".picker-row", { hasText: CLIENT_NAME })).toHaveCount(0);
+
+  // nastavení notifikací: zkušební e-mail hlásí konkrétní důvod, proč (ne)odešel
+  await page.goto("/admin");
+  await page.locator("#s-email").fill("");
+  await page.getByRole("button", { name: "Uložit nastavení" }).click();
+  await page.getByRole("button", { name: "Poslat zkušební e-mail" }).click();
+  await expect(page.getByText("Nejdřív vyplňte a uložte adresu pro notifikace.")).toBeVisible();
+
+  await page.locator("#s-email").fill("objednavky@example.com");
+  await page.getByRole("button", { name: "Uložit nastavení" }).click();
+  await page.getByRole("button", { name: "Poslat zkušební e-mail" }).click();
+  // v testu není nastavený klíč → očekáváme hlášku o chybějící konfiguraci
+  await expect(page.getByText(/není nakonfigurované/)).toBeVisible();
 });

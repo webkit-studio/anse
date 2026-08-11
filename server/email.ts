@@ -135,13 +135,21 @@ export function statusMailText(d: StatusMailData): string {
   ].join("\n");
 }
 
-/**
- * Odešle notifikaci. Vrací true, když se e-mail opravdu odeslal.
- * Nikdy nehází — změna stavu se nesmí kvůli e-mailu vrátit zpět.
- */
-export async function sendStatusMail(to: string[], data: StatusMailData): Promise<boolean> {
+/** Výsledek odeslání — důvod selhání se hlásí adminovi česky (test v Nastavení). */
+export type SendResult =
+  | { ok: true }
+  | { ok: false; reason: "no_key" | "no_recipients" | "rejected" | "error"; detail?: string };
+
+/** Vlastní odeslání přes Resend. Nikdy nehází — vrací důvod selhání. */
+async function deliver(
+  to: string[],
+  mail: { subject: string; html: string; text: string },
+): Promise<SendResult> {
+  // Pořadí kontrol = pořadí, v jakém to admin může spravit: adresu si doplní
+  // sám v Nastavení, klíč musí doplnit správce do env Netlify.
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || to.length === 0) return false;
+  if (to.length === 0) return { ok: false, reason: "no_recipients" };
+  if (!apiKey) return { ok: false, reason: "no_key" };
 
   try {
     const res = await fetch(RESEND_ENDPOINT, {
@@ -153,19 +161,73 @@ export async function sendStatusMail(to: string[], data: StatusMailData): Promis
       body: JSON.stringify({
         from: process.env.RESEND_FROM ?? DEFAULT_FROM,
         to,
-        subject: statusMailSubject(data),
-        html: statusMailHtml(data),
-        text: statusMailText(data),
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
       }),
       signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
     });
     if (!res.ok) {
-      console.error("Resend odmítl notifikaci:", res.status, await res.text().catch(() => ""));
-      return false;
+      // Tělo chyby Resendu je pro admina to nejcennější („doména není ověřená",
+      // „neplatný klíč"…) — vytáhneme z něj message, ale klíč nikdy nelogujeme.
+      const body = await res.text().catch(() => "");
+      console.error("Resend odmítl zprávu:", res.status, body);
+      let detail = `HTTP ${res.status}`;
+      try {
+        const parsed = JSON.parse(body) as { message?: string; error?: string };
+        if (parsed.message || parsed.error) detail = String(parsed.message ?? parsed.error);
+      } catch {
+        /* tělo není JSON — zůstane HTTP kód */
+      }
+      return { ok: false, reason: "rejected", detail };
     }
-    return true;
+    return { ok: true };
   } catch (err) {
-    console.error("Notifikaci se nepodařilo odeslat:", err instanceof Error ? err.message : err);
-    return false;
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error("Zprávu se nepodařilo odeslat:", detail);
+    return { ok: false, reason: "error", detail };
   }
+}
+
+/**
+ * Odešle notifikaci o změně stavu.
+ * Nikdy nehází — změna stavu se nesmí kvůli e-mailu vrátit zpět.
+ */
+export async function sendStatusMail(to: string[], data: StatusMailData): Promise<SendResult> {
+  return deliver(to, {
+    subject: statusMailSubject(data),
+    html: statusMailHtml(data),
+    text: statusMailText(data),
+  });
+}
+
+/** Zkušební zpráva z Nastavení — ověří klíč, odesílatele i adresáty bez čekání na ostrou zakázku. */
+export async function sendTestMail(to: string[], userName: string): Promise<SendResult> {
+  const html = `<!doctype html>
+<html lang="cs">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:24px 12px;background:#f2f6f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;">
+    <tr><td style="padding:0 4px 14px;">
+      <span style="font-size:18px;font-weight:700;letter-spacing:2px;color:#0e1513;">ANSE</span>
+      <span style="font-size:13px;color:#5b6663;margin-left:8px;">zakázky</span>
+    </td></tr>
+    <tr><td style="background:#ffffff;border-radius:20px;padding:24px;">
+      <p style="margin:0 0 4px;font-size:13px;color:#5b6663;">Zkušební zpráva</p>
+      <h1 style="margin:0 0 14px;font-size:20px;color:#0e1513;">Notifikace fungují ✅</h1>
+      <p style="margin:0 0 8px;font-size:14px;color:#1b201f;">
+        Tuhle zprávu vyžádal <strong>${escapeHtml(userName)}</strong> z Nastavení aplikace.
+        Na tuto adresu teď budou chodit upozornění při každé změně stavu zakázky.
+      </p>
+      <p style="margin:0;font-size:13px;color:#5b6663;">Adresy pro notifikace změníte v aplikaci: Správa účtů → Notifikace.</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  return deliver(to, {
+    subject: "Anse: zkušební notifikace",
+    html,
+    text: `Zkušební zpráva z aplikace Anse. Vyžádal ${userName}. Notifikace o změnách stavu zakázek fungují.`,
+  });
 }

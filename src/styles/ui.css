@@ -1261,6 +1261,26 @@ input[type="date"] {
   font-weight: 600;
 }
 
+/* Nastavení notifikací: uložit + zkušební e-mail vedle sebe, výsledek pod nimi. */
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.settings-test-ok {
+  color: var(--c-green-deep);
+  background: var(--c-green-soft);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius);
+  font-weight: 600;
+  margin-top: var(--sp-2);
+}
+
+.field-msg.field-msg-error {
+  margin-top: var(--sp-2);
+}
+
 /* --- toasty ------------------------------------------------------------------------------------ */
 
 .toast-stack {
