@@ -8,11 +8,12 @@ import { NotifPrefsPanel, OfficeShell } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
+  ConfirmButton,
   Field,
   NativeSelect,
+  Spinner,
   Switch,
   TextInput,
-  Spinner,
 } from "../components/ui";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -243,6 +244,13 @@ function Ucty() {
     }
   }
 
+  async function newCode(id: string) {
+    await api(`/api/users/${id}/code`, { method: "POST" });
+    await refresh();
+    setShown((prev) => new Set(prev).add(id));
+    toast("Vygenerován nový kód");
+  }
+
   async function create() {
     if (!newName.trim()) return;
     await api("/api/users", { method: "POST", body: { name: newName, role: newRole } });
@@ -341,8 +349,14 @@ function Ucty() {
                       })
                     }
                   >
-                    {shown.has(u.id) ? "skrýt" : "👁"}
-                  </button>
+                    {shown.has(u.id) ? "skrýt" : "zobrazit"}
+                  </button>{" "}
+                  <ConfirmButton
+                    label="nový"
+                    confirmLabel="Opravdu?"
+                    ariaLabel={`Vygenerovat nový kód pro ${u.name}`}
+                    onConfirm={() => void newCode(u.id)}
+                  />
                 </td>
                 <td className="cell-muted col-secondary">{ago(u.created_at)}</td>
                 <td>
@@ -358,8 +372,8 @@ function Ucty() {
         </table>
       </div>
       <p className="muted t-caption">
-        Kódy generuje server náhodně a nikdy je nezapisuje do logů. Nový kód vydáte odebráním
-        a znovupřidáním účtu, nebo změnou v řádku.
+        Kódy generuje server náhodně a nikdy je nezapisuje do logů. „Nový" vydá jiný kód —
+        ten starý tím okamžitě přestane platit.
       </p>
     </OfficeShell>
   );
