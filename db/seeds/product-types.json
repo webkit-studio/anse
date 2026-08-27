@@ -1,47 +1,71 @@
 [
   {
-    "code": "SEL-15",
-    "name": "Okenní sítě",
-    "manufacturer": "jackwest",
+    "code": "OKENNI-SIT",
+    "name": "Okenní síť",
     "active": true,
     "sort": 1,
-    "definitionFile": "definitions/sel15.v1.json"
+    "subcategories": [
+      {
+        "code": "SEL-15",
+        "name": "Jack West · SEL 15 — rám do okna",
+        "manufacturer": "jackwest",
+        "active": true,
+        "sort": 1,
+        "definitionFile": "definitions/sel15.v1.json"
+      }
+    ]
   },
   {
-    "code": "ESD",
-    "name": "Horizontální žaluzie",
-    "manufacturer": "jackwest",
+    "code": "INT-ZALUZIE",
+    "name": "Interiérová žaluzie",
     "active": true,
     "sort": 2,
-    "definitionFile": "definitions/esd.v1.json"
+    "subcategories": [
+      {
+        "code": "ESD",
+        "name": "Jack West · ESD — horizontální 25 mm",
+        "manufacturer": "jackwest",
+        "active": true,
+        "sort": 1,
+        "definitionFile": "definitions/esd.v1.json"
+      }
+    ]
   },
   {
     "code": "PLISSE",
-    "name": "Plissé žaluzie",
-    "manufacturer": "jackwest",
+    "name": "Plissé",
     "active": true,
     "sort": 3,
-    "definitionFile": "definitions/plisse.v1.json"
+    "subcategories": [
+      {
+        "code": "PLISSE-KLASIK",
+        "name": "Jack West · Plissé klasik",
+        "manufacturer": "jackwest",
+        "active": true,
+        "sort": 1,
+        "definitionFile": "definitions/plisse.v1.json"
+      }
+    ]
   },
   {
-    "code": "VZ-TBD",
+    "code": "VENK-ZALUZIE",
     "name": "Venkovní žaluzie",
-    "manufacturer": "jackwest",
     "active": false,
-    "sort": 4
+    "sort": 4,
+    "subcategories": []
   },
   {
-    "code": "VR-TBD",
-    "name": "Venkovní rolety",
-    "manufacturer": "jackwest",
+    "code": "VENK-ROLETA",
+    "name": "Venkovní roleta",
     "active": false,
-    "sort": 5
+    "sort": 5,
+    "subcategories": []
   },
   {
-    "code": "VSC-TBD",
-    "name": "Venkovní screeny",
-    "manufacturer": "jackwest",
+    "code": "SCREEN",
+    "name": "Screen",
     "active": false,
-    "sort": 6
+    "sort": 6,
+    "subcategories": []
   }
 ]

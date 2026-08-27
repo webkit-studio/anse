@@ -20,15 +20,15 @@ export interface Route {
   handler: RouteHandler;
   /** Bez přihlášení (login, health). */
   isPublic?: boolean;
-  /** Jen role admin. */
-  adminOnly?: boolean;
+  /** Jen role kancelář. */
+  officeOnly?: boolean;
 }
 
 export function makeRoute(
   method: string,
   path: string,
   handler: RouteHandler,
-  opts: { isPublic?: boolean; adminOnly?: boolean } = {},
+  opts: { isPublic?: boolean; officeOnly?: boolean } = {},
 ): Route {
   const keys: string[] = [];
   const pattern = new RegExp(
@@ -78,9 +78,9 @@ export async function parseBody<S extends z.ZodTypeAny>(req: Request, schema: S)
   return parsed.data;
 }
 
-export function requireAdmin(ctx: Ctx): void {
-  if (ctx.user.role !== "admin") {
-    throw new ApiError(403, "Tuto akci může provést jen administrátor.");
+export function requireOffice(ctx: Ctx): void {
+  if (ctx.user.role !== "kancelar") {
+    throw new ApiError(403, "Tuto akci může provést jen kancelář.");
   }
 }
 

@@ -9,7 +9,7 @@ export const roomRoutes: Route[] = [
     const body = await parseBody(req, roomCreateBody);
 
     const [existing] = await db`
-      select id, order_id, name, note, position from rooms
+      select id, order_id, name, position from rooms
       where order_id = ${params.orderId!} and lower(name) = lower(${body.name})
     `;
     if (existing) return json({ room: existing });
@@ -19,7 +19,7 @@ export const roomRoutes: Route[] = [
         insert into rooms (order_id, name, position)
         values (${params.orderId!}, ${body.name},
                 coalesce((select max(position) from rooms where order_id = ${params.orderId!}), 0) + 1)
-        returning id, order_id, name, note, position
+        returning id, order_id, name, position
       `;
       return json({ room }, { status: 201 });
     } catch (err) {
@@ -30,7 +30,7 @@ export const roomRoutes: Route[] = [
           insert into rooms (order_id, name, position)
           values (${params.orderId!}, ${body.name},
                   coalesce((select max(position) from rooms where order_id = ${params.orderId!}), 0) + 1)
-          returning id, order_id, name, note, position
+          returning id, order_id, name, position
         `;
         return json({ room }, { status: 201 });
       }
@@ -42,14 +42,9 @@ export const roomRoutes: Route[] = [
     const db = sql();
     const body = await parseBody(req, roomUpdateBody);
 
-    const patch: Record<string, string> = {};
-    if (body.name !== undefined) patch.name = body.name;
-    if (body.note !== undefined) patch.note = body.note;
-    if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
-
     const [updated] = await db`
-      update rooms set ${db(patch)} where id = ${params.id!}
-      returning id, order_id, name, note, position
+      update rooms set name = ${body.name} where id = ${params.id!}
+      returning id, order_id, name, position
     `;
     if (!updated) throw new ApiError(404, "Místnost nenalezena.");
     return json({ room: updated });

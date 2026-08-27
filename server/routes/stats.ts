@@ -2,27 +2,11 @@ import { sql } from "../db";
 import { ApiError, json } from "../http";
 import { makeRoute, type Route } from "../router";
 
-// Statistiky pro admina (jen měsíční pohled). „Vyměřeno/založeno" = založení
-// zakázky technikem (zakládá se na místě při měření); „objednáno" = přepnutí
-// na stav Objednáno (z auditu order_events). Hranice měsíce v Europe/Prague.
+// Statistiky kanceláře — měsíční pohled. Hranice měsíce v Europe/Prague.
+// „Zaměřeno" a „namontováno" se čtou z auditu přechodů (order_events), ne ze
+// současné fáze: zakázka, která už je hotová, musela projít oběma kroky.
 
 const TZ = "Europe/Prague";
-
-interface UserCounts {
-  zalozeno: Map<string, number>;
-  objednano: Map<string, number>;
-}
-
-function mergeUsers(c: UserCounts) {
-  const names = new Set([...c.zalozeno.keys(), ...c.objednano.keys()]);
-  return [...names]
-    .sort((a, b) => a.localeCompare(b, "cs"))
-    .map((name) => ({
-      name,
-      zalozeno: c.zalozeno.get(name) ?? 0,
-      objednano: c.objednano.get(name) ?? 0,
-    }));
-}
 
 export const statsRoutes: Route[] = [
   makeRoute(
@@ -32,42 +16,73 @@ export const statsRoutes: Route[] = [
       const db = sql();
       const url = new URL(req.url);
       const month = url.searchParams.get("month");
-
-      if (month) {
-        if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) throw new ApiError(400, "Neplatný měsíc.");
-        const start = `${month}-01`;
-
-        const zalozeno = await db`
-          select u.name, count(*)::int as n
-          from orders o join users u on u.id = o.created_by
-          where o.created_at >= (${start}::timestamp at time zone ${TZ})
-            and o.created_at < ((${start}::date + interval '1 month') at time zone ${TZ})
-          group by u.name
-        `;
-        const objednano = await db`
-          select u.name, count(distinct e.order_id)::int as n
-          from order_events e join users u on u.id = e.user_id
-          where e.to_status = 'k_objednavce'
-            and e.created_at >= (${start}::timestamp at time zone ${TZ})
-            and e.created_at < ((${start}::date + interval '1 month') at time zone ${TZ})
-          group by u.name
-        `;
-
-        const counts: UserCounts = {
-          zalozeno: new Map(zalozeno.map((r) => [r.name as string, r.n as number])),
-          objednano: new Map(objednano.map((r) => [r.name as string, r.n as number])),
-        };
-        return json({
-          month,
-          zalozeno: [...counts.zalozeno.values()].reduce((a, b) => a + b, 0),
-          objednano: [...counts.objednano.values()].reduce((a, b) => a + b, 0),
-          users: mergeUsers(counts),
-        });
+      if (!month || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+        throw new ApiError(400, "Zadejte ?month=YYYY-MM.");
       }
+      const start = `${month}-01`;
 
+      const range = (col: string) => db.unsafe(`
+        ${col} >= ('${start}'::timestamp at time zone '${TZ}')
+        and ${col} < (('${start}'::date + interval '1 month') at time zone '${TZ}')
+      `);
 
-      throw new ApiError(400, "Zadejte ?month=YYYY-MM.");
+      const [kontakty] = await db`
+        select count(*)::int as n from contacts c where ${range("c.created_at")}
+      `;
+      // Kontaktováno = někdo s kontaktem opravdu něco udělal (poznámka nebo zakázka).
+      const [kontaktovano] = await db`
+        select count(*)::int as n from contacts c
+        where ${range("c.created_at")}
+          and (exists (select 1 from contact_notes n where n.contact_id = c.id)
+               or exists (select 1 from orders o where o.contact_id = c.id))
+      `;
+      const [zamereno] = await db`
+        select count(distinct e.order_id)::int as n from order_events e
+        where e.to_phase = 'k_naceneni' and ${range("e.created_at")}
+      `;
+      const [objednano] = await db`
+        select count(distinct e.order_id)::int as n from order_events e
+        where e.to_phase = 'k_montazi' and ${range("e.created_at")}
+      `;
+      const [hotovo] = await db`
+        select count(distinct e.order_id)::int as n from order_events e
+        where e.to_phase in ('k_fakturaci', 'hotovo') and ${range("e.created_at")}
+      `;
+
+      const techs = await db`
+        select u.name,
+          count(*) filter (where e.to_phase = 'k_naceneni')::int as zamereno,
+          count(*) filter (where e.to_phase = 'k_fakturaci')::int as namontovano,
+          coalesce(sum(
+            case when e.to_phase = 'k_fakturaci'
+              then nullif(regexp_replace(o.price_montage, '[^0-9]', '', 'g'), '')::numeric
+            end
+          ), 0)::text as price_montage_sum
+        from order_events e
+        join users u on u.id = e.user_id
+        join orders o on o.id = e.order_id
+        where ${range("e.created_at")} and e.to_phase in ('k_naceneni', 'k_fakturaci')
+        group by u.name
+        order by u.name
+      `;
+
+      return json({
+        month,
+        kpi: {
+          nove_kontakty: kontakty?.n ?? 0,
+          zamereno: zamereno?.n ?? 0,
+          objednano: objednano?.n ?? 0,
+          hotovo: hotovo?.n ?? 0,
+        },
+        funnel: [
+          { label: "Nové kontakty", value: kontakty?.n ?? 0 },
+          { label: "Kontaktováno", value: kontaktovano?.n ?? 0 },
+          { label: "Zaměřeno", value: zamereno?.n ?? 0 },
+          { label: "Vyšlo", value: objednano?.n ?? 0 },
+        ],
+        techs,
+      });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 ];

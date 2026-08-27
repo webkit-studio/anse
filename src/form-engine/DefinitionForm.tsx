@@ -21,22 +21,46 @@ export interface DefinitionFormProps {
   definition: FormDefinition;
   initialParams: Params;
   initialNote: string;
+  /** Nadpis v hlavičce formuláře — „Okenní síť · Kuchyně". */
+  title: string;
   submitLabel: string;
   busy?: boolean;
   /** Chyby vrácené serverem (422) — zobrazí se, dokud uživatel formulář nezmění. */
   serverIssues?: Issue[];
+  /** Text indikátoru autosave v patce. */
+  savedLabel?: string;
+  offline?: boolean;
+  /** Fotky položky a další obsah pod skupinami. */
+  children?: React.ReactNode;
   onSubmit: (params: Params, note: string) => void;
   onChange?: (params: Params, note: string) => void;
   autoFocusFirst?: boolean;
+}
+
+/** Povinná pole viditelná při aktuálních hodnotách (skrytá se nevalidují). */
+function requiredVisible(definition: FormDefinition, params: Params): FieldDef[] {
+  return definition.groups
+    .flatMap((g) => g.fields)
+    .filter((f) => !f.tbd && isFieldVisible(f, params))
+    .filter((f) => f.required === true || (f.requiredIf !== undefined && evalConds(f.requiredIf, params)));
+}
+
+function isFilled(params: Params, key: string): boolean {
+  const v = params[key];
+  return v !== undefined && v !== null && String(v).trim() !== "";
 }
 
 export function DefinitionForm({
   definition,
   initialParams,
   initialNote,
+  title,
   submitLabel,
   busy = false,
   serverIssues = [],
+  savedLabel,
+  offline = false,
+  children,
   onSubmit,
   onChange,
   autoFocusFirst = true,
@@ -55,6 +79,12 @@ export function DefinitionForm({
 
   const activeServerIssues = dirtySinceServer ? [] : serverIssues;
   const allIssues = [...validation.issues, ...activeServerIssues];
+
+  // Postup: kolik povinných polí je hotových (počítá se jen z viditelných).
+  const required = requiredVisible(definition, params);
+  const missing = required.filter((f) => !isFilled(params, f.key));
+  const doneCount = required.length - missing.length;
+  const progress = required.length ? Math.round((doneCount / required.length) * 100) : 100;
 
   function setValue(key: string, value: string) {
     setParams((p) => ({ ...p, [key]: value }));
@@ -84,17 +114,18 @@ export function DefinitionForm({
 
   const generalIssues = allIssues.filter((i) => i.fieldKey === undefined);
 
+  function scrollTo(selector: string) {
+    formRef.current
+      ?.querySelector(selector)
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   function handleSubmit() {
     if (busy) return; // dvojtap na Uložit nesmí odeslat druhý request
     setAttempted(true);
     if (hasBlocking(allIssues)) {
       // odscrollovat na první chybné pole
-      setTimeout(() => {
-        formRef.current?.querySelector(".field-invalid")?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }, 30);
+      setTimeout(() => scrollTo(".field-invalid"), 30);
       return;
     }
     onSubmit(validation.params, note.trim());
@@ -106,9 +137,12 @@ export function DefinitionForm({
     const id = `f-${f.key}`;
     const rawValue = params[f.key];
     const value = rawValue === undefined || rawValue === null ? "" : String(rawValue);
-    const requiredNow = !f.tbd && (f.required === true || (f.requiredIf !== undefined && evalConds(f.requiredIf, params)));
+    const requiredNow =
+      !f.tbd && (f.required === true || (f.requiredIf !== undefined && evalConds(f.requiredIf, params)));
     const shouldAutoFocus = autoFocusFirst && groupIndex === 0 && !focusAssigned && !f.tbd;
     if (shouldAutoFocus) focusAssigned = true;
+    // Podmíněně odkryté pole dostane zelený pruh vlevo — je vidět, že přibylo.
+    const revealed = f.visibleIf !== undefined;
 
     if (f.tbd) {
       return (
@@ -181,84 +215,158 @@ export function DefinitionForm({
     }
 
     return (
-      <Field
-        key={f.key}
-        label={f.unit && f.type !== "number" ? `${f.label} (${f.unit})` : f.label}
-        htmlFor={id}
-        required={requiredNow}
-        help={f.help}
-        messages={messagesFor(f.key)}
-      >
-        {control}
-      </Field>
+      <div key={f.key} className={revealed ? "field-revealed" : undefined}>
+        <Field
+          label={f.unit && f.type !== "number" ? `${f.label} (${f.unit})` : f.label}
+          htmlFor={id}
+          required={requiredNow}
+          help={f.help}
+          messages={messagesFor(f.key)}
+        >
+          {control}
+        </Field>
+      </div>
     );
   }
 
   return (
-    <form
-      ref={formRef}
-      className="definition-form"
-      noValidate
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
-      <p className="required-legend">
-        <span className="field-required">*</span> povinný údaj
-      </p>
-      {definition.groups.map((g, gi) => {
-        const visible = g.fields.filter((f) => isFieldVisible(f, params));
-        if (visible.length === 0) return null;
-        return (
-          <section key={g.key} className="form-group">
-            <h2 className="form-group-title">{g.label}</h2>
-            {visible.map((f) => renderField(f, gi))}
-          </section>
-        );
-      })}
-
-      <section className="form-group">
-        <h2 className="form-group-title" id="f-note-label">
-          Poznámka
-        </h2>
-        <div className={messagesFor("note").some((m) => m.level === "error") ? "field field-invalid" : "field"}>
-          <Textarea
-            id="f-note"
-            aria-labelledby="f-note-label"
-            value={note}
-            onChange={(e) => {
-              setNote(e.target.value);
-              setDirtySinceServer(true);
-            }}
-            onBlur={() => markTouched("note")}
-            placeholder="Cokoli k této položce…"
-          />
-          {messagesFor("note").map((m, i) => (
-            <p key={i} className={`field-msg field-msg-${m.level}`} role={m.level === "error" ? "alert" : undefined}>
-              {m.message}
-            </p>
-          ))}
+    <>
+      <div className="form-head">
+        <div className="form-head-row">
+          <span className="form-title">{title}</span>
+          <span className="form-progress-label">
+            Povinná {doneCount}/{required.length}
+          </span>
         </div>
-      </section>
+        <div className="progress-track">
+          <div className="progress-bar" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="group-strip">
+          {definition.groups.map((g) => {
+            const req = g.fields.filter(
+              (f) =>
+                !f.tbd &&
+                isFieldVisible(f, params) &&
+                (f.required === true || (f.requiredIf !== undefined && evalConds(f.requiredIf, params))),
+            );
+            const done = req.filter((f) => isFilled(params, f.key)).length;
+            const complete = req.length > 0 && done === req.length;
+            return (
+              <button
+                key={g.key}
+                type="button"
+                className={`group-chip ${complete ? "group-chip-done" : ""}`}
+                onClick={() => scrollTo(`#grp-${g.key}`)}
+              >
+                {g.label}
+                {req.length > 0 && !complete && ` ${done}/${req.length}`}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-      {generalIssues.filter((i) => i.level !== "error" || attempted).length > 0 && (
-        <div className="form-issues">
-          {generalIssues
-            .filter((i) => i.level !== "error" || attempted)
-            .map((i, idx) => (
-              <p key={idx} className={`field-msg field-msg-${i.level}`}>
-                {i.message}
+      <form
+        ref={formRef}
+        className="definition-form tech-body tech-body-footer"
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <p className="required-legend">
+          <span className="field-required">*</span> povinný údaj
+        </p>
+        {definition.groups.map((g, gi) => {
+          const visible = g.fields.filter((f) => isFieldVisible(f, params));
+          if (visible.length === 0) return null;
+          return (
+            <section key={g.key} id={`grp-${g.key}`} className="form-group">
+              <h2 className="form-group-title">{g.label}</h2>
+              {visible.map((f) => renderField(f, gi))}
+            </section>
+          );
+        })}
+
+        <section className="form-group">
+          <h2 className="form-group-title" id="f-note-label">
+            Poznámka
+          </h2>
+          <div
+            className={
+              messagesFor("note").some((m) => m.level === "error") ? "field field-invalid" : "field"
+            }
+          >
+            <Textarea
+              id="f-note"
+              aria-labelledby="f-note-label"
+              value={note}
+              onChange={(e) => {
+                setNote(e.target.value);
+                setDirtySinceServer(true);
+              }}
+              onBlur={() => markTouched("note")}
+              placeholder="Cokoli k této položce…"
+            />
+            {messagesFor("note").map((m, i) => (
+              <p
+                key={i}
+                className={`field-msg field-msg-${m.level}`}
+                role={m.level === "error" ? "alert" : undefined}
+              >
+                {m.message}
               </p>
             ))}
-        </div>
-      )}
+          </div>
+        </section>
 
-      <div className="form-actions">
+        {children}
+
+        {generalIssues.filter((i) => i.level !== "error" || attempted).length > 0 && (
+          <div className="form-issues">
+            {generalIssues
+              .filter((i) => i.level !== "error" || attempted)
+              .map((i, idx) => (
+                <p key={idx} className={`field-msg field-msg-${i.level}`}>
+                  {i.message}
+                </p>
+              ))}
+          </div>
+        )}
+      </form>
+
+      <div className="form-foot">
+        {attempted && missing.length > 0 ? (
+          <>
+            <span className="form-foot-note" style={{ color: "var(--c-error)", fontWeight: 600 }}>
+              Chybí {missing.length}{" "}
+              {missing.length === 1 ? "povinné pole" : missing.length < 5 ? "povinná pole" : "povinných polí"}
+            </span>
+            <div className="error-chips">
+              {missing.slice(0, 6).map((f) => (
+                <button
+                  key={f.key}
+                  type="button"
+                  className="error-chip"
+                  onClick={() => scrollTo(`#f-${f.key}`)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <span className={`form-foot-note ${offline ? "form-foot-note-offline" : ""}`}>
+            {offline
+              ? "Uloženo v telefonu, odešle se po připojení"
+              : (savedLabel ?? "Rozepsaná položka zůstává uložená")}
+          </span>
+        )}
         <Button variant="primary" className="btn-block" disabled={busy} onClick={handleSubmit}>
           {busy ? "Ukládám…" : submitLabel}
         </Button>
       </div>
-    </form>
+    </>
   );
 }

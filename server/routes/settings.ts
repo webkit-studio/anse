@@ -13,7 +13,7 @@ export const settingsRoutes: Route[] = [
       const [row] = await db`select value from settings where key = 'admin_group_email'`;
       return json({ admin_group_email: (row?.value as string | undefined) ?? "" });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 
   makeRoute(
@@ -29,11 +29,11 @@ export const settingsRoutes: Route[] = [
       `;
       return json({ admin_group_email: body.admin_group_email });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 
-  // Zkušební notifikace — admin si ověří klíč, odesílatele i adresáty bez toho,
-  // aby musel přehazovat stav ostré zakázky. Vrací vždy 200 se srozumitelným
+  // Zkušební notifikace — kancelář si ověří klíč, odesílatele i adresáty bez
+  // toho, aby musela přehazovat fázi ostré zakázky. Vrací vždy 200 se srozumitelným
   // výsledkem, aby UI mohlo ukázat konkrétní důvod (chybí klíč, doména není
   // ověřená…) místo obecné chyby.
   makeRoute(
@@ -60,6 +60,6 @@ export const settingsRoutes: Route[] = [
       };
       return json({ ok: false, message: MESSAGES[result.reason] });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 ];

@@ -23,7 +23,7 @@ npm run dev            # Vite na :5173 (proxuje /api na :8788)
 npm run dev:api        # lokální API server na :8788 (stejný handler jako Netlify funkce)
 npm run build          # tsc --noEmit && vite build
 npm test               # Vitest (form-engine, server)
-npm run test:e2e       # Playwright smoke (mobilní viewport) — vyžaduje lokální
+npm run test:e2e       # Playwright smoke (mobil + desktop) — vyžaduje lokální
                        # Postgres (viz níže) + proběhlý migrate a seed; nastaví
                        # testovací kódy 111111/999999 (jen proti localhost DB).
                        # V sandboxu: PLAYWRIGHT_CHROMIUM_PATH=/opt/pw-browsers/chromium
@@ -47,15 +47,23 @@ uživatelem, port 5433, DB `anse` — connection string
 - Server **nikdy nevěří klientovi**: params se revalidují proti připnuté verzi
   definice, `position` a `product_type_id` přiděluje server, role se kontroluje
   per routa.
-- Stavy zakázky (jen vpřed, žádné vracení): `rozpracovana` → `k_naceneni` →
-  `k_objednavce` → `k_montazi` → `hotovo`. Technik posouvá terénní kroky
-  (zaměřeno, namontováno), nacenění a objednávku dělá admin — viz
-  `ALLOWED_TRANSITIONS` v `shared/types.ts`.
+- Role: `technik` (nezávislý dodavatel, vidí jen svoje zakázky) a `kancelar`
+  (vidí vše). **Cenu zakázky pro zákazníka server technikovi vůbec neposílá** —
+  není to jen skryté v UI (`orderCols()` v `server/routes/orders.ts`).
+- Fáze zakázky (jen vpřed, žádné vracení): `k_zamereni` → `k_naceneni` →
+  `k_montazi` → `k_fakturaci` → `hotovo`, plus `zruseno` mimo linku. Technik
+  posouvá terénní kroky (odeslat k nacenění, namontováno), nacenění, objednávku
+  a fakturaci dělá kancelář — viz `ALLOWED_PHASE_TRANSITIONS` v `shared/types.ts`.
+- Zakázka **vždy patří kontaktu**; kontakt je databáze čísel, ne pipeline
+  (jediný příznak je `fresh` = „ozvat se").
+- Co brání posunu dál, počítá server (`blockingFor()`); UI to jen vypisuje.
 - Přechody stavů zakázky jsou compare-and-swap (`WHERE status = $expected`),
   editace hlavičky/položek optimistický zámek přes `updated_at` → při konfliktu
   409 a klient nabídne obnovení.
-- Každá změna stavu posílá notifikaci na adresy z nastavení (`server/email.ts`,
-  Resend). Odeslání nikdy neshodí požadavek — bez `RESEND_API_KEY` se přeskočí.
+- Notifikace mají dva kanály: in-app (tabulka `notifications`, nevypíná se)
+  a e-mail podle `notif_prefs` per uživatel a událost (`server/notify.ts`,
+  `server/email.ts`, Resend). Odeslání nikdy neshodí požadavek — bez
+  `RESEND_API_KEY` se přeskočí. Události jsou v `NOTIF_EVENTS`.
 - UI texty **výhradně česky**, chybové hlášky přímo u pole. Touch targety
   min. 48 px (`--tap`), číselná pole `inputmode="numeric"/"decimal"`,
   fonty inputů min. 16 px (jinak iOS zoomuje).
@@ -63,9 +71,13 @@ uživatelem, port 5433, DB `anse` — connection string
   (nedostatečný kontrast) — jen plochy/akcenty; text na zelené je `--c-ink`,
   zelený text/odkazy řeší tmavá `--c-green-deep`.
 
-## Jak přidat / upravit typ produktu (bez zásahu do kódu)
+## Jak přidat / upravit produkt (bez zásahu do kódu)
 
-1. Uprav/přidej JSON v `db/seeds/definitions/` (schéma: `shared/form-schema.ts`,
+Katalog má dvě úrovně: **produkt** (Okenní síť) → **podkategorie**
+(Jack West · SEL 15). Definice formuláře i výrobce visí na podkategorii.
+
+1. Uprav/přidej JSON v `db/seeds/definitions/` a zapiš ho k podkategorii
+   v `db/seeds/product-types.json` (schéma: `shared/form-schema.ts`,
    vzor: `sel15.v1.json`). Skupiny zrcadlí editor výrobce; `options[].value` =
    kód výrobce pro export, `label` česky.
 2. `npm run validate:definitions` — musí projít.

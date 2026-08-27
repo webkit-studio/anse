@@ -7,7 +7,7 @@ import { ApiError, json } from "../http";
 import { makeRoute, parseBody, type Route } from "../router";
 
 // Kódy: generuje výhradně server, náhodné, unikátní. Vystavené JEN na těchto
-// admin routách; nikdy se nelogují.
+// routách kanceláře; nikdy se nelogují.
 async function generateUniqueCode(): Promise<string> {
   const db = sql();
   for (let i = 0; i < 50; i++) {
@@ -18,7 +18,7 @@ async function generateUniqueCode(): Promise<string> {
   throw new ApiError(500, "Nepodařilo se vygenerovat unikátní kód.");
 }
 
-const USER_COLS = "id, name, code, role, active, created_at";
+const USER_COLS = "id, name, code, role, phone, email, active, created_at";
 
 export const userRoutes: Route[] = [
   makeRoute(
@@ -31,7 +31,7 @@ export const userRoutes: Route[] = [
       `;
       return json({ users: rows });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 
   makeRoute(
@@ -42,13 +42,14 @@ export const userRoutes: Route[] = [
       const body = await parseBody(req, userCreateBody);
       const code = await generateUniqueCode();
       const [user] = await db`
-        insert into users (name, code, role) values (${body.name}, ${code}, ${body.role})
+        insert into users (name, code, role, phone, email)
+        values (${body.name}, ${code}, ${body.role}, ${body.phone}, ${body.email})
         returning ${db.unsafe(USER_COLS)}
       `;
       invalidateUsersCache();
       return json({ user }, { status: 201 });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 
   makeRoute(
@@ -62,12 +63,14 @@ export const userRoutes: Route[] = [
         throw new ApiError(400, "Nemůžete deaktivovat sami sebe.");
       }
       if (body.role === "technik" && params.id === ctx.user.id) {
-        throw new ApiError(400, "Nemůžete si odebrat roli administrátora.");
+        throw new ApiError(400, "Nemůžete si sami odebrat roli kanceláře.");
       }
 
       const patch: Record<string, string | boolean> = {};
       if (body.name !== undefined) patch.name = body.name;
       if (body.role !== undefined) patch.role = body.role;
+      if (body.phone !== undefined) patch.phone = body.phone;
+      if (body.email !== undefined) patch.email = body.email;
       if (body.active !== undefined) patch.active = body.active;
       if (body.code !== undefined) {
         if (isTrivialCode(body.code)) {
@@ -93,7 +96,7 @@ export const userRoutes: Route[] = [
       invalidateUsersCache();
       return json({ user });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 
   makeRoute(
@@ -109,6 +112,6 @@ export const userRoutes: Route[] = [
       if (!user) throw new ApiError(404, "Uživatel nenalezen.");
       return json({ user });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 ];

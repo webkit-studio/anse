@@ -10,11 +10,13 @@ import {
   verifySessionToken,
 } from "./auth";
 import { errorResponse, json, withCookie } from "./http";
-import { checkCsrf, matchRoute, requireAdmin, type Ctx, type Route } from "./router";
+import { checkCsrf, matchRoute, requireOffice, type Ctx, type Route } from "./router";
 import { authRoutes } from "./routes/auth-routes";
-import { clientRoutes } from "./routes/clients";
+import { contactRoutes } from "./routes/contacts";
 import { itemRoutes } from "./routes/items";
+import { notificationRoutes } from "./routes/notifications";
 import { orderRoutes } from "./routes/orders";
+import { photoRoutes } from "./routes/photos";
 import { productTypeRoutes } from "./routes/product-types";
 import { roomRoutes } from "./routes/rooms";
 import { settingsRoutes } from "./routes/settings";
@@ -29,7 +31,9 @@ const routes: Route[] = [
   ...authRoutes,
   ...orderRoutes,
   ...itemRoutes,
-  ...clientRoutes,
+  ...contactRoutes,
+  ...photoRoutes,
+  ...notificationRoutes,
   ...roomRoutes,
   ...productTypeRoutes,
   ...userRoutes,
@@ -73,7 +77,7 @@ export async function handle(req: Request): Promise<Response> {
         user: { id: session.user.id, name: current.name, role: current.role },
         ip: clientIp(req),
       };
-      if (matched.route.adminOnly) requireAdmin(ctx);
+      if (matched.route.officeOnly) requireOffice(ctx);
       if (shouldRenew(session)) {
         renewedCookie = sessionCookie(req, await signSession(ctx.user));
       }

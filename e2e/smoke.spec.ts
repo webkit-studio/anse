@@ -1,314 +1,159 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// Kolo 2 flow: dashboard bez hledání → nová zakázka (technik: jen místo +
-// poznámka) → typ produktu → fullscreen formulář s místností → duplikace →
-// EDITACE KOPIE (regrese na 409) → přesun místnosti → k nacenění → admin
-// objedná → statistiky.
+// Smoke celé linky: kontakt → zakázka → údaje zákazníka → položka → cena práce
+// → k nacenění → (kancelář) cena + termín → objednáno → (technik) termín montáže
+// → podpis → hotovo → (kancelář) faktura. Mobilní viewport, česká lokalizace.
 
-const CLIENT_NAME = `E2E Novák ${Date.now()}`;
+const SUFFIX = Date.now();
+const CONTACT = `E2E Novák ${SUFFIX}`;
 
 test.describe.configure({ mode: "serial" });
 
 /** Výběr v našem SelectSheet: tap na trigger → tap na možnost. */
-async function pickSheet(page: Page, triggerId: string, optionLabel: string | RegExp) {
+async function pickSheet(page: Page, triggerId: string, index = 0) {
   await page.locator(`#${triggerId}`).click();
-  await page.locator(".sheet-option", { hasText: optionLabel }).first().click();
+  await page.locator(".sheet-option").nth(index).click();
 }
 
-test("technik: zakázka → produkt → duplikace → editace kopie → přesun → k nacenění", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.getByLabel("Přihlašovací kód").fill("111111");
+async function login(page: Page, code: string) {
+  await page.goto("/login");
+  await page.getByLabel("Přihlašovací kód").fill(code);
+  await expect(page).toHaveURL(/\/(?!login)/);
+}
 
-  // dashboard: dlaždice fází, bez vyhledávání
-  await expect(page.getByRole("link", { name: "+ Nová zakázka" })).toBeVisible();
-  await expect(page.getByText("Rozpracovaná")).toBeVisible();
-  await expect(page.getByText("K nacenění")).toBeVisible();
-  await expect(page.locator("input[type=search]")).toHaveCount(0);
+let orderUrl = "";
 
-  // nová zakázka — technik nevidí čísla montáže/zakázky ani termín dodání
-  await page.getByRole("link", { name: "+ Nová zakázka" }).click();
-  await expect(page.getByText("povinný údaj")).toBeVisible(); // legenda hvězdiček
-  await expect(page.locator("#o-montage")).toHaveCount(0);
-  await expect(page.locator("#o-delivery")).toHaveCount(0);
+test("technik: kontakt → zakázka → položka → cena práce → k nacenění", async ({ page }) => {
+  await login(page, "111111");
 
-  // technik ve výběru „Stávající" nemá úpravy ani mazání zákazníků (jen admin)
-  await page.getByRole("tab", { name: "Stávající" }).click();
-  await expect(page.getByLabel("Vyhledat zákazníka")).toBeVisible();
-  await expect(page.getByRole("button", { name: /Smazat zákazníka/ })).toHaveCount(0);
-  await page.getByRole("tab", { name: "Nový zákazník" }).click();
-  await page.getByLabel("Firma / jméno a příjmení").fill(CLIENT_NAME);
-  await page.locator("#c-phone").fill("777123456");
-  await page.getByLabel("Adresa").fill("Testovací 12, Praha");
+  // Dnes: pozdrav a spodní navigace se třemi cíli
+  await expect(page.getByRole("navigation", { name: "Hlavní navigace" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Kontakty/ })).toBeVisible();
 
-  // adresa i e-mail jsou povinné — bez e-mailu se zakázka nezaloží
+  // nový kontakt — stačí jméno nebo telefon
+  await page.goto("/kontakty/novy");
+  await page.getByLabel("Jméno").fill(CONTACT);
+  await page.locator("#c-phone").fill("608 123 456");
+  await page.getByLabel("Místo").fill("Ostrava-Poruba");
+  await page.getByRole("button", { name: "Založit kontakt" }).click();
+  await expect(page.getByRole("heading", { name: CONTACT })).toBeVisible();
+
+  // poznámka zůstává u kontaktu
+  await page.getByLabel("Nová poznámka").fill("Volal kvůli sítím do oken.");
+  await page.getByRole("button", { name: "Přidat poznámku" }).click();
+  await expect(page.getByText("Volal kvůli sítím do oken.")).toBeVisible();
+
+  // zakázka vzniká zadáním termínu zaměření
+  await page.getByRole("button", { name: "Zadat termín zaměření" }).click();
   await page.getByRole("button", { name: "Založit zakázku" }).click();
-  await expect(page.getByText("Vyplňte e-mail.")).toBeVisible();
-  await page.getByLabel("E-mail").fill("novak@example.com");
+  await expect(page).toHaveURL(/\/zakazky\/[0-9a-f-]{36}$/);
+  orderUrl = page.url();
 
-  // místo montáže je defaultně shodné s adresou zákazníka (pole skryté)
-  await expect(page.locator("#o-address")).toHaveCount(0);
-  await page.getByRole("button", { name: "Založit zakázku" }).click();
+  // první položka se neobejde bez údajů zákazníka — appka tam pošle sama
+  await page.getByRole("button", { name: "＋ Položka" }).click();
+  await expect(page).toHaveURL(/\/zakaznik\?dal=polozka$/);
+  await page.locator("#u-email").fill("novak@example.cz");
+  await page.locator("#u-addr").fill("Nádražní 12, Ostrava");
+  await page.getByRole("button", { name: "Uložit a přidat položku" }).click();
 
-  await expect(page.getByRole("heading", { name: CLIENT_NAME })).toBeVisible();
-  await expect(page.locator(".status-badge")).toHaveText("Rozpracovaná");
-  // telefon se uložil s předvolbou a mezerami
-  await expect(page.getByText("+420 777 123 456")).toBeVisible();
+  // výběr produktu → formulář podle definice dodavatele
+  await expect(page.getByRole("heading", { name: "Co zaměřujeme" })).toBeVisible();
+  await page.locator(".product-tile").first().click();
+  await expect(page.getByText(/Povinná \d+\/\d+/)).toBeVisible();
 
-  // přidat produkt: nejdřív jen typ (fullscreen s návratem na zakázku)
-  await page.getByRole("link", { name: "+ Přidat produkt" }).click();
-  await expect(page.getByRole("link", { name: "← Zakázka" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Plissé žaluzie/ })).toBeEnabled();
-  await expect(page.getByRole("button", { name: /Venkovní rolety/ })).toBeDisabled();
-  await page.getByRole("button", { name: /Okenní sítě/ }).click();
-
-  // regrese: obsah na plnou šířku viewportu (auto-margin bug ve flexu)
-  const widths = await page.evaluate(() => ({
-    viewport: document.documentElement.clientWidth,
-    page: document.querySelector(".page")!.getBoundingClientRect().width,
-  }));
-  expect(widths.page).toBeGreaterThanOrEqual(widths.viewport - 1);
-
-  // formulář: legenda povinných polí + místnost jako první volba
-  await expect(page.getByText("povinný údaj")).toBeVisible();
-  await pickSheet(page, "room-select", "Kuchyně");
-
-  const sirka = page.locator("#f-sirka");
-  await expect(sirka).toHaveAttribute("inputmode", "numeric");
-  await sirka.fill("500");
-  await page.locator("#f-vyska").fill("500");
-  await expect(page.getByText("Plocha je pod minimálním účtovaným rozměrem 0,8 m².")).toBeVisible();
-
-  // žádné defaulty: síťovina i barva se musí zvolit; podmíněné RAL pole
-  await expect(page.locator("#f-ral")).toHaveCount(0);
-  await pickSheet(page, "f-barva_profilu", "RAL");
-  await expect(page.locator("#f-ral")).toBeVisible();
-  await expect(page.getByText("V barvě RAL je minimální účtovaný rozměr 2 m².")).toBeVisible();
-  await page.locator("#f-ral").fill("7035");
-  await pickSheet(page, "f-sitovina", "Standard");
-  await pickSheet(page, "f-barva_sitoviny", "Šedá");
-  await pickSheet(page, "f-typ_uchyceni", /^STANDARD$/);
-
-  // ořez lemu Ano → blokující poznámka
-  await pickSheet(page, "f-orez_lemu", /^Ano$/);
+  // místnost + rozměry + selecty
+  await page.locator(".chip", { hasText: "Kuchyně" }).first().click();
+  await page.locator("#f-sirka").fill("900");
+  await page.locator("#f-vyska").fill("1400");
+  for (const id of ["f-barva_profilu", "f-sitovina", "f-barva_sitoviny", "f-typ_uchyceni"]) {
+    await pickSheet(page, id);
+  }
   await page.getByRole("button", { name: "Uložit položku" }).click();
-  await expect(page.getByText("Uveďte do poznámky, která strana sítě se ořezává.")).toBeVisible();
-  await page.locator("#f-note").fill("ořez vpravo");
-  await page.getByRole("button", { name: "Uložit položku" }).click();
+  await expect(page).toHaveURL(orderUrl);
+  await expect(page.getByText("Kuchyně")).toBeVisible();
 
-  // zpět na zakázce: sekce Výpis produktů + karta v Kuchyni
-  await expect(page.getByRole("heading", { name: "Výpis produktů" })).toBeVisible();
-  await expect(page.locator(".item-card")).toHaveCount(1);
+  // bez ceny práce nejde odeslat — tlačítko vede na krok 2 ze 2
+  await page.getByRole("button", { name: "K nacenění — odeslat" }).click();
+  await expect(page).toHaveURL(/\/cena$/);
+  await expect(page.getByText("Krok 2 ze 2")).toBeVisible();
+  await page.locator(".preset", { hasText: "Půl dne" }).click();
+  await page.getByRole("button", { name: "Odeslat k nacenění" }).click();
 
-  // duplikace
-  await page.getByRole("button", { name: "Duplikovat položku" }).click();
-  await expect(page.locator(".item-card")).toHaveCount(2);
-
-  // REGRESE 409: editace duplikované položky musí projít
-  await page.locator(".item-card").nth(1).getByRole("link", { name: "Upravit položku" }).click();
-  await page.locator("#f-vyska").fill("600");
-  await page.getByRole("button", { name: "Uložit změny" }).click();
-  await expect(page.getByRole("heading", { name: "Výpis produktů" })).toBeVisible();
-  await expect(page.getByText("Položku mezitím upravil někdo jiný.")).toHaveCount(0);
-  await expect(page.getByText("500 × 600 mm")).toBeVisible();
-
-  // přesun kopie do jiné místnosti (předvolba Ložnice)
-  await page.locator(".item-card").nth(1).getByRole("link", { name: "Upravit položku" }).click();
-  await pickSheet(page, "room-select", "Ložnice");
-  await page.getByRole("button", { name: "Uložit změny" }).click();
-  await expect(page.getByRole("heading", { name: "Ložnice" })).toBeVisible();
-
-  // Plissé (3. produkt): podmíněná pole — DaN → spodní látka; vynášecí set × BM
-  await page.getByRole("link", { name: "+ Přidat produkt" }).click();
-  await page.getByRole("button", { name: /Plissé žaluzie/ }).click();
-  await pickSheet(page, "room-select", "Kuchyně");
-  await page.locator("#f-sirka").fill("800");
-  await page.locator("#f-vyska").fill("1200");
-  await expect(page.locator("#f-cislo_latky_spodni")).toHaveCount(0);
-  await pickSheet(page, "f-provedeni", /^DaN$/);
-  await expect(page.locator("#f-cislo_latky_spodni")).toBeVisible(); // DaN → spodní látka
-  await pickSheet(page, "f-barva_profilu", "Bílá RAL 9003");
-  await page.locator("#f-cislo_latky_horni").fill("10306");
-  await page.locator("#f-cislo_latky_spodni").fill("10307");
-  await expect(page.locator("#f-barva_vs")).toHaveCount(0);
-  await pickSheet(page, "f-vynaseci_set", /^Ano$/);
-  await expect(page.locator("#f-barva_vs")).toBeVisible();
-  await expect(page.locator("#f-bm")).toHaveCount(0); // VS a BM se vylučují
-  await pickSheet(page, "f-barva_vs", "Šedá");
-  await pickSheet(page, "f-madlo", "Klasické");
-  await pickSheet(page, "f-pocet_madel", /^2$/);
-  await pickSheet(page, "f-str_uchyceni", "Žádné");
-  await pickSheet(page, "f-ovladaci_tyc", /^Ne$/);
-  await page.getByRole("button", { name: "Uložit položku" }).click();
-  await expect(page.getByRole("heading", { name: "Výpis produktů" })).toBeVisible();
-  await expect(page.getByText("Plissé žaluzie")).toBeVisible();
-
-  // podpis zákazníka: fullscreen pad → tah prstem → uložit → malý štítek
-  await page.getByRole("button", { name: /^Podepsat/ }).click();
-  await expect(page.getByRole("dialog", { name: "Podpis zákazníka" })).toBeVisible();
-  await expect(page.getByText("Otočte telefon na šířku")).toBeVisible(); // mobilní viewport = na výšku
-  await expect(page.getByRole("button", { name: "Uložit podpis" })).toBeDisabled();
-  const sigBox = (await page.locator(".signature-canvas").boundingBox())!;
-  await page.mouse.move(sigBox.x + 30, sigBox.y + sigBox.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(sigBox.x + 110, sigBox.y + sigBox.height / 2 - 40, { steps: 6 });
-  await page.mouse.move(sigBox.x + 190, sigBox.y + sigBox.height / 2 + 30, { steps: 6 });
-  await page.mouse.up();
-  await page.getByRole("button", { name: "Uložit podpis" }).click();
-  await expect(page.getByText("✓ Podepsáno")).toBeVisible();
-
-  // technik nemá mazání zakázky (jen admin)
-  await expect(page.getByRole("button", { name: /Smazat zakázku/ })).toHaveCount(0);
-
-  // zaměřeno → k nacenění (dvojtap potvrzení, jen vpřed); další fáze je na adminovi
-  await page.getByRole("button", { name: /Zaměřeno/ }).click();
-  await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
-  await expect(page.locator(".status-badge").first()).toHaveText("K nacenění");
-  await expect(page.getByRole("button", { name: /Zaměřeno/ })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Naceněno/ })).toHaveCount(0); // technik nenacení
-
-  await page.getByRole("button", { name: /Odhlásit/ }).click();
-  await expect(page).toHaveURL(/\/login/);
+  await expect(page).toHaveURL(orderUrl);
+  await expect(page.getByText("Čeká na kancelář")).toBeVisible();
 });
 
-test("admin: objedná, vidí počty kusů, exporty a statistiky", async ({ page }) => {
-  await page.goto("/login");
-  await page.getByLabel("Přihlašovací kód").fill("999999");
-  await expect(page.getByRole("link", { name: "+ Nová zakázka" })).toBeVisible();
+test("technik cenu zakázky nevidí ani v API", async ({ request }) => {
+  await request.post("/api/login", { data: { code: "111111" } });
+  const id = orderUrl.split("/").pop();
+  const res = await request.get(`/api/orders/${id}`);
+  const body = (await res.json()) as { order: Record<string, unknown> };
+  expect(body.order).not.toHaveProperty("price_customer");
+  expect(body.order.price_montage).toBeTruthy();
+});
 
-  // seznam: filtr stavů jako chipy (Vše default) + hledání
-  await page.getByRole("link", { name: "Zakázky" }).click();
-  await expect(page.getByRole("tab", { name: "Vše" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tab", { name: "Rozpracovaná" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "K nacenění" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "K montáži" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Hotovo" })).toBeVisible();
-  await page.getByLabel("Hledat v zakázkách").fill("e2e novak");
-  // štítek podpisu je vidět už v seznamu (zakázka podepsaná z technik testu)
-  const card = page.getByRole("link", { name: new RegExp(CLIENT_NAME) }).first();
-  await expect(card).toContainText("✓ Podepsáno");
-  await card.click();
+// Kancelář pracuje na desktopu — na telefonu vidí technikův pohled (zadání §1).
+test.describe("kancelář (desktop)", () => {
+  test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
 
-  // rámeček exportů (počet kusů + deaktivovaní výrobci) je na spodu stránky
-  await expect(page.getByText(/kusy \(ks = počet položek\)/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "Export JackWest" })).toBeDisabled();
-  const boxY = await page
-    .locator(".admin-actions")
-    .evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-  const listY = await page
-    .locator(".room-section")
-    .first()
-    .evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-  expect(boxY).toBeGreaterThan(listY);
+  test("nacenění → objednáno", async ({ page }) => {
+    await login(page, "999999");
+    await page.goto(orderUrl);
 
-  // xlsx export je odstraněný — žádné tlačítko, routa 404
-  const orderId = page.url().split("/zakazky/")[1]!;
-  await expect(page.getByRole("button", { name: /xlsx/ })).toHaveCount(0);
-  expect((await page.request.get(`/export/montazni-list/${orderId}`)).status()).toBe(404);
+    // panel fáze: cena zakázky + termín dodání, teprve pak Objednáno
+    await expect(page.getByRole("button", { name: "Objednáno" })).toBeDisabled();
+    await page.locator("#p-cena").fill("18400");
+    await page.locator("#p-cena").blur();
+    await page.getByRole("button", { name: /Vyberte datum/ }).click();
+    await page.locator(".calendar-day:not(:disabled)").last().click();
+    await page.getByRole("button", { name: "Objednáno" }).click();
+    await expect(page.getByText("K montáži").first()).toBeVisible();
+  });
+});
 
-  // PDF export: zamčený, dokud chybí exportní údaje (podpis už je z technik testu)
-  const pdfButton = page.getByRole("button", { name: /Export PDF/ });
-  await expect(pdfButton).toBeDisabled();
-  await expect(
-    page.getByText(/Doplňte nejdřív: číslo montáže, číslo zakázky, číslo faktury, termín dodání/),
-  ).toBeVisible();
+test("technik: montáž → podpis → hotovo", async ({ page }) => {
+  await login(page, "111111");
+  await page.goto(orderUrl);
+  await expect(page.getByText("Termín dodání")).toBeVisible();
+  await page.getByRole("button", { name: /Zadat termín/ }).click();
+  await page.getByRole("button", { name: "Uložit termín" }).click();
 
-  // REGRESE (hlášeno z produkce): povinná pole karty zákazníka se hlídají
-  // PŘED odesláním — dřív prošel PATCH zakázky, karta spadla na validaci
-  // a druhý pokus o uložení skončil falešným 409 „upravil někdo jiný".
-  await page.getByRole("button", { name: "Upravit ✎" }).click();
-  await page.locator("#c-address").fill("");
-  await page.getByRole("button", { name: "Uložit" }).click();
-  await expect(page.getByText("Vyplňte adresu.")).toBeVisible();
-  await page.locator("#c-address").fill("Testovací 12, Praha");
-  await page.getByRole("button", { name: "Uložit" }).click();
-  await expect(page.locator("#c-address")).toHaveCount(0); // editor se zavřel, žádný 409
+  // podpis: bez něj se Hotovo neodešle
+  await page.getByRole("button", { name: "Podepsat" }).click();
+  await expect(page).toHaveURL(/\/montaz$/);
+  await expect(page.getByRole("button", { name: "Nejdřív podpis" })).toBeDisabled();
 
-  // údaje pro export: samostatný formulář pod PDF tlačítkem; uložit jde i rozpracované
-  await page.getByRole("button", { name: "Údaje pro export ✎" }).click();
-  await page.locator("#x-montage").fill("E2E-MON-1");
-  await page.locator("#x-number").fill("E2E-ZAK-1");
-  await page.getByRole("button", { name: "Uložit" }).click();
-  await expect(page.locator("#x-montage")).toHaveCount(0);
-  await expect(pdfButton).toBeDisabled(); // pořád nekompletní
-  await expect(page.getByText(/Doplňte nejdřív: číslo faktury, termín dodání/)).toBeVisible();
-
-  await page.getByRole("button", { name: "Údaje pro export ✎" }).click();
-  await page.locator("#x-invoice").fill("E2E-FA-1");
-  await page.locator("#x-delivery").fill("2026-08-20");
-  await page.locator("#x-price-ex").fill("10 000 Kč");
-  await page.locator("#x-price-vat").fill("2 100 Kč");
-  await page.locator("#x-price-montage").fill("1 500 Kč");
-  await page.locator("#x-price-total").fill("13 600 Kč");
-  await page.locator("#x-price-deposit").fill("9 520 Kč");
-  await page.locator("#x-price-balance").fill("4 080 Kč");
-  await page.locator("#x-montage-by").fill("Jakub Svoboda");
-  await page.getByRole("button", { name: "Uložit" }).click();
-  await expect(pdfButton).toBeEnabled();
-
-  const pdfRes = await page.request.get(`/export/montazni-list-pdf/${orderId}`);
-  expect(pdfRes.status()).toBe(200);
-  expect(pdfRes.headers()["content-type"]).toBe("application/pdf");
-  expect((await pdfRes.body()).subarray(0, 5).toString()).toBe("%PDF-");
-
-  // admin protlačí zbývající fáze: nacenění → objednávka → montáž → hotovo
-  for (const [label, expected] of [
-    [/Naceněno/, "K objednávce"],
-    [/Objednáno/, "K montáži"],
-    [/Namontováno/, "Hotovo"],
-  ] as const) {
-    await page.getByRole("button", { name: label }).click();
-    await page.getByRole("button", { name: "Potvrdit — nejde vrátit zpět" }).click();
-    await expect(page.locator(".status-badge").first()).toHaveText(expected);
+  await page.getByRole("button", { name: "Podepsat" }).click();
+  const canvas = page.locator("canvas.signature-canvas");
+  const box = (await canvas.boundingBox())!;
+  await page.mouse.move(box.x + 40, box.y + box.height / 2);
+  await page.mouse.down();
+  for (let i = 1; i < 10; i++) {
+    await page.mouse.move(box.x + 40 + i * 20, box.y + box.height / 2 + Math.sin(i) * 20);
   }
+  await page.mouse.up();
+  await page.getByRole("button", { name: /Uložit podpis/ }).click();
 
-  // statistiky: jen měsíc (žádný týden), „Podle uživatelů", nenulové počty
-  await page.goto("/statistiky");
-  await expect(page.getByRole("tab", { name: "Týden" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Podle uživatelů" })).toBeVisible();
-  await expect(page.getByText(/Vyměřeno = založení/)).toHaveCount(0);
-  const zalozeno = page.locator(".stats-total").first().locator(".stats-total-num");
-  const objednano = page.locator(".stats-total").nth(1).locator(".stats-total-num");
-  await expect
-    .poll(async () => Number(await zalozeno.textContent()), { timeout: 10_000 })
-    .toBeGreaterThan(0);
-  expect(Number(await objednano.textContent())).toBeGreaterThan(0);
+  await page.getByRole("button", { name: "✓ Hotovo" }).click();
+  await expect(page).toHaveURL(orderUrl);
+  // technik vidí fakturaci jako hotovou práci
+  await expect(page.getByText("Hotovo").first()).toBeVisible();
+});
 
-  // admin smaže zakázku (dvojtap) → návrat na seznam, zakázka pryč
-  await page.goto(`/zakazky/${orderId}`);
-  await page.getByRole("button", { name: /Smazat zakázku/ }).click();
-  await page.getByRole("button", { name: /Opravdu smazat/ }).click();
-  await expect(page).toHaveURL(/\/zakazky$/);
-  await page.getByLabel("Hledat v zakázkách").fill(CLIENT_NAME);
-  await expect(page.getByRole("link", { name: new RegExp(CLIENT_NAME) })).toHaveCount(0);
+// Fakturace přijde na řadu, až technik odevzdá podepsanou montáž.
+test.describe("kancelář: fakturace (desktop)", () => {
+  test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
 
-  // správa zákazníků ve výběru Stávající (jen admin): tužka otevře editaci,
-  // koš (dvojtap) archivuje — zákazník zmizí ze seznamu, zakázky ho drží dál
-  await page.goto("/zakazky/nova");
-  await page.getByRole("tab", { name: "Stávající" }).click();
-  await page.getByLabel("Vyhledat zákazníka").fill(CLIENT_NAME);
-  const clientRow = page.locator(".picker-row", { hasText: CLIENT_NAME });
-  await expect(clientRow).toHaveCount(1);
+  test("faktura odemkne montážní list", async ({ page }) => {
+    await login(page, "999999");
+    await page.goto(orderUrl);
+    await expect(page.getByRole("button", { name: "Vystavit montážní list" })).toBeDisabled();
+    await page.locator("#p-fa").fill(`E2E-${SUFFIX}`);
+    await page.locator("#p-fa").blur();
+    await expect(page.getByRole("button", { name: "Vystavit montážní list" })).toBeEnabled();
 
-  await clientRow.getByRole("button", { name: /Upravit zákazníka/ }).click();
-  await expect(page.getByRole("dialog", { name: /Upravit zákazníka/ })).toBeVisible();
-  await page.locator(".client-edit-sheet .sheet-close").click();
-
-  await clientRow.getByRole("button", { name: /Smazat zákazníka/ }).click();
-  await clientRow.getByRole("button", { name: "Opravdu?" }).click();
-  await expect(page.locator(".picker-row", { hasText: CLIENT_NAME })).toHaveCount(0);
-
-  // nastavení notifikací: zkušební e-mail hlásí konkrétní důvod, proč (ne)odešel
-  await page.goto("/admin");
-  await page.locator("#s-email").fill("");
-  await page.getByRole("button", { name: "Uložit nastavení" }).click();
-  await page.getByRole("button", { name: "Poslat zkušební e-mail" }).click();
-  await expect(page.getByText("Nejdřív vyplňte a uložte adresu pro notifikace.")).toBeVisible();
-
-  await page.locator("#s-email").fill("objednavky@example.com");
-  await page.getByRole("button", { name: "Uložit nastavení" }).click();
-  await page.getByRole("button", { name: "Poslat zkušební e-mail" }).click();
-  // v testu není nastavený klíč → očekáváme hlášku o chybějící konfiguraci
-  await expect(page.getByText(/není nakonfigurované/)).toBeVisible();
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Vystavit montážní list" }).click();
+    expect((await download).suggestedFilename()).toMatch(/\.pdf$/);
+  });
 });

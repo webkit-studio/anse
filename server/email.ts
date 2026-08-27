@@ -1,7 +1,4 @@
-import type { OrderStatus } from "../shared/types";
-import { STATUS_LABELS } from "../shared/types";
-
-// E-mailové notifikace o změně stavu zakázky (Resend, free tier).
+// E-mailový kanál notifikací (Resend, free tier).
 // Bez RESEND_API_KEY se tiše přeskočí — appka funguje dál i bez e-mailů.
 // Odeslání nikdy neshodí požadavek: chyby se jen zalogují.
 
@@ -9,21 +6,17 @@ const RESEND_ENDPOINT = "https://api.resend.com/emails";
 const DEFAULT_FROM = "Anse <zakazky@anse.cz>";
 const SEND_TIMEOUT_MS = 4000;
 
-export interface StatusMailData {
-  orderId: string;
-  clientName: string;
-  installationAddress: string;
-  orderNumber: string;
-  montageNumber: string;
-  itemCount: number;
-  from: OrderStatus;
-  to: OrderStatus;
-  /** Kdo změnu provedl. */
-  userName: string;
-  /** Kdy (Europe/Prague, „5. 8. 2026 14:20"). */
-  changedAt: string;
-  /** Odkaz do aplikace na detail zakázky. */
-  orderUrl: string;
+export interface NotifMailData {
+  /** Nadpis zprávy — stejný text jako in-app notifikace. */
+  title: string;
+  /** Tělo zprávy (jedna věta). */
+  body: string;
+  /** Štítek události („Nové zaměření"). */
+  eventLabel: string;
+  /** Odkaz do aplikace (detail zakázky nebo kontaktu). */
+  url: string;
+  /** Popisek tlačítka. */
+  cta: string;
 }
 
 function escapeHtml(s: string): string {
@@ -42,34 +35,15 @@ export function parseRecipients(value: string): string[] {
     .filter((s) => s.includes("@"));
 }
 
-export function statusMailSubject(d: StatusMailData): string {
-  const number = d.orderNumber || d.montageNumber;
-  return `Anse: ${d.clientName}${number ? ` (${number})` : ""} — ${STATUS_LABELS[d.to]}`;
+export function notifMailSubject(d: NotifMailData): string {
+  return `Anse: ${d.eventLabel} — ${d.title}`;
 }
 
 /**
  * HTML šablona notifikace. Tabulkový layout a inline styly — e-mailoví
  * klienti (Outlook, Gmail) neumí flexbox ani <style> spolehlivě.
  */
-export function statusMailHtml(d: StatusMailData): string {
-  const rows: Array<[string, string]> = [
-    ["Zákazník", d.clientName],
-    ["Místo montáže", d.installationAddress || "—"],
-    ["Číslo zakázky", d.orderNumber || "—"],
-    ["Číslo montáže", d.montageNumber || "—"],
-    ["Položek", `${d.itemCount}`],
-  ];
-
-  const rowsHtml = rows
-    .map(
-      ([label, value]) => `
-              <tr>
-                <td style="padding:6px 0;color:#5b6663;font-size:14px;width:132px;vertical-align:top;">${escapeHtml(label)}</td>
-                <td style="padding:6px 0;color:#0e1513;font-size:14px;font-weight:600;">${escapeHtml(value)}</td>
-              </tr>`,
-    )
-    .join("");
-
+export function notifMailHtml(d: NotifMailData): string {
   return `<!doctype html>
 <html lang="cs">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -83,29 +57,14 @@ export function statusMailHtml(d: StatusMailData): string {
     </tr>
     <tr>
       <td style="background:#ffffff;border-radius:20px;padding:24px;">
-        <p style="margin:0 0 4px;font-size:13px;color:#5b6663;">Změna stavu zakázky</p>
-        <h1 style="margin:0 0 16px;font-size:20px;line-height:1.3;color:#0e1513;">${escapeHtml(d.clientName)}</h1>
+        <p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#5b6663;">${escapeHtml(d.eventLabel)}</p>
+        <h1 style="margin:0 0 12px;font-size:20px;line-height:1.3;color:#0e1513;">${escapeHtml(d.title)}</h1>
+        <p style="margin:0 0 22px;font-size:15px;line-height:1.5;color:#1b201f;">${escapeHtml(d.body)}</p>
 
-        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 18px;">
-          <tr>
-            <td style="background:#eef2f1;color:#5b6663;font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;">${escapeHtml(STATUS_LABELS[d.from])}</td>
-            <td style="padding:0 8px;color:#5b6663;font-size:15px;">&rarr;</td>
-            <td style="background:#0dc28b;color:#0e1513;font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;">${escapeHtml(STATUS_LABELS[d.to])}</td>
-          </tr>
-        </table>
-
-        <p style="margin:0 0 18px;font-size:14px;color:#1b201f;">
-          Změnil <strong>${escapeHtml(d.userName)}</strong> &middot; ${escapeHtml(d.changedAt)}
-        </p>
-
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #e4eae8;">
-          ${rowsHtml}
-        </table>
-
-        <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:22px;">
+        <table role="presentation" cellpadding="0" cellspacing="0">
           <tr>
             <td style="background:#0dc28b;border-radius:14px;">
-              <a href="${escapeHtml(d.orderUrl)}" style="display:inline-block;padding:13px 22px;color:#0e1513;font-size:15px;font-weight:700;text-decoration:none;">Otevřít zakázku</a>
+              <a href="${escapeHtml(d.url)}" style="display:inline-block;padding:13px 22px;color:#06231a;font-size:15px;font-weight:700;text-decoration:none;">${escapeHtml(d.cta)}</a>
             </td>
           </tr>
         </table>
@@ -113,7 +72,7 @@ export function statusMailHtml(d: StatusMailData): string {
     </tr>
     <tr>
       <td style="padding:14px 4px 0;color:#8a9490;font-size:12px;">
-        Automatická zpráva z interní aplikace Anse. Adresu pro notifikace změníte v aplikaci: Správa účtů → Nastavení.
+        Automatická zpráva z interní aplikace Anse. Které zprávy vám chodí e-mailem, si nastavíte v aplikaci (Notifikace → ⚙).
       </td>
     </tr>
   </table>
@@ -122,20 +81,11 @@ export function statusMailHtml(d: StatusMailData): string {
 }
 
 /** Prostá textová varianta (fallback pro klienty bez HTML). */
-export function statusMailText(d: StatusMailData): string {
-  return [
-    `Změna stavu zakázky: ${STATUS_LABELS[d.from]} → ${STATUS_LABELS[d.to]}`,
-    `Zákazník: ${d.clientName}`,
-    `Místo montáže: ${d.installationAddress || "—"}`,
-    `Číslo zakázky: ${d.orderNumber || "—"} · Číslo montáže: ${d.montageNumber || "—"}`,
-    `Položek: ${d.itemCount}`,
-    `Změnil: ${d.userName} (${d.changedAt})`,
-    "",
-    d.orderUrl,
-  ].join("\n");
+export function notifMailText(d: NotifMailData): string {
+  return [d.eventLabel, d.title, "", d.body, "", d.url].join("\n");
 }
 
-/** Výsledek odeslání — důvod selhání se hlásí adminovi česky (test v Nastavení). */
+/** Výsledek odeslání — důvod selhání se hlásí kanceláři česky (test v Nastavení). */
 export type SendResult =
   | { ok: true }
   | { ok: false; reason: "no_key" | "no_recipients" | "rejected" | "error"; detail?: string };
@@ -145,8 +95,8 @@ async function deliver(
   to: string[],
   mail: { subject: string; html: string; text: string },
 ): Promise<SendResult> {
-  // Pořadí kontrol = pořadí, v jakém to admin může spravit: adresu si doplní
-  // sám v Nastavení, klíč musí doplnit správce do env Netlify.
+  // Pořadí kontrol = pořadí, v jakém to jde spravit: adresu si doplní kancelář
+  // sama v Nastavení, klíč musí doplnit správce do env Netlify.
   const apiKey = process.env.RESEND_API_KEY;
   if (to.length === 0) return { ok: false, reason: "no_recipients" };
   if (!apiKey) return { ok: false, reason: "no_key" };
@@ -168,8 +118,8 @@ async function deliver(
       signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
     });
     if (!res.ok) {
-      // Tělo chyby Resendu je pro admina to nejcennější („doména není ověřená",
-      // „neplatný klíč"…) — vytáhneme z něj message, ale klíč nikdy nelogujeme.
+      // Tělo chyby Resendu je to nejcennější („doména není ověřená",
+      // „neplatný klíč"…) — vytáhneme z něj message, klíč nikdy nelogujeme.
       const body = await res.text().catch(() => "");
       console.error("Resend odmítl zprávu:", res.status, body);
       let detail = `HTTP ${res.status}`;
@@ -190,14 +140,14 @@ async function deliver(
 }
 
 /**
- * Odešle notifikaci o změně stavu.
- * Nikdy nehází — změna stavu se nesmí kvůli e-mailu vrátit zpět.
+ * Odešle notifikaci e-mailem.
+ * Nikdy nehází — akce v aplikaci se kvůli e-mailu nesmí vrátit zpět.
  */
-export async function sendStatusMail(to: string[], data: StatusMailData): Promise<SendResult> {
+export async function sendNotifMail(to: string[], data: NotifMailData): Promise<SendResult> {
   return deliver(to, {
-    subject: statusMailSubject(data),
-    html: statusMailHtml(data),
-    text: statusMailText(data),
+    subject: notifMailSubject(data),
+    html: notifMailHtml(data),
+    text: notifMailText(data),
   });
 }
 
@@ -217,9 +167,9 @@ export async function sendTestMail(to: string[], userName: string): Promise<Send
       <h1 style="margin:0 0 14px;font-size:20px;color:#0e1513;">Notifikace fungují ✅</h1>
       <p style="margin:0 0 8px;font-size:14px;color:#1b201f;">
         Tuhle zprávu vyžádal <strong>${escapeHtml(userName)}</strong> z Nastavení aplikace.
-        Na tuto adresu teď budou chodit upozornění při každé změně stavu zakázky.
+        E-mailem teď budou chodit ty události, které máte v Notifikacích zapnuté.
       </p>
-      <p style="margin:0;font-size:13px;color:#5b6663;">Adresy pro notifikace změníte v aplikaci: Správa účtů → Notifikace.</p>
+      <p style="margin:0;font-size:13px;color:#5b6663;">Nastavení najdete v aplikaci: Nastavení → Notifikace.</p>
     </td></tr>
   </table>
 </body>
@@ -228,6 +178,6 @@ export async function sendTestMail(to: string[], userName: string): Promise<Send
   return deliver(to, {
     subject: "Anse: zkušební notifikace",
     html,
-    text: `Zkušební zpráva z aplikace Anse. Vyžádal ${userName}. Notifikace o změnách stavu zakázek fungují.`,
+    text: `Zkušební zpráva z aplikace Anse. Vyžádal ${userName}. Notifikace fungují.`,
   });
 }

@@ -1,247 +1,374 @@
+import { orderCreateBody, orderUpdateBody, phaseBody } from "../../shared/api-contracts";
+import { czDate, items as czItems } from "../../shared/format";
 import {
-  orderCreateBody,
-  orderUpdateBody,
-  signatureBody,
-  statusBody,
-} from "../../shared/api-contracts";
-import {
-  ALLOWED_TRANSITIONS,
-  ORDER_STATUSES,
-  STATUS_LABELS,
-  type OrderStatus,
+  ARCHIVE_PHASES,
+  ORDER_PHASES,
+  PHASE_LABELS,
+  canTransition,
+  type OrderPhase,
+  type Role,
 } from "../../shared/types";
 import { sql } from "../db";
-import { parseRecipients, sendStatusMail } from "../email";
 import { ApiError, json } from "../http";
-import { makeRoute, parseBody, type Route } from "../router";
+import { appOrigin, notify } from "../notify";
+import { makeRoute, parseBody, type Ctx, type Route } from "../router";
 
-const ORDER_COLS = (db: ReturnType<typeof sql>) => db.unsafe(`
-  o.id, o.client_id, o.installation_address, o.montage_number, o.order_number, o.status,
-  to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
-  to_char(o.delivery_date, 'YYYY-MM-DD') as delivery_date,
-  o.invoice_number, o.price_ex_vat, o.price_vat, o.price_montage, o.price_total,
-  o.price_deposit, o.price_balance, o.montage_by,
-  o.note, o.signed_at, o.created_at, o.updated_at
-`);
-
-/** Pole exportních údajů — mění je jen admin (viz PATCH). */
-const ADMIN_ONLY_FIELDS = [
-  "invoice_number",
-  "price_ex_vat",
-  "price_vat",
-  "price_montage",
-  "price_total",
-  "price_deposit",
-  "price_balance",
-  "montage_by",
+// Cena zakázky pro zákazníka se technikovi NEPOSÍLÁ (ne že by se jen skryla
+// v UI) — technik je nezávislý dodavatel a účtuje si vlastní cenu práce.
+const OFFICE_ONLY_FIELDS = [
+  "price_customer",
+  "term_dodani",
+  "invoice_no",
+  "order_no",
+  "assignee_id",
 ] as const;
 
-const PNG_DATA_URL_PREFIX = "data:image/png;base64,";
-const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+function orderCols(db: ReturnType<typeof sql>, role: Role) {
+  return db.unsafe(`
+    o.id, o.contact_id, o.phase, o.assignee_id,
+    o.customer_name, o.customer_phone, o.customer_email,
+    o.addr_montaz, o.addr_fakt, o.ico, o.dic,
+    ${role === "kancelar" ? "o.price_customer," : ""}
+    o.price_montage,
+    to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
+    to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
+    to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
+    o.invoice_no, o.order_no, o.note, o.cancelled_reason,
+    o.created_at, o.updated_at
+  `);
+}
 
-/** Jen nevalidní uuid v URL se mapuje na „nenalezeno"; ostatní chyby DB musí
- *  propadnout do errorResponse (500 + log), ne se tiše tvářit jako 404. */
+/** Nevalidní uuid v URL = nenalezeno; ostatní chyby DB propadnou do 500. */
 function invalidUuidAsMissing(err: unknown): never[] {
   if ((err as { code?: string }).code === "22P02") return [];
   throw err;
 }
 
+/** Popisek zakázky do notifikací a e-mailů. */
+function orderLabel(row: { customer_name?: string; contact_name?: string; addr_montaz?: string }) {
+  const who = (row.customer_name || "").trim() || (row.contact_name || "").trim() || "Zakázka";
+  const where = (row.addr_montaz || "").trim();
+  return where ? `${who} · ${where}` : who;
+}
+
 /**
- * Notifikace o změně stavu na adresu z nastavení. Doplní data zakázky a odešle;
- * chyba odesílání se jen zaloguje — změna stavu už je uložená a nesmí se kvůli
- * e-mailu vrátit zpět.
+ * Co chybí k posunu do další fáze. Počítá server, UI to jen vypíše —
+ * ať se pravidlo nerozejde mezi mobilem, kanceláří a API.
  */
-async function notifyStatusChange(
-  req: Request,
-  change: { orderId: string; from: OrderStatus; to: OrderStatus; userName: string },
-): Promise<void> {
-  try {
-    const db = sql();
-    const [row] = await db`
-      select
-        c.name as client_name, o.installation_address, o.order_number, o.montage_number,
-        (select count(*)::int from items i where i.order_id = o.id) as item_count,
-        (select value from settings where key = 'admin_group_email') as admin_group_email,
-        to_char(now() at time zone 'Europe/Prague', 'FMDD. FMMM. YYYY HH24:MI') as changed_at
-      from orders o join clients c on c.id = o.client_id
-      where o.id = ${change.orderId}
-    `;
-    if (!row) return;
-
-    const recipients = parseRecipients(String(row.admin_group_email ?? ""));
-    if (recipients.length === 0) return;
-
-    const origin = process.env.APP_URL ?? new URL(req.url).origin;
-    await sendStatusMail(recipients, {
-      orderId: change.orderId,
-      clientName: row.client_name,
-      installationAddress: row.installation_address,
-      orderNumber: row.order_number,
-      montageNumber: row.montage_number,
-      itemCount: row.item_count,
-      from: change.from,
-      to: change.to,
-      userName: change.userName,
-      changedAt: row.changed_at,
-      orderUrl: `${origin}/zakazky/${change.orderId}`,
-    });
-  } catch (err) {
-    console.error("Notifikace o změně stavu selhala:", err instanceof Error ? err.message : err);
+export function blockingFor(
+  phase: OrderPhase,
+  o: {
+    customer_name: string;
+    customer_phone: string;
+    customer_email: string;
+    addr_montaz: string;
+    price_montage: string;
+    price_customer?: string;
+    term_dodani: string | null;
+    term_montaz: string | null;
+    invoice_no: string;
+  },
+  itemCount: number,
+  hasSignature: boolean,
+): string[] {
+  const missing: string[] = [];
+  if (phase === "k_zamereni") {
+    if (!o.customer_name.trim() || !o.customer_phone.trim() || !o.customer_email.trim() || !o.addr_montaz.trim()) {
+      missing.push("Údaje zákazníka");
+    }
+    if (itemCount === 0) missing.push("Aspoň jedna položka");
+    if (!o.price_montage.trim()) missing.push("Cena práce");
   }
+  if (phase === "k_naceneni") {
+    if (o.price_customer !== undefined && !o.price_customer.trim()) missing.push("Cena zakázky");
+    if (!o.term_dodani) missing.push("Termín dodání");
+  }
+  if (phase === "k_montazi") {
+    if (!o.term_montaz) missing.push("Termín montáže");
+    if (!hasSignature) missing.push("Podpis zákazníka");
+  }
+  if (phase === "k_fakturaci" && !o.invoice_no.trim()) missing.push("Číslo faktury");
+  return missing;
+}
+
+/** Technik vidí jen svoje zakázky — cizí ani neexistují. */
+async function loadOrderFor(ctx: Ctx, id: string) {
+  const db = sql();
+  const [order] = await db`
+    select ${orderCols(db, ctx.user.role)}, c.name as contact_name, c.phone as contact_phone,
+           u.name as assignee_name,
+           (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
+    from orders o
+    join contacts c on c.id = o.contact_id
+    left join users u on u.id = o.assignee_id
+    where o.id = ${id}
+  `.catch(invalidUuidAsMissing);
+  if (!order) throw new ApiError(404, "Zakázka nenalezena.");
+  if (ctx.user.role === "technik" && order.assignee_id !== ctx.user.id) {
+    throw new ApiError(404, "Zakázka nenalezena.");
+  }
+  return order;
 }
 
 export const orderRoutes: Route[] = [
-  makeRoute("GET", "/api/dashboard", async () => {
+  // Přehled kanceláře: fronty podle fází + počty.
+  makeRoute(
+    "GET",
+    "/api/overview",
+    async () => {
+      const db = sql();
+      const counts = await db`select phase, count(*)::int as n from orders group by phase`;
+      const phaseCounts = Object.fromEntries(ORDER_PHASES.map((p) => [p, 0])) as Record<
+        OrderPhase,
+        number
+      >;
+      for (const r of counts) phaseCounts[r.phase as OrderPhase] = r.n;
+
+      const queues = await db`
+        select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_id, o.price_customer,
+               u.name as assignee_name, c.name as contact_name, o.customer_name,
+               to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
+               to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
+               o.updated_at,
+               extract(day from now() - o.updated_at)::int as idle_days,
+               (select count(*)::int from items i where i.order_id = o.id) as item_count,
+               (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
+        from orders o
+        join contacts c on c.id = o.contact_id
+        left join users u on u.id = o.assignee_id
+        where o.phase in ('k_zamereni', 'k_naceneni', 'k_montazi', 'k_fakturaci')
+        order by o.updated_at asc
+        limit 200
+      `;
+      const [fresh] = await db`select count(*)::int as n from contacts where fresh and not cancelled`;
+
+      return json({ phase_counts: phaseCounts, queue: queues, fresh_contacts: fresh?.n ?? 0 });
+    },
+    { officeOnly: true },
+  ),
+
+  // Dnešek technika: co namontovat, co dokončit, komu se ozvat.
+  makeRoute("GET", "/api/today", async (_req, ctx) => {
     const db = sql();
-    const rows = await db`select status, count(*)::int as n from orders group by status`;
-    const counts = Object.fromEntries(ORDER_STATUSES.map((s) => [s, 0])) as Record<
-      OrderStatus,
-      number
-    >;
-    for (const r of rows) counts[r.status as OrderStatus] = r.n;
-    return json({ counts });
+    const mine = ctx.user.role === "technik";
+    const orders = await db`
+      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_id, u.name as assignee_name,
+             c.name as contact_name, o.customer_name,
+             to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
+             to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
+             o.updated_at,
+             (select count(*)::int from items i where i.order_id = o.id) as item_count,
+             (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
+      from orders o
+      join contacts c on c.id = o.contact_id
+      left join users u on u.id = o.assignee_id
+      where o.phase in ('k_zamereni', 'k_montazi')
+        and (${!mine} or o.assignee_id = ${ctx.user.id})
+      order by coalesce(o.term_montaz, o.measured_at, current_date), o.created_at
+    `;
+    const contacts = await db`
+      select id, name, phone, place, fresh, cancelled, cancelled_reason, created_at, updated_at
+      from contacts where fresh and not cancelled
+      order by created_at desc limit 20
+    `;
+    const [waiting] = await db`
+      select count(*)::int as n from orders
+      where phase in ('k_naceneni', 'k_fakturaci')
+        and (${!mine} or assignee_id = ${ctx.user.id})
+    `;
+
+    return json({
+      namontovat: orders.filter((o) => o.phase === "k_montazi"),
+      dokoncit: orders.filter((o) => o.phase === "k_zamereni"),
+      ozvat: contacts,
+      v_kancelari: waiting?.n ?? 0,
+    });
   }),
 
-  makeRoute("GET", "/api/orders", async (req) => {
+  makeRoute("GET", "/api/orders", async (req, ctx) => {
     const db = sql();
     const url = new URL(req.url);
     const q = (url.searchParams.get("search") ?? "").trim();
-    const status = url.searchParams.get("status");
-    if (status && !ORDER_STATUSES.includes(status as OrderStatus)) {
-      throw new ApiError(400, "Neznámý stav.");
+    const filter = url.searchParams.get("filter") ?? "vse";
+    const mine = ctx.user.role === "technik";
+
+    if (
+      filter !== "vse" &&
+      filter !== "archiv" &&
+      !ORDER_PHASES.includes(filter as OrderPhase)
+    ) {
+      throw new ApiError(400, "Neznámý filtr.");
     }
+    const phases =
+      filter === "vse"
+        ? null
+        : filter === "archiv"
+          ? ARCHIVE_PHASES
+          : [filter as OrderPhase];
 
     const rows = await db`
-      select
-        o.id, o.status, o.installation_address, o.montage_number, o.order_number,
-        o.signed_at, o.updated_at,
-        c.name as client_name,
-        (select count(*)::int from items i where i.order_id = o.id) as item_count
+      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_id, u.name as assignee_name,
+             c.name as contact_name, o.customer_name,
+             ${ctx.user.role === "kancelar" ? db`o.price_customer,` : db``}
+             to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
+             to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
+             o.updated_at,
+             (select count(*)::int from items i where i.order_id = o.id) as item_count,
+             (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
       from orders o
-      join clients c on c.id = o.client_id
-      where (${status ?? null}::text is null or o.status = ${status})
+      join contacts c on c.id = o.contact_id
+      left join users u on u.id = o.assignee_id
+      where (${!mine} or o.assignee_id = ${ctx.user.id})
+        and (${phases}::text[] is null or o.phase = any(${phases}))
         and (
           ${q} = '' or
           unaccent_cz(c.name) like '%' || unaccent_cz(${q}) || '%' or
-          unaccent_cz(o.installation_address) like '%' || unaccent_cz(${q}) || '%' or
-          unaccent_cz(c.address) like '%' || unaccent_cz(${q}) || '%' or
-          exists (
-            select 1 from items ii
-            join product_types pt on pt.id = ii.product_type_id
-            where ii.order_id = o.id
-              and (unaccent_cz(pt.name) like '%' || unaccent_cz(${q}) || '%'
-                   or unaccent_cz(pt.code) like '%' || unaccent_cz(${q}) || '%')
-          )
+          unaccent_cz(o.customer_name) like '%' || unaccent_cz(${q}) || '%' or
+          unaccent_cz(o.addr_montaz) like '%' || unaccent_cz(${q}) || '%'
         )
-      order by o.created_at desc
-      limit 100
+      order by o.updated_at desc
+      limit 200
     `;
     return json({ orders: rows });
   }),
 
+  // Zakázka vzniká vždy z kontaktu — zadáním termínu zaměření.
   makeRoute("POST", "/api/orders", async (req, ctx) => {
     const db = sql();
     const body = await parseBody(req, orderCreateBody);
 
+    // Technik si zakázku bere na sebe; kancelář může přidělit technika.
+    const assignee =
+      ctx.user.role === "technik" ? ctx.user.id : (body.assignee_id ?? ctx.user.id);
+
     const id = await db.begin(async (tx) => {
-      let clientId: string;
-      let clientAddress = "";
+      const [contact] = await tx`
+        select id, name, phone, place from contacts where id = ${body.contact_id} and not cancelled
+      `;
+      if (!contact) throw new ApiError(404, "Kontakt nenalezen.");
 
-      if ("id" in body.client) {
-        const [c] = await tx`select id, address from clients where id = ${body.client.id}`;
-        if (!c) throw new ApiError(404, "Klient nenalezen.");
-        clientId = c.id;
-        clientAddress = c.address;
-      } else {
-        const [c] = await tx`insert into clients ${tx(body.client.new)} returning id, address`;
-        clientId = c!.id;
-        clientAddress = c!.address;
-      }
+      // Fakturační údaje se předvyplní z poslední zakázky kontaktu
+      // (SVJ a stavební firmy mají pořád stejné IČO/DIČ i fakturační adresu).
+      const [prev] = await tx`
+        select customer_name, customer_phone, customer_email, addr_fakt, ico, dic
+        from orders where contact_id = ${contact.id}
+        order by created_at desc limit 1
+      `;
 
-      // Nová zakázka vzniká rovnou „Rozpracovaná" s předvyplněným termínem
-      // vyměření = dnešek (potvrzené rozhodnutí, 16. 7.).
-      const installation = body.installation_address || clientAddress;
       const [o] = await tx`
-        insert into orders (client_id, installation_address, montage_number, order_number,
-                            delivery_date, note, measured_at, created_by)
-        values (${clientId}, ${installation}, ${body.montage_number}, ${body.order_number},
-                ${body.delivery_date ?? null}, ${body.note}, current_date, ${ctx.user.id})
+        insert into orders (contact_id, assignee_id, phase, measured_at, created_by,
+                            customer_name, customer_phone, customer_email, addr_fakt, ico, dic)
+        values (${contact.id}, ${assignee}, 'k_zamereni', ${body.measured_at ?? null}, ${ctx.user.id},
+                ${prev?.customer_name ?? contact.name ?? ""}, ${prev?.customer_phone ?? contact.phone ?? ""},
+                ${prev?.customer_email ?? ""}, ${prev?.addr_fakt ?? ""},
+                ${prev?.ico ?? ""}, ${prev?.dic ?? ""})
         returning id
       `;
+      // Založením zakázky kontakt přestává být „ozvat se".
+      await tx`update contacts set fresh = false where id = ${contact.id}`;
       return o!.id as string;
     });
 
     return json({ id }, { status: 201 });
   }),
 
-  makeRoute("GET", "/api/orders/:id", async (_req, _ctx, params) => {
+  makeRoute("GET", "/api/orders/:id", async (_req, ctx, params) => {
     const db = sql();
-    const [order] = await db`
-      select ${ORDER_COLS(db)} from orders o where o.id = ${params.id!}
-    `.catch(invalidUuidAsMissing);
-    if (!order) throw new ApiError(404, "Zakázka nenalezena.");
+    const order = await loadOrderFor(ctx, params.id!);
 
-    const [client] = await db`
-      select c.id, c.name, c.contact_person, c.address, c.delivery_address, c.phone,
-             c.email, c.ico, c.dic, c.note, c.updated_at
-      from clients c where c.id = ${order.client_id}
-    `;
     const rooms = await db`
-      select id, order_id, name, note, position from rooms
-      where order_id = ${order.id} order by position
+      select id, order_id, name, position from rooms where order_id = ${order.id} order by position
     `;
     const items = await db`
-      select i.id, i.order_id, i.room_id, i.product_type_id, i.form_definition_id,
-             i.params, i.note, i.position, i.updated_at,
-             pt.code as product_type_code, pt.name as product_type_name
+      select i.id, i.order_id, i.room_id, i.kind, i.product_type_id, i.subcategory_id,
+             i.form_definition_id, i.params, i.note, i.defect_note, i.position, i.updated_at,
+             pt.name as product_type_name, pt.custom_name as product_type_custom_name,
+             s.name as subcategory_name, s.custom_name as subcategory_custom_name
       from items i
       join product_types pt on pt.id = i.product_type_id
+      left join subcategories s on s.id = i.subcategory_id
       where i.order_id = ${order.id}
       order by i.position
     `;
+    const photos = await db`
+      select id, item_id, kind, data, created_at from item_photos
+      where order_id = ${order.id} order by created_at
+    `;
     const defs = await db`
       select fd.id, fd.version, fd.definition from form_definitions fd
-      where fd.id in (select distinct form_definition_id from items where order_id = ${order.id})
+      where fd.id in (
+        select distinct form_definition_id from items
+        where order_id = ${order.id} and form_definition_id is not null
+      )
     `;
+
+    const blocking = blockingFor(
+      order.phase as OrderPhase,
+      order as never,
+      items.length,
+      !!order.signed_at,
+    );
 
     return json({
       order,
-      client,
       rooms,
-      items,
+      items: items.map((i) => ({
+        ...i,
+        product_type_name: i.product_type_custom_name || i.product_type_name,
+        subcategory_name: i.subcategory_custom_name || i.subcategory_name,
+        photos: photos.filter((p) => p.item_id === i.id),
+      })),
+      photos: photos.filter((p) => !p.item_id),
       definitions: Object.fromEntries(
         defs.map((d) => [d.id, { version: d.version, definition: d.definition }]),
       ),
+      blocking,
     });
   }),
 
   makeRoute("PATCH", "/api/orders/:id", async (req, ctx, params) => {
     const db = sql();
     const body = await parseBody(req, orderUpdateBody);
+    await loadOrderFor(ctx, params.id!);
 
-    if (ctx.user.role !== "admin" && ADMIN_ONLY_FIELDS.some((k) => body[k] !== undefined)) {
-      throw new ApiError(403, "Údaje pro export může měnit jen administrátor.");
+    if (ctx.user.role !== "kancelar" && OFFICE_ONLY_FIELDS.some((k) => body[k] !== undefined)) {
+      throw new ApiError(403, "Tyto údaje může měnit jen kancelář.");
     }
 
     const patch: Record<string, string | null> = {};
     for (const key of [
-      "installation_address",
-      "montage_number",
-      "order_number",
+      "customer_name",
+      "customer_phone",
+      "customer_email",
+      "addr_montaz",
+      "addr_fakt",
+      "ico",
+      "dic",
       "note",
-      ...ADMIN_ONLY_FIELDS,
+      "price_montage",
+      "measured_at",
+      "term_montaz",
+      ...OFFICE_ONLY_FIELDS,
     ] as const) {
-      if (body[key] !== undefined) patch[key] = body[key];
+      if (body[key] !== undefined) patch[key] = body[key] as string | null;
     }
-    if (body.measured_at !== undefined) patch.measured_at = body.measured_at;
-    if (body.delivery_date !== undefined) patch.delivery_date = body.delivery_date;
-
     if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
+
+    // Montáž nemůže být dřív než dodání — technik by čekal na zboží.
+    if (patch.term_montaz) {
+      const [row] = await db`
+        select to_char(term_dodani, 'YYYY-MM-DD') as term_dodani from orders where id = ${params.id!}
+      `;
+      const dodani = (patch.term_dodani as string | undefined) ?? row?.term_dodani;
+      if (dodani && String(patch.term_montaz) < String(dodani)) {
+        throw new ApiError(400, "Termín montáže nemůže být dřív než termín dodání.");
+      }
+    }
 
     const [updated] = await db`
       update orders o set ${db(patch)}
       where o.id = ${params.id!} and o.updated_at = ${body.expected_updated_at}
-      returning ${ORDER_COLS(db)}
+      returning ${orderCols(db, ctx.user.role)}
     `;
     if (!updated) {
       const [exists] = await db`select 1 from orders where id = ${params.id!}`;
@@ -251,8 +378,6 @@ export const orderRoutes: Route[] = [
     return json({ order: updated });
   }),
 
-  // Smazání zakázky — jen admin, nevratné. Místnosti, položky i historie stavů
-  // odchází kaskádou (FK on delete cascade); karta klienta zůstává.
   makeRoute(
     "DELETE",
     "/api/orders/:id",
@@ -264,76 +389,122 @@ export const orderRoutes: Route[] = [
       if (!deleted) throw new ApiError(404, "Zakázka nenalezena.");
       return json({ ok: true });
     },
-    { adminOnly: true },
+    { officeOnly: true },
   ),
 
-  // Podpis zákazníka — technik i admin, přepodepsání povolené (poslední platí).
-  // Záměrně bez optimistického zámku: uložení podpisu nesmí ztroskotat na tom,
-  // že mezitím někdo upravil hlavičku. Pozor: UPDATE spustí trigger updated_at,
-  // takže souběžně otevřená editace hlavičky dostane standardní 409 (akceptováno,
-  // data se srovnají obnovením).
-  makeRoute("POST", "/api/orders/:id/signature", async (req, ctx, params) => {
+  // Posun fáze — jen vpřed, compare-and-swap, blokace hlídá server.
+  makeRoute("POST", "/api/orders/:id/phase", async (req, ctx, params) => {
     const db = sql();
-    const body = await parseBody(req, signatureBody);
+    const body = await parseBody(req, phaseBody);
+    const to = body.to as OrderPhase;
+    const expected = body.expected as OrderPhase;
 
-    // Server nevěří klientovi: payload musí být skutečné PNG (magic bytes),
-    // jinak by poškozený „podpis" později shazoval PDF export montážního listu.
-    const bytes = Buffer.from(body.signature_png.slice(PNG_DATA_URL_PREFIX.length), "base64");
-    if (bytes.length < PNG_MAGIC.length || PNG_MAGIC.some((b, i) => bytes[i] !== b)) {
-      throw new ApiError(422, "Neplatný podpis. Zkuste ho nakreslit znovu.");
-    }
+    const order = await loadOrderFor(ctx, params.id!);
 
-    const [updated] = await db`
-      update orders o
-      set signature_png = ${body.signature_png}, signed_at = now(), signed_by = ${ctx.user.id}
-      where o.id = ${params.id!}
-      returning ${ORDER_COLS(db)}
-    `.catch(invalidUuidAsMissing);
-    if (!updated) throw new ApiError(404, "Zakázka nenalezena.");
-    return json({ order: updated });
-  }),
-
-  makeRoute("POST", "/api/orders/:id/status", async (req, ctx, params) => {
-    const db = sql();
-    const body = await parseBody(req, statusBody);
-    const to = body.to as OrderStatus;
-    const expected = body.expected as OrderStatus;
-
-    const allowed = ALLOWED_TRANSITIONS[ctx.user.role][expected] ?? [];
-    if (!allowed.includes(to)) {
+    if (!canTransition(ctx.user.role, expected, to)) {
       throw new ApiError(
         403,
-        `Přechod „${STATUS_LABELS[expected]} → ${STATUS_LABELS[to]}" nemůžete provést.`,
+        `Přechod „${PHASE_LABELS[expected]} → ${PHASE_LABELS[to]}" nemůžete provést.`,
       );
     }
+    if (to === "zruseno" && !body.reason.trim()) {
+      throw new ApiError(400, "Napište důvod zrušení.");
+    }
 
-    // Compare-and-swap: přepne se jen z očekávaného stavu; jinak 409.
+    const [items] = await db`select count(*)::int as n from items where order_id = ${order.id}`;
+    if (to !== "zruseno") {
+      // Kancelář kontroluje i cenu zakázky, kterou technikův pohled nezná.
+      const [full] = await db`
+        select customer_name, customer_phone, customer_email, addr_montaz, price_montage,
+               price_customer, invoice_no,
+               to_char(term_dodani, 'YYYY-MM-DD') as term_dodani,
+               to_char(term_montaz, 'YYYY-MM-DD') as term_montaz
+        from orders where id = ${order.id}
+      `;
+      const missing = blockingFor(expected, full as never, items?.n ?? 0, !!order.signed_at);
+      if (missing.length > 0) {
+        throw new ApiError(422, `Ještě chybí: ${missing.join(", ")}.`, { blocking: missing });
+      }
+    }
+
     const [updated] = await db`
-      update orders o set status = ${to}
-      where o.id = ${params.id!} and o.status = ${expected}
-      returning ${ORDER_COLS(db)}
+      update orders o set phase = ${to},
+        cancelled_reason = case when ${to} = 'zruseno' then ${body.reason} else o.cancelled_reason end
+      where o.id = ${params.id!} and o.phase = ${expected}
+      returning ${orderCols(db, ctx.user.role)}
     `;
-
     if (!updated) {
-      const [current] = await db`select status from orders where id = ${params.id!}`;
+      const [current] = await db`select phase from orders where id = ${params.id!}`;
       if (!current) throw new ApiError(404, "Zakázka nenalezena.");
       throw new ApiError(
         409,
-        `Zakázka je mezitím ve stavu „${STATUS_LABELS[current.status as OrderStatus]}". Načtěte ji prosím znovu.`,
+        `Zakázku mezitím posunul někdo jiný — je ve fázi „${PHASE_LABELS[current.phase as OrderPhase]}".`,
       );
     }
 
     await db`
-      insert into order_events (order_id, user_id, from_status, to_status)
+      insert into order_events (order_id, user_id, from_phase, to_phase)
       values (${params.id!}, ${ctx.user.id}, ${expected}, ${to})
     `;
 
-    await notifyStatusChange(req, {
-      orderId: params.id!,
-      from: expected,
-      to,
-      userName: ctx.user.name,
+    const label = orderLabel({
+      customer_name: order.customer_name,
+      contact_name: order.contact_name,
+      addr_montaz: order.addr_montaz,
     });
+    const url = `${appOrigin(req)}/zakazky/${params.id!}`;
+    const assignee = order.assignee_id ? [order.assignee_id as string] : [];
+
+    if (to === "k_naceneni") {
+      await notify({
+        event: "nove_zamereni",
+        subject: label,
+        vars: { "položky": czItems(items?.n ?? 0) },
+        orderId: params.id!,
+        actorId: ctx.user.id,
+        url,
+      });
+    } else if (to === "k_montazi") {
+      await notify({
+        event: "termin_dodani",
+        subject: label,
+        vars: { datum: czDate(updated.term_dodani) },
+        orderId: params.id!,
+        actorId: ctx.user.id,
+        userIds: assignee,
+        url,
+      });
+    } else if (to === "k_fakturaci") {
+      await notify({
+        event: "namontovano",
+        subject: label,
+        vars: {},
+        orderId: params.id!,
+        actorId: ctx.user.id,
+        url,
+      });
+    } else if (to === "zruseno") {
+      if (ctx.user.role === "technik") {
+        await notify({
+          event: "zruseno_technikem",
+          subject: label,
+          vars: { "důvod": body.reason },
+          orderId: params.id!,
+          actorId: ctx.user.id,
+          url,
+        });
+      } else {
+        await notify({
+          event: "zakazka_zrusena",
+          subject: label,
+          vars: {},
+          orderId: params.id!,
+          actorId: ctx.user.id,
+          userIds: assignee,
+          url,
+        });
+      }
+    }
 
     return json({ order: updated });
   }),

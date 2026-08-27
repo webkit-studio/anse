@@ -1,425 +1,503 @@
-import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import type { Params } from "@shared/form-schema";
+import type { ProductTypeRow, SubcategoryRow } from "@shared/types";
+import { ROOM_PRESETS, displayName } from "@shared/types";
 import type { Issue } from "@shared/form-engine";
-import { initialParams } from "@shared/form-engine";
-import type { FormDefinition, Params } from "@shared/form-schema";
-import { ROOM_PRESETS, type OrderDetail, type RoomRow } from "@shared/types";
-import { ApiFetchError, api, isConflict } from "../api/client";
+import { ApiFetchError, api } from "../api/client";
 import { useInvalidateOrder, useOrder, useProductTypes } from "../api/hooks";
+import { PhotoPicker, uploadPending, type PendingPhoto } from "../components/PhotoPicker";
 import { ProductIcon } from "../components/ProductIcon";
+import { TechDetail } from "../components/Shell";
 import { useToast } from "../components/Toast";
-import { ErrorBanner, Field, SelectSheet, Spinner, TextInput } from "../components/ui";
+import {
+  Button,
+  Chips,
+  ConfirmButton,
+  Field,
+  Spinner,
+  Textarea,
+  TextInput,
+  useOnline,
+} from "../components/ui";
 import { DefinitionForm } from "../form-engine/DefinitionForm";
 import { useDraft } from "../form-engine/useDraft";
 
-// Fullscreen krok bez app hlavičky: nahoře jen návrat na zakázku.
+type Kind = "config" | "oprava";
 
-function TopBar({ orderId, title }: { orderId: string; title: string }) {
+const KINDS = [
+  { value: "config", label: "Zaměření" },
+  { value: "oprava", label: "Oprava" },
+] as const;
+
+/** Fullscreen návod — otevírá se nad formulářem, ne místo něj. */
+function Navod({ text, onClose }: { text: string; onClose: () => void }) {
   return (
-    <header className="itemform-topbar">
-      <Link to={`/zakazky/${orderId}`} className="itemform-back">
-        ← Zakázka
-      </Link>
-      <span className="itemform-title">{title}</span>
-    </header>
-  );
-}
-
-// --- Výběr místnosti (první pole formuláře) ---------------------------------
-
-const NEW_ROOM = "__new__";
-
-function lastRoomKey(orderId: string) {
-  return `anse-last-room:${orderId}`;
-}
-
-function RoomSelect({
-  rooms,
-  value,
-  customName,
-  error,
-  onChange,
-  onCustomName,
-}: {
-  rooms: RoomRow[];
-  value: string; // id existující místnosti | název předvolby | __new__ | ""
-  customName: string;
-  error?: string;
-  onChange: (value: string) => void;
-  onCustomName: (name: string) => void;
-}) {
-  const options = [
-    ...rooms.map((r) => ({ value: r.id, label: r.name })),
-    ...ROOM_PRESETS.filter((p) => !rooms.some((r) => r.name.toLowerCase() === p.toLowerCase())).map(
-      (p) => ({ value: `name:${p}`, label: p }),
-    ),
-    { value: NEW_ROOM, label: "+ Nová místnost…" },
-  ];
-
-  return (
-    <section className="form-group">
-      <h2 className="form-group-title">Místnost</h2>
-      <Field
-        label="Kam produkt patří"
-        htmlFor="room-select"
-        required
-        messages={error ? [{ level: "error", message: error }] : []}
-      >
-        <SelectSheet
-          id="room-select"
-          value={value}
-          options={options}
-          placeholder="Vyberte místnost…"
-          onChange={onChange}
-        />
-      </Field>
-      {value === NEW_ROOM && (
-        <TextInput
-          aria-label="Název nové místnosti"
-          placeholder="Např. Pracovna"
-          autoFocus
-          value={customName}
-          onChange={(e) => onCustomName(e.target.value)}
-        />
-      )}
-    </section>
-  );
-}
-
-/** Převod hodnoty výběru na API payload { id } | { name }. */
-function roomPayload(value: string, customName: string): { id: string } | { name: string } | null {
-  if (value === NEW_ROOM) {
-    const name = customName.trim();
-    return name ? { name } : null;
-  }
-  if (value.startsWith("name:")) return { name: value.slice(5) };
-  return value ? { id: value } : null;
-}
-
-export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
-  const { orderId = "", itemId = "" } = useParams();
-  const order = useOrder(orderId);
-
-  if (order.isPending) {
-    return (
-      <div className="page-center">
-        <Spinner />
+    <div className="overlay" role="dialog" aria-modal="true" aria-label="Návod k zaměření">
+      <div className="overlay-head">
+        <strong>Návod k zaměření</strong>
+        <Button variant="ghost" onClick={onClose}>
+          Zavřít
+        </Button>
       </div>
-    );
-  }
-  if (order.isError || !order.data) {
-    return (
-      <div className="page">
-        <ErrorBanner message="Zakázka nenalezena." />
-      </div>
-    );
-  }
-
-  return mode === "new" ? (
-    <NewItem orderId={orderId} detail={order.data} />
-  ) : (
-    <EditItem orderId={orderId} itemId={itemId} detail={order.data} />
-  );
-}
-
-// --- Nová položka: 1) typ produktu → 2) formulář s místností -----------------
-
-function NewItem({ orderId, detail }: { orderId: string; detail: OrderDetail }) {
-  const productTypes = useProductTypes();
-  const navigate = useNavigate();
-  const toast = useToast();
-  const invalidate = useInvalidateOrder();
-
-  const [typeId, setTypeId] = useState<string | null>(null);
-
-  const remembered = localStorage.getItem(lastRoomKey(orderId)) ?? "";
-  const validRemembered =
-    detail.rooms.some((r) => r.id === remembered) || remembered.startsWith("name:") ? remembered : "";
-  const [room, setRoom] = useState<string>(
-    validRemembered || (detail.rooms.length === 1 ? detail.rooms[0]!.id : ""),
-  );
-  const [customRoomName, setCustomRoomName] = useState("");
-  const [roomError, setRoomError] = useState<string | undefined>();
-
-  const [busy, setBusy] = useState(false);
-  const [serverIssues, setServerIssues] = useState<Issue[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  const selectedType = productTypes.data?.product_types.find((t) => t.id === typeId);
-  const definition = selectedType?.definition as FormDefinition | undefined;
-
-  const draft = useDraft(typeId ? `new:${orderId}:${typeId}` : null);
-  const draftData = useMemo(() => draft.read(), [draft]);
-
-  const startParams = useMemo<Params>(() => {
-    if (!definition) return {};
-    return draftData?.params ?? initialParams(definition);
-  }, [definition, draftData]);
-
-  async function submit(params: Params, note: string) {
-    const payload = roomPayload(room, customRoomName);
-    if (!payload) {
-      setRoomError("Vyberte místnost.");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    setRoomError(undefined);
-    setBusy(true);
-    setError(null);
-    try {
-      await api("/api/items", {
-        method: "POST",
-        body: { order_id: orderId, product_type_id: typeId, room: payload, params, note },
-      });
-      localStorage.setItem(lastRoomKey(orderId), room === NEW_ROOM ? "" : room);
-      draft.clear();
-      invalidate(orderId);
-      toast("Položka uložena.");
-      navigate(`/zakazky/${orderId}`, { replace: true });
-    } catch (err) {
-      if (err instanceof ApiFetchError && err.issues) {
-        setServerIssues(err.issues);
-        setError(err.message);
-      } else {
-        setError(err instanceof Error ? err.message : "Uložení se nepodařilo.");
-      }
-      setBusy(false);
-    }
-  }
-
-  // Krok 1: výběr typu produktu
-  if (!definition) {
-    return (
-      <div className="app">
-        <TopBar orderId={orderId} title="Přidat produkt" />
-        <div className="page">
-          <h1>Typ produktu</h1>
-          {productTypes.isPending && <Spinner />}
-          {productTypes.data && (
-            <div className="type-tiles">
-              {productTypes.data.product_types.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  className="type-tile"
-                  disabled={!t.active}
-                  onClick={() => setTypeId(t.id)}
-                >
-                  <span className="type-tile-icon" aria-hidden="true">
-                    <ProductIcon name={t.name} />
-                  </span>
-                  <span className="type-tile-name">{t.name}</span>
-                  <span className="type-tile-code">{t.active ? t.code : "Připravujeme"}</span>
-                </button>
-              ))}
-            </div>
-          )}
+      <div className="overlay-body">
+        <p className="overlay-hint">Rozepsaná položka zůstává uložená.</p>
+        <div className="card card-pad" style={{ whiteSpace: "pre-wrap", lineHeight: 1.55 }}>
+          {text}
         </div>
-      </div>
-    );
-  }
-
-  // Krok 2: formulář (typ už nejde měnit — zpět = na zakázku)
-  return (
-    <div className="app">
-      <TopBar orderId={orderId} title={selectedType!.name} />
-      <div className="page">
-        {draftData && (
-          <div className="draft-banner">
-            Obnovena rozepsaná verze.{" "}
-            <button
-              type="button"
-              className="link-btn"
-              onClick={() => {
-                draft.clear();
-                const id = typeId;
-                setTypeId(null);
-                setTimeout(() => setTypeId(id), 0);
-              }}
-            >
-              Začít znovu
-            </button>
-          </div>
-        )}
-
-        <RoomSelect
-          rooms={detail.rooms}
-          value={room}
-          customName={customRoomName}
-          error={roomError}
-          onChange={(v) => {
-            setRoom(v);
-            setRoomError(undefined);
-          }}
-          onCustomName={setCustomRoomName}
-        />
-
-        <DefinitionForm
-          key={`${typeId}-${draftData ? "draft" : "fresh"}`}
-          definition={definition}
-          initialParams={startParams}
-          initialNote={draftData?.note ?? ""}
-          submitLabel="Uložit položku"
-          busy={busy}
-          serverIssues={serverIssues}
-          onSubmit={(params, note) => void submit(params, note)}
-          onChange={(params, note) => draft.save(params, note)}
-          autoFocusFirst={!draftData}
-        />
-        {error && <ErrorBanner message={error} />}
       </div>
     </div>
   );
 }
 
-// --- Editace položky: připnutá verze definice + přesun místnosti --------------
-
-function EditItem({
-  orderId,
-  itemId,
-  detail,
+/** Výběr místnosti: existující v zakázce, běžné presety, nebo vlastní název. */
+function RoomPicker({
+  rooms,
+  value,
+  onChange,
 }: {
-  orderId: string;
-  itemId: string;
-  detail: OrderDetail;
+  rooms: { id: string; name: string }[];
+  value: { id: string } | { name: string };
+  onChange: (v: { id: string } | { name: string }) => void;
 }) {
+  const [custom, setCustom] = useState("name" in value ? value.name : "");
+  const presets = ROOM_PRESETS.filter((p) => !rooms.some((r) => r.name.toLowerCase() === p.toLowerCase()));
+
+  return (
+    <div className="card card-pad">
+      <span className="field-label">Místnost *</span>
+      <div className="chips chips-scroll" style={{ margin: "8px 0" }}>
+        {rooms.map((r) => (
+          <button
+            key={r.id}
+            type="button"
+            className={`chip ${"id" in value && value.id === r.id ? "chip-active" : ""}`}
+            onClick={() => onChange({ id: r.id })}
+          >
+            {r.name}
+          </button>
+        ))}
+        {presets.map((p) => (
+          <button
+            key={p}
+            type="button"
+            className={`chip ${"name" in value && value.name === p ? "chip-active" : ""}`}
+            onClick={() => {
+              setCustom(p);
+              onChange({ name: p });
+            }}
+          >
+            {p}
+          </button>
+        ))}
+      </div>
+      <TextInput
+        aria-label="Vlastní název místnosti"
+        value={custom}
+        placeholder="…nebo napiš vlastní"
+        onChange={(e) => {
+          setCustom(e.target.value);
+          onChange({ name: e.target.value });
+        }}
+      />
+    </div>
+  );
+}
+
+export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
+  const { orderId = "", itemId = "" } = useParams();
+  const [search] = useSearchParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const detail = useOrder(orderId);
+  const types = useProductTypes();
   const invalidate = useInvalidateOrder();
-  const [busy, setBusy] = useState(false);
+
+  const [kind, setKind] = useState<Kind>("config");
+  const [productId, setProductId] = useState<string | null>(null);
+  const [subId, setSubId] = useState<string | null>(null);
+  const [room, setRoom] = useState<{ id: string } | { name: string }>(
+    search.get("room") ? { id: search.get("room")! } : { name: "" },
+  );
+  const [defect, setDefect] = useState("");
+  const [note, setNote] = useState("");
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
   const [serverIssues, setServerIssues] = useState<Issue[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [conflict, setConflict] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [navod, setNavod] = useState(false);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const touchedRef = useRef(false);
+  const online = useOnline();
 
-  const item = detail.items.find((i) => i.id === itemId);
-  const pinned = item ? detail.definitions[item.form_definition_id] : undefined;
+  const d = detail.data;
+  const item = mode === "edit" ? d?.items.find((i) => i.id === itemId) : undefined;
 
-  const [room, setRoom] = useState<string>(item?.room_id ?? "");
-  const [customRoomName, setCustomRoomName] = useState("");
-  const [roomError, setRoomError] = useState<string | undefined>();
+  // Blokující krok: údaje zákazníka se vyplňují před první položkou.
+  useEffect(() => {
+    if (mode !== "new" || !d || detail.isFetching) return;
+    if (d.items.length === 0 && d.blocking.includes("Údaje zákazníka")) {
+      navigate(`/zakazky/${orderId}/zakaznik?dal=polozka`, { replace: true });
+    }
+  }, [mode, d, detail.isFetching, navigate, orderId]);
+  const productTypes = types.data?.product_types ?? [];
 
-  const draft = useDraft(item ? `edit:${item.id}` : null);
-  const draftData = useMemo(() => draft.read(), [draft]);
+  // Editace: produkt, podkategorie i verze definice jsou dané položkou.
+  const product: ProductTypeRow | undefined = item
+    ? productTypes.find((p) => p.id === item.product_type_id)
+    : (productTypes.find((p) => p.id === productId) ?? undefined);
+  const sub: SubcategoryRow | undefined = item
+    ? product?.subcategories.find((s) => s.id === item.subcategory_id)
+    : product?.subcategories.find((s) => s.id === subId);
 
-  if (!item || !pinned) {
-    return (
-      <div className="page">
-        <ErrorBanner message="Položka nenalezena." />
-      </div>
-    );
-  }
+  const definition = item
+    ? (item.form_definition_id ? d?.definitions[item.form_definition_id]?.definition : undefined)
+    : sub?.definition;
 
-  async function submit(params: Params, note: string) {
+  const draftKey = mode === "edit" ? `item:${itemId}` : productId && subId ? `new:${orderId}:${subId}` : null;
+  const draft = useDraft(draftKey);
+  const initial = useMemo(() => {
+    if (item) return { params: item.params, note: item.note };
+    const saved = draft.read();
+    return { params: (saved?.params ?? {}) as Params, note: saved?.note ?? "" };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?.id, draftKey]);
+
+  const activeKind: Kind = item ? item.kind : kind;
+  const rooms = d?.rooms ?? [];
+  const roomValid = "id" in room ? true : room.name.trim() !== "";
+
+  async function saveConfig(params: Params, noteText: string) {
+    if (busy) return;
     setBusy(true);
-    setError(null);
-    setConflict(false);
+    setServerIssues([]);
     try {
-      // Přesun do nové/pojmenované místnosti: nejdřív ji založí prázdný
-      // požadavek? Ne — API bere room_id; novou místnost založíme přes
-      // vytvoření názvem jen u nové položky. Tady: id přímo, name → 400.
-      const payload = roomPayload(room, customRoomName);
-      if (!payload) {
-        setRoomError("Vyberte místnost.");
-        setBusy(false);
-        return;
-      }
-      let roomId: string | undefined;
-      if ("id" in payload) {
-        roomId = payload.id !== item!.room_id ? payload.id : undefined;
-      } else {
-        // předvolba/nová místnost, která na zakázce ještě neexistuje —
-        // založí se přes rooms API? Jednodušeji: pošleme name přes create-room
-        // trik: použijeme POST /api/items? Ne. Vytvoření místnosti řeší PATCH
-        // s room_id — místnost musí existovat. Založíme ji zvlášť:
-        const { room: created } = await api<{ room: RoomRow }>(`/api/orders/${orderId}/rooms`, {
-          method: "POST",
-          body: { name: payload.name },
+      if (mode === "edit" && item) {
+        await api(`/api/items/${item.id}`, {
+          method: "PATCH",
+          body: { params, note: noteText, expected_updated_at: item.updated_at },
         });
-        roomId = created.id;
-      }
-
-      await api(`/api/items/${itemId}`, {
-        method: "PATCH",
-        body: {
-          params,
-          note,
-          ...(roomId ? { room_id: roomId } : {}),
-          expected_updated_at: item!.updated_at,
-        },
-      });
-      draft.clear();
-      invalidate(orderId);
-      toast("Položka uložena.");
-      navigate(`/zakazky/${orderId}`, { replace: true });
-    } catch (err) {
-      if (isConflict(err)) {
-        setConflict(true);
-      } else if (err instanceof ApiFetchError && err.issues) {
-        setServerIssues(err.issues);
-        setError(err.message);
       } else {
-        setError(err instanceof Error ? err.message : "Uložení se nepodařilo.");
+        if (!roomValid) {
+          toast("Vyber místnost.");
+          setBusy(false);
+          return;
+        }
+        const { item: created } = await api<{ item: { id: string } }>("/api/items", {
+          method: "POST",
+          body: {
+            kind: "config",
+            order_id: orderId,
+            room,
+            product_type_id: product!.id,
+            subcategory_id: sub!.id,
+            params,
+            note: noteText,
+          },
+        });
+        if (photos.length) await uploadPending(orderId, created.id, "zamereni", photos);
       }
+      draft.clear();
+      await invalidate(orderId);
+      toast("Položka uložená");
+      navigate(`/zakazky/${orderId}`);
+    } catch (err) {
+      if (err instanceof ApiFetchError && err.issues) setServerIssues(err.issues);
+      toast(err instanceof Error ? err.message : "Položku se nepodařilo uložit.");
       setBusy(false);
     }
   }
 
-  return (
-    <div className="app">
-      <TopBar orderId={orderId} title={item.product_type_name} />
-      <div className="page">
-        {draftData && (
-          <div className="draft-banner">
-            Obnovena rozepsaná verze.{" "}
-            <button
-              type="button"
-              className="link-btn"
-              onClick={() => {
-                draft.clear();
-                location.reload();
-              }}
-            >
-              Zahodit a načíst uložené
-            </button>
+  async function saveRepair() {
+    if (busy) return;
+    if (!product) {
+      toast("Vyber produkt.");
+      return;
+    }
+    if (!roomValid) {
+      toast("Vyber místnost.");
+      return;
+    }
+    if (!defect.trim()) {
+      toast("Popiš závadu.");
+      return;
+    }
+    setBusy(true);
+    try {
+      if (mode === "edit" && item) {
+        await api(`/api/items/${item.id}`, {
+          method: "PATCH",
+          body: { defect_note: defect, note, expected_updated_at: item.updated_at },
+        });
+      } else {
+        const { item: created } = await api<{ item: { id: string } }>("/api/items", {
+          method: "POST",
+          body: {
+            kind: "oprava",
+            order_id: orderId,
+            room,
+            product_type_id: product.id,
+            defect_note: defect,
+            note,
+          },
+        });
+        if (photos.length) await uploadPending(orderId, created.id, "zavada", photos);
+      }
+      await invalidate(orderId);
+      toast("Oprava uložená");
+      navigate(`/zakazky/${orderId}`);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Opravu se nepodařilo uložit.");
+      setBusy(false);
+    }
+  }
+
+  async function duplicate() {
+    if (!item) return;
+    await api(`/api/items/${item.id}/duplicate`, { method: "POST" });
+    await invalidate(orderId);
+    toast("Zkopírováno — rozměry přepiš");
+    navigate(`/zakazky/${orderId}`);
+  }
+
+  async function remove() {
+    if (!item) return;
+    await api(`/api/items/${item.id}`, { method: "DELETE" });
+    await invalidate(orderId);
+    toast("Položka smazaná");
+    navigate(`/zakazky/${orderId}`);
+  }
+
+  // --- výběr produktu (jen nová položka) ------------------------------------
+  if (mode === "new" && (!product || (activeKind === "config" && !sub))) {
+    return (
+      <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
+        <h1 className="t-title" style={{ margin: "4px 0 0" }}>
+          {activeKind === "config" ? "Co zaměřujeme" : "Co opravujeme"}
+        </h1>
+        <Chips options={KINDS} value={kind} onChange={(k) => {
+          setKind(k);
+          setProductId(null);
+          setSubId(null);
+        }} />
+
+        {activeKind === "oprava" && (
+          <p className="muted t-body-s" style={{ margin: 0 }}>
+            Vyber produkt, vyfoť závadu a popiš ji.
+          </p>
+        )}
+
+        {types.isPending && <Spinner />}
+
+        {!product && (
+          <div className="product-grid">
+            {productTypes.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`product-tile ${p.active ? "" : "product-tile-off"}`}
+                onClick={() => {
+                  if (!p.active) {
+                    toast("Tenhle produkt teď není k dispozici.");
+                    return;
+                  }
+                  setProductId(p.id);
+                  const active = p.subcategories.filter((s) => s.active);
+                  // Jedna podkategorie = žádný zbytečný krok navíc.
+                  if (activeKind === "config" && active.length === 1) setSubId(active[0]!.id);
+                }}
+              >
+                <ProductIcon name={p.name} size={26} />
+                <span className="product-name">{displayName(p)}</span>
+                {p.note_for_tech && <span className="product-note">{p.note_for_tech}</span>}
+                {!p.active && <span className="muted t-caption">zatím nedostupné</span>}
+              </button>
+            ))}
           </div>
         )}
 
-        {conflict && (
-          <ErrorBanner
-            message="Položku mezitím upravil někdo jiný."
-            onRetry={() => {
-              draft.clear();
-              invalidate(orderId);
-              location.reload();
-            }}
+        {product && activeKind === "config" && (
+          <>
+            <h2 className="card-section-title" style={{ marginTop: 8 }}>
+              {displayName(product)}
+            </h2>
+            <div style={{ display: "grid", gap: 10 }}>
+              {product.subcategories.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={`product-tile ${s.active ? "" : "product-tile-off"}`}
+                  style={{ minHeight: 0 }}
+                  onClick={() => {
+                    if (!s.active) {
+                      toast("Tahle podkategorie teď není k dispozici.");
+                      return;
+                    }
+                    setSubId(s.id);
+                  }}
+                >
+                  <span className="product-name">{displayName(s)}</span>
+                  {s.note && <span className="product-note">{s.note}</span>}
+                  {s.field_count ? <span className="muted t-caption">{s.field_count} polí</span> : null}
+                </button>
+              ))}
+              {product.subcategories.length === 0 && (
+                <p className="muted t-body-s">Tenhle produkt zatím nemá formulář — přidej ho jako opravu.</p>
+              )}
+            </div>
+            <Button variant="ghost" onClick={() => setProductId(null)}>
+              ← Jiný produkt
+            </Button>
+          </>
+        )}
+      </TechDetail>
+    );
+  }
+
+  // --- oprava ----------------------------------------------------------------
+  if (activeKind === "oprava") {
+    return (
+      <TechDetail
+        back={`/zakazky/${orderId}`}
+        backLabel="Zakázka"
+        footer={
+          <Button variant="primary" onClick={() => void saveRepair()} disabled={busy}>
+            {busy ? "Ukládám…" : "Uložit opravu"}
+          </Button>
+        }
+      >
+        <div className="repair-card">
+          <span className="badge tone-wait">⟳ Oprava</span>
+          <h1 className="t-section" style={{ margin: "10px 0 0" }}>
+            {product ? displayName(product) : item?.product_type_name}
+          </h1>
+        </div>
+
+        {mode === "new" && <RoomPicker rooms={rooms} value={room} onChange={setRoom} />}
+
+        <div className="card card-pad">
+          <Field label="Popis závady" htmlFor="defect" required>
+            <Textarea
+              id="defect"
+              value={defect || item?.defect_note || ""}
+              rows={3}
+              onChange={(e) => setDefect(e.target.value)}
+              placeholder="Co je špatně, kde a od kdy…"
+            />
+          </Field>
+          <PhotoPicker
+            label="Foto závady *"
+            kind="zavada"
+            orderId={orderId}
+            itemId={item?.id}
+            saved={item?.photos ?? []}
+            pending={photos}
+            onPendingChange={setPhotos}
+            onUploaded={() => invalidate(orderId)}
+          />
+        </div>
+
+        {item && (
+          <ConfirmButton
+            label="Smazat položku"
+            confirmLabel="Opravdu smazat?"
+            className="order-delete"
+            onConfirm={() => void remove()}
           />
         )}
+      </TechDetail>
+    );
+  }
 
-        <RoomSelect
-          rooms={detail.rooms}
-          value={room}
-          customName={customRoomName}
-          error={roomError}
-          onChange={(v) => {
-            setRoom(v);
-            setRoomError(undefined);
-          }}
-          onCustomName={setCustomRoomName}
-        />
+  // --- konfigurace podle definice --------------------------------------------
+  if (!definition) {
+    return (
+      <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
+        <Spinner />
+      </TechDetail>
+    );
+  }
 
-        <DefinitionForm
-          definition={pinned.definition}
-          initialParams={draftData?.params ?? item.params}
-          initialNote={draftData?.note ?? item.note}
-          submitLabel="Uložit změny"
-          busy={busy}
-          serverIssues={serverIssues}
-          onSubmit={(params, note) => void submit(params, note)}
-          onChange={(params, note) => draft.save(params, note)}
-          autoFocusFirst={false}
-        />
-        {error && <ErrorBanner message={error} />}
+  const roomName =
+    "id" in room ? (rooms.find((r) => r.id === room.id)?.name ?? "") : room.name;
+  // Krátký nadpis: kategorie produktu + místnost (celý název podkategorie
+  // je i tak vidět ve výběru a v detailu zakázky).
+  const title = `${product ? displayName(product) : (item?.product_type_name ?? "")} · ${
+    item ? (rooms.find((r) => r.id === item.room_id)?.name ?? "") : roomName || "bez místnosti"
+  }`;
+
+  return (
+    <div className="tech">
+      <div className="tech-bar">
+        <Link to={`/zakazky/${orderId}`} className="back-btn">
+          ← Zakázka
+        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          {item && (
+            <Button variant="ghost" onClick={() => void duplicate()} aria-label="Duplikovat položku">
+              ⧉
+            </Button>
+          )}
+          {product?.note_for_tech && (
+            <Button variant="ghost" onClick={() => setNavod(true)}>
+              ◎ Návod
+            </Button>
+          )}
+        </div>
       </div>
+
+      {mode === "new" && (
+        <div className="tech-body" style={{ paddingBottom: 0 }}>
+          <RoomPicker rooms={rooms} value={room} onChange={setRoom} />
+        </div>
+      )}
+
+      <DefinitionForm
+        definition={definition}
+        initialParams={initial.params}
+        initialNote={initial.note}
+        title={title}
+        submitLabel={mode === "edit" ? "Uložit změny" : "Uložit položku"}
+        busy={busy}
+        serverIssues={serverIssues}
+        savedLabel={savedAt ? `Uloženo automaticky v ${savedAt}` : undefined}
+        offline={!online}
+        onChange={(params, noteText) => {
+          draft.save(params, noteText);
+          // indikátor „uloženo" až po první skutečné změně, ne hned po otevření
+          if (touchedRef.current) {
+            setSavedAt(new Date().toLocaleTimeString("cs-CZ", { hour: "numeric", minute: "2-digit" }));
+          }
+          touchedRef.current = true;
+        }}
+        onSubmit={(params, noteText) => void saveConfig(params, noteText)}
+      >
+        <section className="form-group">
+          <h2 className="form-group-title">Fotky</h2>
+          <PhotoPicker
+            label="Foto k položce"
+            kind="zamereni"
+            orderId={orderId}
+            itemId={item?.id}
+            saved={item?.photos ?? []}
+            pending={photos}
+            onPendingChange={setPhotos}
+            onUploaded={() => invalidate(orderId)}
+          />
+        </section>
+
+        {item && (
+          <ConfirmButton
+            label="Smazat položku"
+            confirmLabel="Opravdu smazat?"
+            className="order-delete"
+            onConfirm={() => void remove()}
+          />
+        )}
+      </DefinitionForm>
+
+      {navod && product?.note_for_tech && (
+        <Navod text={product.note_for_tech} onClose={() => setNavod(false)} />
+      )}
     </div>
   );
 }

@@ -22,7 +22,10 @@ function item(overrides: Partial<ListItemInput> = {}): ListItemInput {
   return {
     room_id: "r1",
     product_type_id: "pt-esd",
-    product_type_code: "ESD",
+    kind: "config" as const,
+    product_type_name: "Interiérová žaluzie",
+    subcategory_name: "Jack West · ESD",
+    defect_note: "",
     form_definition_id: DEF_ID,
     params: baseParams,
     note: "",
@@ -32,8 +35,8 @@ function item(overrides: Partial<ListItemInput> = {}): ListItemInput {
 }
 
 const rooms = [
-  { id: "r1", name: "Kuchyně", note: "", position: 1 },
-  { id: "r2", name: "Ložnice", note: "2. patro", position: 2 },
+  { id: "r1", name: "Kuchyně", position: 1 },
+  { id: "r2", name: "Ložnice", position: 2 },
 ];
 
 describe("aggregateForList", () => {
@@ -72,13 +75,12 @@ describe("aggregateForList", () => {
     expect(groups).toHaveLength(2);
     expect(groups[0]!.roomName).toBe("Kuchyně");
     expect(groups[1]!.roomName).toBe("Ložnice");
-    expect(groups[1]!.roomNote).toBe("2. patro");
   });
 
   it("sloupce se mapují přes printMap definice (surové hodnoty = kódy výrobce)", () => {
     const groups = aggregateForList(rooms, [item()], definitions);
     const row = groups[0]!.rows[0]!;
-    expect(row.stineni).toBe("ESD");
+    expect(row.stineni).toBe("Interiérová žaluzie · Jack West · ESD");
     expect(row.sirka).toBe("900");
     expect(row.vyska).toBe("1400");
     expect(row.barva).toBe("58");
@@ -89,13 +91,27 @@ describe("aggregateForList", () => {
   it("prázdné místnosti se vynechávají, pořadí dle position", () => {
     const groups = aggregateForList(
       [
-        { id: "r2", name: "Ložnice", note: "", position: 2 },
-        { id: "r1", name: "Kuchyně", note: "", position: 1 },
-        { id: "r3", name: "Prázdná", note: "", position: 3 },
+        { id: "r2", name: "Ložnice", position: 2 },
+        { id: "r1", name: "Kuchyně", position: 1 },
+        { id: "r3", name: "Prázdná", position: 3 },
       ],
       [item({ room_id: "r2" }), item({ room_id: "r1" })],
       definitions,
     );
     expect(groups.map((g) => g.roomName)).toEqual(["Kuchyně", "Ložnice"]);
+  });
+
+  it("opravy se nikdy neslučují — každá závada je jiná", () => {
+    const oprava = (position: number): ListItemInput => ({
+      ...item({ position }),
+      kind: "oprava",
+      form_definition_id: null,
+      params: {},
+      defect_note: "netěsní",
+    });
+    const groups = aggregateForList(rooms, [oprava(1), oprava(2)], definitions);
+    expect(groups[0]!.rows).toHaveLength(2);
+    expect(groups[0]!.rows[0]!.stineni).toContain("oprava");
+    expect(groups[0]!.rows[0]!.poznamka).toBe("netěsní");
   });
 });

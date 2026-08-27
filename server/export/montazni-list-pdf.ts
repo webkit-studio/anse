@@ -79,29 +79,25 @@ export function exportFilename(orderNumber: string, orderId: string): string {
 
 interface PdfOrder {
   id: string;
-  installation_address: string;
-  montage_number: string;
-  order_number: string;
-  invoice_number: string;
-  price_ex_vat: string;
-  price_vat: string;
+  addr_montaz: string;
+  addr_fakt: string;
+  order_no: string;
+  invoice_no: string;
+  price_customer: string;
   price_montage: string;
-  price_total: string;
-  price_deposit: string;
-  price_balance: string;
-  montage_by: string;
   measured_at: string | null;
-  delivery_date: string | null;
+  term_dodani: string | null;
+  term_montaz: string | null;
   signature_png: string | null;
+  signer_name: string;
   signed_date: string | null;
-  client_name: string;
-  contact_person: string;
-  address: string;
-  delivery_address: string;
-  phone: string;
-  email: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
   ico: string;
   dic: string;
+  contact_name: string;
+  assignee_name: string | null;
   created_by_name: string;
 }
 
@@ -311,53 +307,53 @@ export async function buildMontazniListPdf(
   const db = sql();
 
   const [order] = (await db`
-    select o.id, o.installation_address, o.montage_number, o.order_number, o.invoice_number,
-           o.price_ex_vat, o.price_vat, o.price_montage, o.price_total,
-           o.price_deposit, o.price_balance, o.montage_by,
+    select o.id, o.addr_montaz, o.addr_fakt, o.order_no, o.invoice_no,
+           o.price_customer, o.price_montage,
+           o.customer_name, o.customer_phone, o.customer_email, o.ico, o.dic,
            to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
-           to_char(o.delivery_date, 'YYYY-MM-DD') as delivery_date,
-           o.signature_png,
-           to_char(o.signed_at at time zone 'Europe/Prague', 'YYYY-MM-DD') as signed_date,
-           c.name as client_name, c.contact_person, c.address, c.delivery_address,
-           c.phone, c.email, c.ico, c.dic,
+           to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
+           to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
+           s.data as signature_png, s.signer_name,
+           to_char(s.signed_at at time zone 'Europe/Prague', 'YYYY-MM-DD') as signed_date,
+           c.name as contact_name,
+           a.name as assignee_name,
            u.name as created_by_name
     from orders o
-    join clients c on c.id = o.client_id
+    join contacts c on c.id = o.contact_id
     join users u on u.id = o.created_by
+    left join users a on a.id = o.assignee_id
+    left join signatures s on s.order_id = o.id
     where o.id = ${orderId}
   `) as unknown as [PdfOrder | undefined];
   if (!order) throw new ApiError(404, "Zakázka nenalezena.");
 
   const missing = missingForPdf({
-    montage_number: order.montage_number,
-    order_number: order.order_number,
-    invoice_number: order.invoice_number,
-    delivery_date: order.delivery_date,
-    price_ex_vat: order.price_ex_vat,
-    price_vat: order.price_vat,
-    price_montage: order.price_montage,
-    price_total: order.price_total,
-    price_deposit: order.price_deposit,
-    price_balance: order.price_balance,
-    montage_by: order.montage_by,
+    invoice_no: order.invoice_no,
     signed: Boolean(order.signature_png),
   });
   if (missing.length > 0) {
-    throw new ApiError(400, `PDF montážního listu zatím nejde vytvořit — chybí: ${missing.join(", ")}.`);
+    throw new ApiError(400, `Montážní list zatím nejde vystavit — chybí: ${missing.join(", ")}.`);
   }
 
   const rooms = await db`
-    select id, name, note, position from rooms where order_id = ${orderId}
+    select id, name, position from rooms where order_id = ${orderId}
   `;
   const items = await db`
-    select i.room_id, i.product_type_id, i.form_definition_id, i.params, i.note, i.position,
-           pt.code as product_type_code
-    from items i join product_types pt on pt.id = i.product_type_id
+    select i.room_id, i.kind, i.product_type_id, i.subcategory_id, i.form_definition_id,
+           i.params, i.note, i.defect_note, i.position,
+           coalesce(nullif(pt.custom_name, ''), pt.name) as product_type_name,
+           coalesce(nullif(sc.custom_name, ''), sc.name) as subcategory_name
+    from items i
+    join product_types pt on pt.id = i.product_type_id
+    left join subcategories sc on sc.id = i.subcategory_id
     where i.order_id = ${orderId}
   `;
   const defRows = await db`
     select fd.id, fd.definition from form_definitions fd
-    where fd.id in (select distinct form_definition_id from items where order_id = ${orderId})
+    where fd.id in (
+      select distinct form_definition_id from items
+      where order_id = ${orderId} and form_definition_id is not null
+    )
   `;
   const definitions: Record<string, { definition: FormDefinition }> = {};
   for (const d of defRows) {
@@ -365,14 +361,17 @@ export async function buildMontazniListPdf(
   }
 
   const groups = aggregateForList(
-    rooms.map((r) => ({ id: r.id, name: r.name, note: r.note, position: r.position })),
+    rooms.map((r) => ({ id: r.id, name: r.name, position: r.position })),
     items.map((i) => ({
       room_id: i.room_id,
+      kind: i.kind,
       product_type_id: i.product_type_id,
-      product_type_code: i.product_type_code,
+      product_type_name: i.product_type_name,
+      subcategory_name: i.subcategory_name,
       form_definition_id: i.form_definition_id,
       params: i.params,
       note: i.note,
+      defect_note: i.defect_note,
       position: i.position,
     })),
     definitions,
@@ -388,10 +387,7 @@ export async function buildMontazniListPdf(
       ks: String(row.ks),
       strana: row.strana,
       ovladani: row.ovladani,
-      poznamka: [
-        idx === 0 ? `${g.roomName}${g.roomNote ? ` (${g.roomNote})` : ""}` : "",
-        row.poznamka,
-      ]
+      poznamka: [idx === 0 ? g.roomName : "", row.poznamka]
         .filter(Boolean)
         .join(" – "),
     })),
@@ -428,19 +424,20 @@ export async function buildMontazniListPdf(
   ctx.y = headerTop;
   drawText(ctx, "Objednavatel:", colRightX, 8.5, { color: GRAY });
   ctx.y -= 12;
-  const nameLine = order.contact_person
-    ? `${order.client_name} (${order.contact_person})`
-    : order.client_name;
-  const addressLine = order.delivery_address
-    ? `${order.address} / ${order.delivery_address}`
-    : order.address;
+  const nameLine = order.customer_name || order.contact_name;
   labeledLine(ctx, "Firma/Jméno:", nameLine, colRightX, colRightW);
-  labeledLine(ctx, "Adresa:", addressLine, colRightX, colRightW);
-  labeledLine(ctx, "Tel./e-mail:", [order.phone, order.email].filter(Boolean).join(" · "), colRightX, colRightW);
+  labeledLine(ctx, "Fakturační adresa:", order.addr_fakt || order.addr_montaz, colRightX, colRightW);
+  labeledLine(
+    ctx,
+    "Tel./e-mail:",
+    [order.customer_phone, order.customer_email].filter(Boolean).join(" · "),
+    colRightX,
+    colRightW,
+  );
   if (order.ico || order.dic) {
     labeledLine(ctx, "IČ/DIČ:", [order.ico, order.dic].filter(Boolean).join(" / "), colRightX, colRightW);
   }
-  labeledLine(ctx, "Místo montáže:", order.installation_address, colRightX, colRightW);
+  labeledLine(ctx, "Místo montáže:", order.addr_montaz, colRightX, colRightW);
 
   ctx.y = Math.min(ctx.y, leftBottom) - 6;
 
@@ -448,10 +445,10 @@ export async function buildMontazniListPdf(
   ensure(ctx, 30);
   const quarters = CONTENT_W / 4;
   const numbers: Array<[string, string]> = [
-    ["číslo montáže", order.montage_number],
-    ["číslo objednávky", order.order_number],
-    ["termín vyměření", czDate(order.measured_at)],
-    ["termín dodání", czDate(order.delivery_date)],
+    ["číslo zakázky", order.order_no],
+    ["termín zaměření", czDate(order.measured_at)],
+    ["termín dodání", czDate(order.term_dodani)],
+    ["termín montáže", czDate(order.term_montaz)],
   ];
   const numTop = ctx.y;
   for (const [i, [label, value]] of numbers.entries()) {
@@ -475,14 +472,10 @@ export async function buildMontazniListPdf(
   // --- ceny + FA ------------------------------------------------------------
   // Hodnoty z aplikace (gating zaručuje vyplnění); prázdné pole → tečkovaná
   // linka k ručnímu doplnění (obrana pro historická data).
-  ensure(ctx, 66);
+  ensure(ctx, 42);
   const priceLabels: Array<[string, string]> = [
-    ["cena bez DPH", order.price_ex_vat],
-    ["DPH", order.price_vat],
-    ["montáž", order.price_montage],
-    ["cena celkem", order.price_total],
-    ["záloha", order.price_deposit],
-    ["doplatek", order.price_balance],
+    ["cena zakázky", order.price_customer],
+    ["z toho montáž", order.price_montage],
   ];
   const priceTop = ctx.y;
   const priceColW = CONTENT_W / 3;
@@ -497,8 +490,8 @@ export async function buildMontazniListPdf(
       dottedLine(ctx, x + labelW + 6, x + priceColW - 14, rowY - 9);
     }
   }
-  ctx.y = priceTop - 48;
-  ctx.page.drawText(`FA č.: ${order.invoice_number}`, {
+  ctx.y = priceTop - 24;
+  ctx.page.drawText(`FA č.: ${order.invoice_no}`, {
     x: MARGIN,
     y: ctx.y - 9,
     size: 9,
@@ -511,10 +504,12 @@ export async function buildMontazniListPdf(
   const SIG_BLOCK_H = 78;
   ensure(ctx, SIG_BLOCK_H + 26);
 
-  drawText(ctx, "vyměřeno dne/pracovník:", MARGIN, 8.5, { color: GRAY });
-  const measuredText = [czDate(order.measured_at), order.created_by_name].filter(Boolean).join(" — ");
+  drawText(ctx, "zaměřeno dne/pracovník:", MARGIN, 8.5, { color: GRAY });
+  const measuredText = [czDate(order.measured_at), order.assignee_name ?? order.created_by_name]
+    .filter(Boolean)
+    .join(" — ");
   ctx.page.drawText(measuredText, {
-    x: MARGIN + regular.widthOfTextAtSize("vyměřeno dne/pracovník:", 8.5) + 6,
+    x: MARGIN + regular.widthOfTextAtSize("zaměřeno dne/pracovník:", 8.5) + 6,
     y: ctx.y - 8.5,
     size: 8.5,
     font: bold,
@@ -552,8 +547,8 @@ export async function buildMontazniListPdf(
 
   ctx.y = sigTop;
   drawText(ctx, "montáž provedl:", MARGIN, 8.5, { color: GRAY });
-  if (order.montage_by) {
-    ctx.page.drawText(order.montage_by, {
+  if (order.assignee_name) {
+    ctx.page.drawText(order.assignee_name, {
       x: MARGIN + regular.widthOfTextAtSize("montáž provedl:", 8.5) + 6,
       y: ctx.y - 8.5,
       size: 8.5,
@@ -588,6 +583,6 @@ export async function buildMontazniListPdf(
   const bytes = await doc.save();
   return {
     buffer: Buffer.from(bytes),
-    filename: exportFilename(order.order_number, order.id),
+    filename: exportFilename(order.order_no || order.invoice_no, order.id),
   };
 }

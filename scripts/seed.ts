@@ -1,6 +1,6 @@
-// Seed: výchozí uživatelé, typy produktů a verzované definice formulářů.
-// Idempotentní — bezpečné spouštět opakovaně:
-//  - uživatelé se zakládají jen pokud jméno v DB chybí (kódy náhodné, vypíšou se JEDNOU)
+// Seed: výchozí uživatelé, katalog produktů (produkt → podkategorie) a
+// verzované definice formulářů. Idempotentní — bezpečné spouštět opakovaně:
+//  - uživatelé se zakládají jen pokud jméno v DB chybí (kódy náhodné)
 //  - definice se porovnají s aktuální verzí; změna ⇒ nová verze (staré se nemění)
 import { randomInt } from "node:crypto";
 import postgres from "postgres";
@@ -14,10 +14,10 @@ const url = process.env.DIRECT_DATABASE_URL ?? requireEnv("DATABASE_URL");
 const sql = postgres(url, { prepare: false, max: 1, ssl: sslFor(url) });
 
 const DEFAULT_USERS = [
-  { name: "Marek Konderla", role: "admin" },
-  { name: "Darina Konderlová", role: "admin" },
+  { name: "Marek Konderla", role: "kancelar" },
+  { name: "Darina Konderlová", role: "kancelar" },
   { name: "Jakub Svoboda", role: "technik" },
-  { name: "Lukáš Svoboda", role: "admin" }, // testovací přístup dodavatele
+  { name: "Lukáš Svoboda", role: "kancelar" }, // testovací přístup dodavatele
 ] as const;
 
 function stableStringify(value: unknown): string {
@@ -42,7 +42,7 @@ async function generateUniqueCode(): Promise<string> {
 
 async function seedUsers() {
   // Bootstrap bez kódů v (build) logu: SEED_ADMIN_CODE dostane Lukáš Svoboda,
-  // přihlásí se a kódy ostatních zobrazí/změní v admin rozhraní.
+  // přihlásí se a kódy ostatních zobrazí/změní ve Správě účtů.
   const bootstrap = process.env.SEED_ADMIN_CODE;
   const bootstrapValid = !!bootstrap && CODE_REGEX.test(bootstrap) && !isTrivialCode(bootstrap);
   if (bootstrap && !bootstrapValid) {
@@ -61,7 +61,7 @@ async function seedUsers() {
       await sql`insert into users (name, code, role) values (${u.name}, ${code}, ${u.role})`;
       console.log(
         taken
-          ? `Založen uživatel ${u.name} — SEED_ADMIN_CODE už je obsazený, kód zobrazíte v admin UI.`
+          ? `Založen uživatel ${u.name} — SEED_ADMIN_CODE už je obsazený, kód zobrazíte ve Správě účtů.`
           : `Založen uživatel ${u.name} — kód dle SEED_ADMIN_CODE (nevypisuji).`,
       );
       continue;
@@ -70,8 +70,8 @@ async function seedUsers() {
     const code = await generateUniqueCode();
     await sql`insert into users (name, code, role) values (${u.name}, ${code}, ${u.role})`;
     if (bootstrapValid) {
-      // kódy nejdou do logu — admin je uvidí v aplikaci
-      console.log(`Založen uživatel ${u.name} (${u.role}) — kód zobrazíte v admin UI.`);
+      // kódy nejdou do logu — kancelář je uvidí v aplikaci
+      console.log(`Založen uživatel ${u.name} (${u.role}) — kód zobrazíte ve Správě účtů.`);
     } else {
       // fallback bootstrap: jednorázový výpis (jinak by se nešlo přihlásit)
       console.log(`Založen uživatel ${u.name} (${u.role}) — přihlašovací kód: ${code}`);
@@ -79,16 +79,48 @@ async function seedUsers() {
   }
 
   if (createdAny) {
-    console.log("Tip: kódy můžete kdykoli změnit v aplikaci (Správa → Uživatelé).");
+    console.log("Tip: kódy můžete kdykoli změnit v aplikaci (Nastavení → Účty).");
   }
 }
 
-async function seedProductTypes() {
+/** Nová verze definice u podkategorie — jen když se JSON opravdu liší. */
+async function upsertDefinition(
+  productTypeId: string,
+  subcategoryId: string,
+  code: string,
+  definition: unknown,
+) {
+  const [row] = await sql`
+    select fd.definition as current_definition
+    from subcategories s
+    left join form_definitions fd on fd.id = s.current_definition_id
+    where s.id = ${subcategoryId}
+  `;
+  if (row?.current_definition && stableStringify(row.current_definition) === stableStringify(definition)) {
+    return;
+  }
+
+  await sql.begin(async (tx) => {
+    const [versionRow] = await tx`
+      select coalesce(max(version), 0) + 1 as next_version
+      from form_definitions where subcategory_id = ${subcategoryId}
+    `;
+    const nextVersion = versionRow!.next_version as number;
+    const [fd] = await tx`
+      insert into form_definitions (product_type_id, subcategory_id, version, definition)
+      values (${productTypeId}, ${subcategoryId}, ${nextVersion}, ${tx.json(definition as never)})
+      returning id, version
+    `;
+    await tx`update subcategories set current_definition_id = ${fd!.id} where id = ${subcategoryId}`;
+    console.log(`Definice ${code}: nová verze ${fd!.version}.`);
+  });
+}
+
+async function seedCatalog() {
   const { types, definitions } = await loadAndValidate();
 
-  // Úklid opuštěných placeholderů (přejmenování kódu, např. PLISSE-TBD → PLISSE):
-  // smaže se jen typ, který už v seznamu není, nemá žádné položky ani definice —
-  // nic ostrého tím zmizet nemůže.
+  // Úklid opuštěných placeholderů (přejmenování kódu): smaže se jen produkt,
+  // který už v katalogu není, nemá položky ani definice — nic ostrého nezmizí.
   const keptCodes = types.map((t) => t.code);
   const removed = await sql`
     delete from product_types pt
@@ -97,48 +129,36 @@ async function seedProductTypes() {
       and not exists (select 1 from form_definitions fd where fd.product_type_id = pt.id)
     returning pt.code
   `;
-  for (const r of removed) console.log(`Odstraněn opuštěný placeholder typu: ${r.code}`);
+  for (const r of removed) console.log(`Odstraněn opuštěný produkt: ${r.code}`);
 
   for (const t of types) {
-    await sql`
-      insert into product_types (code, name, manufacturer, active, sort)
-      values (${t.code}, ${t.name}, ${t.manufacturer}, ${t.active}, ${t.sort})
+    const [pt] = await sql`
+      insert into product_types (code, name, active, sort)
+      values (${t.code}, ${t.name}, ${t.active}, ${t.sort})
       on conflict (code) do update
         set name = excluded.name,
-            manufacturer = excluded.manufacturer,
             active = excluded.active,
             sort = excluded.sort
+      returning id
     `;
+    if (!pt) throw new Error(`Produkt ${t.code} po upsertu nenalezen.`);
 
-    const definition = definitions.get(t.code);
-    if (!definition) continue;
-
-    const [pt] = await sql`
-      select pt.id, fd.definition as current_definition
-      from product_types pt
-      left join form_definitions fd on fd.id = pt.current_definition_id
-      where pt.code = ${t.code}
-    `;
-    if (!pt) throw new Error(`Typ produktu ${t.code} po upsertu nenalezen.`);
-
-    const unchanged =
-      pt.current_definition && stableStringify(pt.current_definition) === stableStringify(definition);
-    if (unchanged) continue;
-
-    await sql.begin(async (tx) => {
-      const [versionRow] = await tx`
-        select coalesce(max(version), 0) + 1 as next_version
-        from form_definitions where product_type_id = ${pt.id}
+    for (const s of t.subcategories) {
+      const [sub] = await sql`
+        insert into subcategories (product_type_id, code, name, manufacturer, active, sort)
+        values (${pt.id}, ${s.code}, ${s.name}, ${s.manufacturer}, ${s.active}, ${s.sort})
+        on conflict (product_type_id, code) do update
+          set name = excluded.name,
+              manufacturer = excluded.manufacturer,
+              active = excluded.active,
+              sort = excluded.sort
+        returning id
       `;
-      const next_version = versionRow!.next_version as number;
-      const [fd] = await tx`
-        insert into form_definitions (product_type_id, version, definition)
-        values (${pt.id}, ${next_version}, ${tx.json(definition as never)})
-        returning id, version
-      `;
-      await tx`update product_types set current_definition_id = ${fd!.id} where id = ${pt.id}`;
-      console.log(`Definice ${t.code}: nová verze ${fd!.version}.`);
-    });
+      if (!sub) throw new Error(`Podkategorie ${s.code} po upsertu nenalezena.`);
+
+      const definition = definitions.get(s.code);
+      if (definition) await upsertDefinition(pt.id as string, sub.id as string, s.code, definition);
+    }
   }
 }
 
@@ -152,7 +172,7 @@ async function seedSettings() {
 
 async function main() {
   await seedUsers();
-  await seedProductTypes();
+  await seedCatalog();
   await seedSettings();
   console.log("Seed hotový.");
 }

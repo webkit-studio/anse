@@ -1,50 +1,112 @@
 import type { FormDefinition, Params } from "./form-schema";
 
-export type Role = "technik" | "admin";
+// === role ==================================================================
 
-export type OrderStatus =
-  | "rozpracovana"
+export type Role = "technik" | "kancelar";
+
+export const ROLE_LABELS: Record<Role, string> = {
+  technik: "technik",
+  kancelar: "kancelář",
+};
+
+// === fáze zakázky ==========================================================
+
+export type OrderPhase =
+  | "k_zamereni"
   | "k_naceneni"
-  | "k_objednavce"
   | "k_montazi"
-  | "hotovo";
+  | "k_fakturaci"
+  | "hotovo"
+  | "zruseno";
 
-export const ORDER_STATUSES: OrderStatus[] = [
-  "rozpracovana",
+/** Pořadí na lince; `zruseno` stojí mimo. */
+export const PHASE_FLOW: OrderPhase[] = [
+  "k_zamereni",
   "k_naceneni",
-  "k_objednavce",
   "k_montazi",
+  "k_fakturaci",
   "hotovo",
 ];
 
-export const STATUS_LABELS: Record<OrderStatus, string> = {
-  rozpracovana: "Rozpracovaná",
+export const ORDER_PHASES: OrderPhase[] = [...PHASE_FLOW, "zruseno"];
+
+export const PHASE_LABELS: Record<OrderPhase, string> = {
+  k_zamereni: "K zaměření",
   k_naceneni: "K nacenění",
-  k_objednavce: "K objednávce",
   k_montazi: "K montáži",
+  k_fakturaci: "K fakturaci",
   hotovo: "Hotovo",
+  zruseno: "Zrušeno",
+};
+
+/** Pět tónů stavu — barva jen zesiluje, nese je glyf + slovo (čitelné černobíle). */
+export type Tone = "todo" | "work" | "wait" | "done" | "dead" | "idle";
+
+export const TONE_GLYPHS: Record<Tone, string> = {
+  todo: "●",
+  work: "◐",
+  wait: "○",
+  done: "✓",
+  dead: "✕",
+  idle: "◇",
+};
+
+const BASE_TONE: Record<OrderPhase, Tone> = {
+  k_zamereni: "work",
+  k_naceneni: "wait",
+  k_montazi: "todo",
+  k_fakturaci: "work",
+  hotovo: "done",
+  zruseno: "dead",
 };
 
 /**
- * Povolené přechody stavů per role — JEN VPŘED (rozhodnutí 16. 7. večer).
- * Technik posouvá to, co dělá v terénu: zaměřeno → k nacenění a po montáži
- * → hotovo. Nacenění a objednání je práce kanceláře (admin).
- * Vracení stavů není (omyl řeší podpora).
+ * Tón fáze. Technik vidí „K fakturaci" jako hotovou práci (✓ Hotovo) —
+ * fakturace je věc kanceláře a jeho se už netýká.
  */
-export const ALLOWED_TRANSITIONS: Record<Role, Partial<Record<OrderStatus, OrderStatus[]>>> = {
+export function phaseTone(phase: OrderPhase, role: Role): Tone {
+  if (role === "technik" && phase === "k_fakturaci") return "done";
+  return BASE_TONE[phase];
+}
+
+export function phaseLabelFor(phase: OrderPhase, role: Role): string {
+  if (role === "technik" && phase === "k_fakturaci") return "Hotovo";
+  return PHASE_LABELS[phase];
+}
+
+/**
+ * Povolené přechody — JEN VPŘED, o jeden krok.
+ * `zruseno` je mimo linku: technik ruší, dokud se nezačalo objednávat,
+ * kancelář kdykoli mimo hotovo (zákazník nepřijal cenu).
+ */
+export const ALLOWED_PHASE_TRANSITIONS: Record<Role, Partial<Record<OrderPhase, OrderPhase[]>>> = {
   technik: {
-    rozpracovana: ["k_naceneni"],
-    k_montazi: ["hotovo"],
+    // admin i technik zaměřují (Marek jezdí taky) — odeslání k nacenění
+    k_zamereni: ["k_naceneni", "zruseno"],
+    k_naceneni: ["zruseno"],
+    k_montazi: ["k_fakturaci"],
   },
-  admin: {
-    rozpracovana: ["k_naceneni"],
-    k_naceneni: ["k_objednavce"],
-    k_objednavce: ["k_montazi"],
-    k_montazi: ["hotovo"],
+  kancelar: {
+    k_zamereni: ["k_naceneni", "zruseno"],
+    k_naceneni: ["k_montazi", "zruseno"],
+    k_montazi: ["k_fakturaci", "zruseno"],
+    k_fakturaci: ["hotovo", "zruseno"],
   },
 };
 
+export function canTransition(role: Role, from: OrderPhase, to: OrderPhase): boolean {
+  return (ALLOWED_PHASE_TRANSITIONS[role][from] ?? []).includes(to);
+}
+
+/** Fáze, které technik považuje za archiv. */
+export const ARCHIVE_PHASES: OrderPhase[] = ["k_fakturaci", "hotovo", "zruseno"];
+
 export const ROOM_PRESETS = ["Kuchyně", "Ložnice", "Obývací pokoj", "Chodba", "Koupelna"] as const;
+
+/** Sazba pro presety ceny práce technika (Kč/h). */
+export const HOURLY_RATE = 850;
+
+// === uživatelé =============================================================
 
 export interface SessionUser {
   id: string;
@@ -56,46 +118,82 @@ export interface UserRow {
   id: string;
   name: string;
   role: Role;
+  phone: string;
+  email: string;
   active: boolean;
   created_at: string;
-  /** Přihlašovací kód — vrací se POUZE na admin routách. */
+  /** Přihlašovací kód — vrací se POUZE na routách kanceláře. */
   code?: string;
 }
 
-export interface ClientRow {
+// === kontakty ==============================================================
+
+export interface ContactRow {
   id: string;
   name: string;
-  contact_person: string;
-  address: string;
-  delivery_address: string;
   phone: string;
-  email: string;
-  ico: string;
-  dic: string;
-  note: string;
+  place: string;
+  /** „● Ozvat se" — zhasne založením zakázky, ručně jde přepnout zpět. */
+  fresh: boolean;
+  cancelled: boolean;
+  cancelled_reason: string;
+  created_at: string;
   updated_at: string;
+  /** Dopočítané pro seznam. */
+  order_count?: number;
+  open_order_count?: number;
+  notes_count?: number;
 }
+
+export interface ContactNote {
+  id: number;
+  contact_id: string;
+  author_id: string;
+  author_name: string;
+  text: string;
+  created_at: string;
+}
+
+export interface ContactDetail {
+  contact: ContactRow;
+  notes: ContactNote[];
+  orders: OrderListRow[];
+}
+
+// === zakázky ===============================================================
 
 export interface OrderRow {
   id: string;
-  client_id: string;
-  installation_address: string;
-  montage_number: string;
-  order_number: string;
-  status: OrderStatus;
-  measured_at: string | null;
-  delivery_date: string | null;
-  invoice_number: string;
-  /** Údaje pro export montážního listu (částky volným textem, montér). */
-  price_ex_vat: string;
-  price_vat: string;
+  contact_id: string;
+  contact_name: string;
+  contact_phone: string;
+  phase: OrderPhase;
+  assignee_id: string | null;
+  assignee_name: string | null;
+
+  /** Údaje zákazníka (blokující krok technika u první položky). */
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string;
+  addr_montaz: string;
+  addr_fakt: string;
+  ico: string;
+  dic: string;
+
+  /** Cena zakázky pro zákazníka — server ji technikovi NEPOSÍLÁ. */
+  price_customer?: string;
+  /** Cena práce technika — vidí obě role. */
   price_montage: string;
-  price_total: string;
-  price_deposit: string;
-  price_balance: string;
-  montage_by: string;
+
+  term_dodani: string | null;
+  term_montaz: string | null;
+  measured_at: string | null;
+
+  invoice_no: string;
+  order_no: string;
   note: string;
-  /** Kdy zákazník podepsal (ISO) — samotný PNG podpis se do detailu nevrací. */
+  cancelled_reason: string;
+
   signed_at: string | null;
   created_at: string;
   updated_at: string;
@@ -103,12 +201,18 @@ export interface OrderRow {
 
 export interface OrderListRow {
   id: string;
-  client_name: string;
-  installation_address: string;
-  status: OrderStatus;
-  montage_number: string;
-  order_number: string;
+  contact_id: string;
+  contact_name: string;
+  /** Jméno zákazníka na zakázce; dokud ho technik nevyplní, zůstává prázdné. */
+  customer_name: string;
+  phase: OrderPhase;
+  addr_montaz: string;
+  assignee_id: string | null;
+  assignee_name: string | null;
   item_count: number;
+  price_customer?: string;
+  term_dodani: string | null;
+  term_montaz: string | null;
   signed_at: string | null;
   updated_at: string;
 }
@@ -117,61 +221,208 @@ export interface RoomRow {
   id: string;
   order_id: string;
   name: string;
-  note: string;
   position: number;
+}
+
+export type ItemKind = "config" | "oprava";
+
+export interface ItemPhoto {
+  id: string;
+  item_id: string | null;
+  kind: "zamereni" | "zavada" | "realizace";
+  data: string;
+  created_at: string;
 }
 
 export interface ItemRow {
   id: string;
   order_id: string;
   room_id: string;
+  kind: ItemKind;
   product_type_id: string;
-  form_definition_id: string;
+  product_type_name: string;
+  subcategory_id: string | null;
+  subcategory_name: string | null;
+  form_definition_id: string | null;
   params: Params;
   note: string;
+  /** Jen u oprav: popis závady (povinný). */
+  defect_note: string;
   position: number;
   updated_at: string;
-  product_type_code: string;
-  product_type_name: string;
+  photos: ItemPhoto[];
 }
 
 export interface OrderDetail {
   order: OrderRow;
-  client: ClientRow;
   rooms: RoomRow[];
   items: ItemRow[];
-  /** Definice použité položkami (pinned verze) — pro vykreslení souhrnů a editaci. */
+  photos: ItemPhoto[];
   definitions: Record<string, { version: number; definition: FormDefinition }>;
+  /** Co chybí k odeslání do další fáze — počítá server, UI to jen vypíše. */
+  blocking: string[];
+}
+
+// === produkty ==============================================================
+
+export interface SubcategoryRow {
+  id: string;
+  product_type_id: string;
+  code: string;
+  name: string;
+  custom_name: string;
+  note: string;
+  active: boolean;
+  sort: number;
+  definition?: FormDefinition;
+  definition_version?: number;
+  field_count?: number;
 }
 
 export interface ProductTypeRow {
   id: string;
   code: string;
   name: string;
-  manufacturer: "jackwest" | "neva" | "susy";
+  custom_name: string;
+  note_for_tech: string;
   active: boolean;
   sort: number;
-  /** Aktuální definice — jen u aktivních typů. */
-  current_definition_id: string | null;
-  definition?: FormDefinition;
-  definition_version?: number;
+  subcategories: SubcategoryRow[];
 }
 
-export type DashboardCounts = Record<OrderStatus, number>;
+/** Zobrazený název: přepis vyhrává, originál se ukazuje jen v nastavení. */
+export function displayName(t: { name: string; custom_name: string }): string {
+  return t.custom_name.trim() || t.name;
+}
 
-export interface StatsUserCount {
+// === notifikace ============================================================
+
+export type NotifEvent =
+  | "termin_dodani"
+  | "novy_kontakt"
+  | "zakazka_zrusena"
+  | "nove_zamereni"
+  | "namontovano"
+  | "zruseno_technikem"
+  | "stoji";
+
+export interface NotifEventMeta {
+  event: NotifEvent;
+  /** Komu chodí. */
+  to: Role;
+  label: string;
+  trigger: string;
+  /** Šablona zprávy pro tabulku v nastavení. */
+  template: string;
+  emailDefault: boolean;
+}
+
+export const NOTIF_EVENTS: NotifEventMeta[] = [
+  {
+    event: "termin_dodani",
+    to: "technik",
+    label: "Termín dodání",
+    trigger: "Kancelář dá Objednáno",
+    template: "{zakázka} — dodání {datum}. Zadej termín montáže.",
+    emailDefault: true,
+  },
+  {
+    event: "novy_kontakt",
+    to: "technik",
+    label: "Nový kontakt",
+    trigger: "Kontakt přidělen uživateli",
+    template: "{jméno} — kontakt přidělený tobě.",
+    emailDefault: true,
+  },
+  {
+    event: "zakazka_zrusena",
+    to: "technik",
+    label: "Zakázka zrušena",
+    trigger: "Kancelář zruší po nacenění",
+    template: "{zakázka} — zákazník nabídku nepřijal. Zakázka je zrušená.",
+    emailDefault: false,
+  },
+  {
+    event: "nove_zamereni",
+    to: "kancelar",
+    label: "Nové zaměření",
+    trigger: "Technik odešle K nacenění",
+    template: "{zakázka} — {položky} k nacenění.",
+    emailDefault: true,
+  },
+  {
+    event: "namontovano",
+    to: "kancelar",
+    label: "Namontováno",
+    trigger: "Technik podepíše a dá hotovo",
+    template: "{zakázka} — podpis uložen, zakázka je k fakturaci.",
+    emailDefault: true,
+  },
+  {
+    event: "zruseno_technikem",
+    to: "kancelar",
+    label: "Zrušeno technikem",
+    trigger: "Technik zruší kontakt/zakázku",
+    template: "{zakázka} — technik zrušil: {důvod}.",
+    emailDefault: false,
+  },
+  {
+    event: "stoji",
+    to: "kancelar",
+    label: "Zakázka stojí",
+    trigger: "Zakázka 7 dní bez pohybu",
+    template: "{zakázka} — {dny} bez pohybu.",
+    emailDefault: false,
+  },
+];
+
+export interface NotificationRow {
+  id: number;
+  event: NotifEvent;
+  title: string;
+  body: string;
+  order_id: string | null;
+  contact_id: string | null;
+  read: boolean;
+  created_at: string;
+}
+
+export interface NotifPref {
+  event: NotifEvent;
+  email: boolean;
+}
+
+// === přehledy ==============================================================
+
+export type PhaseCounts = Record<OrderPhase, number>;
+
+/** Dnešek technika — server posílá rovnou rozdělené sekce. */
+export interface TodayData {
+  namontovat: OrderListRow[];
+  dokoncit: OrderListRow[];
+  ozvat: ContactRow[];
+  /** Kolik zakázek leží u kanceláře (šedý info blok). */
+  v_kancelari: number;
+}
+
+export interface StatsTech {
   name: string;
-  zalozeno: number;
-  objednano: number;
+  zamereno: number;
+  namontovano: number;
+  price_montage_sum?: string;
 }
 
 export interface StatsMonth {
   month: string;
-  zalozeno: number;
-  objednano: number;
-  users: StatsUserCount[];
+  kpi: {
+    nove_kontakty: number;
+    zamereno: number;
+    objednano: number;
+    hotovo: number;
+  };
+  funnel: { label: string; value: number }[];
+  techs: StatsTech[];
 }
-
 
 export interface Settings {
   admin_group_email: string;

@@ -1,19 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { parseRecipients, statusMailHtml, statusMailSubject, statusMailText } from "./email";
-import type { StatusMailData } from "./email";
+import { parseRecipients, notifMailHtml, notifMailSubject, notifMailText } from "./email";
+import type { NotifMailData } from "./email";
+import { fillTemplate } from "./notify";
+import { NOTIF_EVENTS } from "../shared/types";
 
-const base: StatusMailData = {
-  orderId: "8f2c1e4a-1111-2222-3333-444455556666",
-  clientName: "Novákovi",
-  installationAddress: "Květinová 128, Průhonice",
-  orderNumber: "ZAK26071",
-  montageNumber: "MON-2026-042",
-  itemCount: 7,
-  from: "k_naceneni",
-  to: "k_objednavce",
-  userName: "Marek Konderla",
-  changedAt: "5. 8. 2026 14:20",
-  orderUrl: "https://anse-zakazky.netlify.app/zakazky/8f2c1e4a-1111-2222-3333-444455556666",
+const base: NotifMailData = {
+  title: "Novákovi · Květinová 128, Průhonice",
+  body: "Novákovi · Květinová 128, Průhonice — 7 položek k nacenění.",
+  eventLabel: "Nové zaměření",
+  url: "https://anse-zakazky.netlify.app/zakazky/8f2c1e4a-1111-2222-3333-444455556666",
+  cta: "Otevřít zakázku",
 };
 
 describe("parseRecipients", () => {
@@ -31,36 +27,58 @@ describe("parseRecipients", () => {
   });
 });
 
-describe("statusMail", () => {
-  it("předmět nese zákazníka, číslo zakázky a nový stav", () => {
-    expect(statusMailSubject(base)).toBe("Anse: Novákovi (ZAK26071) — K objednávce");
-  });
-
-  it("předmět bez čísel zakázky nespadne na prázdné závorky", () => {
-    expect(statusMailSubject({ ...base, orderNumber: "", montageNumber: "" })).toBe(
-      "Anse: Novákovi — K objednávce",
+describe("notifMail", () => {
+  it("předmět nese událost i zakázku", () => {
+    expect(notifMailSubject(base)).toBe(
+      "Anse: Nové zaměření — Novákovi · Květinová 128, Průhonice",
     );
   });
 
-  it("HTML obsahuje kdo, co a odkaz na zakázku", () => {
-    const html = statusMailHtml(base);
-    expect(html).toContain("Marek Konderla");
-    expect(html).toContain("K nacenění");
-    expect(html).toContain("K objednávce");
-    expect(html).toContain(base.orderUrl);
-    expect(html).toContain("Květinová 128, Průhonice");
+  it("HTML obsahuje zprávu i odkaz na zakázku", () => {
+    const html = notifMailHtml(base);
+    expect(html).toContain("Nové zaměření");
+    expect(html).toContain("7 položek k nacenění");
+    expect(html).toContain(base.url);
+    expect(html).toContain("Otevřít zakázku");
   });
 
   it("escapuje HTML v datech zákazníka (jméno z formuláře je vstup uživatele)", () => {
-    const html = statusMailHtml({ ...base, clientName: '<script>alert("x")</script>' });
+    const html = notifMailHtml({ ...base, title: '<script>alert("x")</script>' });
     expect(html).not.toContain("<script>");
     expect(html).toContain("&lt;script&gt;");
   });
 
   it("textová varianta drží stejná data", () => {
-    const text = statusMailText(base);
-    expect(text).toContain("K nacenění → K objednávce");
-    expect(text).toContain("Marek Konderla");
-    expect(text).toContain(base.orderUrl);
+    const text = notifMailText(base);
+    expect(text).toContain("Nové zaměření");
+    expect(text).toContain("7 položek k nacenění");
+    expect(text).toContain(base.url);
+  });
+});
+
+describe("fillTemplate", () => {
+  it("doplní placeholdery včetně české diakritiky v názvu", () => {
+    expect(fillTemplate("{zakázka} — dodání {datum}. Zadej termín montáže.", {
+      "zakázka": "Novákovi",
+      datum: "2026-09-04",
+    })).toBe("Novákovi — dodání 2026-09-04. Zadej termín montáže.");
+  });
+
+  it("neznámý placeholder nechá být (radši viditelně, než tiše prázdné)", () => {
+    expect(fillTemplate("{zakázka} — {neznamy}", { "zakázka": "X" })).toBe("X — {neznamy}");
+  });
+
+  it("všechny šablony událostí jdou vyplnit beze zbytku", () => {
+    const vars = {
+      "zakázka": "Zakázka",
+      datum: "1. 9. 2026",
+      "jméno": "Novák",
+      "položky": "3 položky",
+      dny: "8 dní",
+      "důvod": "nezájem",
+    };
+    for (const e of NOTIF_EVENTS) {
+      expect(fillTemplate(e.template, vars)).not.toMatch(/\{[^}]+\}/);
+    }
   });
 });

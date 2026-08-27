@@ -5,7 +5,7 @@ import type { FormDefinition, Params } from "./form-schema";
 // Čisté funkce — používá je xlsx export, později i export pro výrobce.
 
 export interface ListRow {
-  /** Kód typu produktu (SEL-15, ESD…). */
+  /** Název produktu (u zaměření i podkategorie, u opravy „⟳ Oprava"). */
   stineni: string;
   barva: string;
   sirka: string;
@@ -19,24 +19,25 @@ export interface ListRow {
 
 export interface RoomGroup {
   roomName: string;
-  roomNote: string;
   rows: ListRow[];
 }
 
 export interface ListItemInput {
   room_id: string;
+  kind: "config" | "oprava";
   product_type_id: string;
-  product_type_code: string;
-  form_definition_id: string;
+  product_type_name: string;
+  subcategory_name: string | null;
+  form_definition_id: string | null;
   params: Params;
   note: string;
+  defect_note: string;
   position: number;
 }
 
 export interface ListRoomInput {
   id: string;
   name: string;
-  note: string;
   position: number;
 }
 
@@ -83,12 +84,16 @@ export function aggregateForList(
     const byIdentity = new Map<string, ListRow>();
 
     for (const item of roomItems) {
-      const identity = [
-        item.product_type_id,
-        item.form_definition_id,
-        stableStringify(item.params),
-        item.note.trim(),
-      ].join("|");
+      // Opravy se nikdy neslučují — každá závada je jiná.
+      const identity =
+        item.kind === "oprava"
+          ? `oprava|${item.position}`
+          : [
+              item.product_type_id,
+              item.form_definition_id,
+              stableStringify(item.params),
+              item.note.trim(),
+            ].join("|");
 
       const existing = byIdentity.get(identity);
       if (existing) {
@@ -96,22 +101,29 @@ export function aggregateForList(
         continue;
       }
 
-      const def = definitions[item.form_definition_id]?.definition;
+      const def = item.form_definition_id
+        ? definitions[item.form_definition_id]?.definition
+        : undefined;
       const row: ListRow = {
-        stineni: item.product_type_code,
+        stineni:
+          item.kind === "oprava"
+            ? `${item.product_type_name} — oprava`
+            : [item.product_type_name, item.subcategory_name].filter(Boolean).join(" · "),
         barva: def ? paramText(item.params, def.printMap.barva) : "",
         sirka: def ? paramText(item.params, def.printMap.sirka) : "",
         vyska: def ? paramText(item.params, def.printMap.vyska) : "",
         ks: 1,
         strana: def ? paramText(item.params, def.printMap.strana) : "",
         ovladani: def ? paramText(item.params, def.printMap.ovladani) : "",
-        poznamka: item.note.trim(),
+        poznamka: [item.kind === "oprava" ? item.defect_note.trim() : "", item.note.trim()]
+          .filter(Boolean)
+          .join(" – "),
       };
       byIdentity.set(identity, row);
       rows.push(row);
     }
 
-    groups.push({ roomName: room.name, roomNote: room.note, rows });
+    groups.push({ roomName: room.name, rows });
   }
 
   return groups;
@@ -123,39 +135,19 @@ export function totalPieces(groups: RoomGroup[]): number {
 
 /** Vstup kontroly kompletnosti pro PDF — podmnožina zakázky + příznak podpisu. */
 export interface PdfReadinessInput {
-  montage_number: string;
-  order_number: string;
-  invoice_number: string;
-  delivery_date: string | null;
-  price_ex_vat: string;
-  price_vat: string;
-  price_montage: string;
-  price_total: string;
-  price_deposit: string;
-  price_balance: string;
-  montage_by: string;
+  invoice_no: string;
   signed: boolean;
 }
 
 /**
- * Co brání PDF exportu montážního listu — prázdné pole = může se generovat.
- * Údaje pro export jde ukládat po částech, ale finální list musí být kompletní
- * (rozhodnutí Lukáš 4. 8.). Stejnou logiku vyhodnocuje server (tvrdé hlídání)
- * i UI (disabled tlačítko s nápovědou); popisky odpovídají polím v aplikaci.
+ * Co brání vystavení montážního listu — prázdné pole = může se generovat.
+ * Bez čísla faktury a bez podpisu se list negeneruje (zadání §9); ostatní
+ * údaje se na papír tisknou tak, jak jsou. Stejnou logiku vyhodnocuje server
+ * (tvrdé hlídání) i UI (disabled tlačítko s nápovědou).
  */
 export function missingForPdf(order: PdfReadinessInput): string[] {
   const missing: string[] = [];
-  if (!order.montage_number) missing.push("číslo montáže");
-  if (!order.order_number) missing.push("číslo zakázky");
-  if (!order.invoice_number) missing.push("číslo faktury");
-  if (!order.delivery_date) missing.push("termín dodání");
-  if (!order.price_ex_vat) missing.push("cena bez DPH");
-  if (!order.price_vat) missing.push("DPH");
-  if (!order.price_montage) missing.push("cena za montáž");
-  if (!order.price_total) missing.push("cena celkem");
-  if (!order.price_deposit) missing.push("záloha");
-  if (!order.price_balance) missing.push("doplatek");
-  if (!order.montage_by) missing.push("montáž provedl");
+  if (!order.invoice_no.trim()) missing.push("číslo faktury");
   if (!order.signed) missing.push("podpis zákazníka");
   return missing;
 }

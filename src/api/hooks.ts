@@ -5,15 +5,19 @@ import {
   type UseQueryResult,
 } from "@tanstack/react-query";
 import type {
-  ClientRow,
-  DashboardCounts,
+  ContactDetail,
+  ContactRow,
   ItemRow,
+  NotificationRow,
+  NotifPref,
   OrderDetail,
   OrderListRow,
-  OrderStatus,
+  OrderPhase,
+  PhaseCounts,
   ProductTypeRow,
   SessionUser,
   StatsMonth,
+  TodayData,
   UserRow,
 } from "@shared/types";
 import { api, isUnauthorized } from "./client";
@@ -40,7 +44,8 @@ export function useMe(): UseQueryResult<SessionUser | null> {
 export function useLogin() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (code: string) => api<{ user: SessionUser }>("/api/login", { method: "POST", body: { code } }),
+    mutationFn: (code: string) =>
+      api<{ user: SessionUser }>("/api/login", { method: "POST", body: { code } }),
     onSuccess: ({ user }) => {
       qc.setQueryData(["me"], user);
     },
@@ -58,23 +63,80 @@ export function useLogout() {
   });
 }
 
+// --- kontakty ---------------------------------------------------------------
+
+export function useContacts(search: string, filter: "vse" | "fresh") {
+  const params = new URLSearchParams();
+  if (search) params.set("search", search);
+  if (filter !== "vse") params.set("filter", filter);
+  const qs = params.toString();
+  return useQuery({
+    queryKey: ["contacts", search, filter],
+    queryFn: () => api<{ contacts: ContactRow[] }>(`/api/contacts${qs ? `?${qs}` : ""}`),
+    staleTime: 15_000,
+    placeholderData: (prev) => prev,
+  });
+}
+
+/** Odznak v navigaci — počet kontaktů „ozvat se". */
+export function useFreshCount() {
+  return useQuery({
+    queryKey: ["contacts", "fresh-count"],
+    queryFn: () => api<{ count: number }>("/api/contacts/fresh-count"),
+    staleTime: 30_000,
+  });
+}
+
+export function useContact(id: string) {
+  return useQuery({
+    queryKey: ["contact", id],
+    queryFn: () => api<ContactDetail>(`/api/contacts/${id}`),
+    staleTime: 10_000,
+  });
+}
+
+export function useInvalidateContacts() {
+  const qc = useQueryClient();
+  return async (id?: string) => {
+    void qc.invalidateQueries({ queryKey: ["contacts"] });
+    void qc.invalidateQueries({ queryKey: ["today"] });
+    void qc.invalidateQueries({ queryKey: ["overview"] });
+    if (id) await qc.invalidateQueries({ queryKey: ["contact", id] });
+  };
+}
+
 // --- zakázky ----------------------------------------------------------------
 
-export function useDashboard() {
+export function useToday() {
   return useQuery({
-    queryKey: ["dashboard"],
-    queryFn: () => api<{ counts: DashboardCounts }>("/api/dashboard"),
+    queryKey: ["today"],
+    queryFn: () => api<TodayData>("/api/today"),
     staleTime: 15_000,
   });
 }
 
-export function useOrders(search: string, status: OrderStatus | "") {
+export interface OverviewData {
+  phase_counts: PhaseCounts;
+  queue: (OrderListRow & { idle_days: number })[];
+  fresh_contacts: number;
+}
+
+export function useOverview(enabled = true) {
+  return useQuery({
+    queryKey: ["overview"],
+    queryFn: () => api<OverviewData>("/api/overview"),
+    enabled,
+    staleTime: 15_000,
+  });
+}
+
+export function useOrders(search: string, filter: OrderPhase | "vse" | "archiv") {
   const params = new URLSearchParams();
   if (search) params.set("search", search);
-  if (status) params.set("status", status);
+  if (filter !== "vse") params.set("filter", filter);
   const qs = params.toString();
   return useQuery({
-    queryKey: ["orders", search, status],
+    queryKey: ["orders", search, filter],
     queryFn: () => api<{ orders: OrderListRow[] }>(`/api/orders${qs ? `?${qs}` : ""}`),
     staleTime: 15_000,
     placeholderData: (prev) => prev,
@@ -89,13 +151,59 @@ export function useOrder(id: string) {
   });
 }
 
+/**
+ * Po zápisu je potřeba počkat na čerstvý detail — jinak by navazující
+ * obrazovka (třeba formulář položky) rozhodovala podle starých dat v cache
+ * a poslala technika zpátky na krok, který právě dokončil.
+ */
 export function useInvalidateOrder() {
   const qc = useQueryClient();
-  return (id: string) => {
-    void qc.invalidateQueries({ queryKey: ["order", id] });
+  return async (id: string) => {
     void qc.invalidateQueries({ queryKey: ["orders"] });
-    void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    void qc.invalidateQueries({ queryKey: ["today"] });
+    void qc.invalidateQueries({ queryKey: ["overview"] });
+    void qc.invalidateQueries({ queryKey: ["notifications"] });
+    await qc.invalidateQueries({ queryKey: ["order", id] });
   };
+}
+
+// --- notifikace ---------------------------------------------------------------
+
+export function useNotifications() {
+  return useQuery({
+    queryKey: ["notifications"],
+    queryFn: () =>
+      api<{ notifications: NotificationRow[]; unread: number }>("/api/notifications"),
+    staleTime: 30_000,
+    refetchInterval: 120_000,
+  });
+}
+
+export function useMarkNotificationsRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (ids?: number[]) =>
+      api<{ ok: true }>("/api/notifications/read", { method: "POST", body: { ids } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+}
+
+export function useNotifPrefs(enabled = true) {
+  return useQuery({
+    queryKey: ["notif-prefs"],
+    queryFn: () => api<{ prefs: NotifPref[] }>("/api/notif-prefs"),
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useSetNotifPref() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (pref: NotifPref) =>
+      api<{ ok: true }>("/api/notif-prefs", { method: "PUT", body: pref }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notif-prefs"] }),
+  });
 }
 
 // --- číselníky ---------------------------------------------------------------
@@ -108,17 +216,7 @@ export function useProductTypes() {
   });
 }
 
-export function useClientSearch(search: string, enabled: boolean) {
-  return useQuery({
-    queryKey: ["clients", search],
-    queryFn: () => api<{ clients: ClientRow[] }>(`/api/clients?search=${encodeURIComponent(search)}`),
-    enabled,
-    staleTime: 30_000,
-    placeholderData: (prev) => prev,
-  });
-}
-
-// --- admin -------------------------------------------------------------------
+// --- kancelář -------------------------------------------------------------------
 
 export function useUsers(enabled: boolean) {
   return useQuery({

@@ -10,12 +10,12 @@ import {
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from "react";
-import type { OrderStatus } from "@shared/types";
-import { STATUS_LABELS } from "@shared/types";
+import type { OrderPhase, Role, Tone } from "@shared/types";
+import { TONE_GLYPHS, phaseLabelFor, phaseTone } from "@shared/types";
 
 // --- Button -------------------------------------------------------------
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+type ButtonVariant = "primary" | "secondary" | "system" | "ghost" | "danger";
 
 export function Button({
   variant = "secondary",
@@ -248,36 +248,157 @@ export function SelectSheet({
 
 // --- Chips -------------------------------------------------------------------
 
-export function Chips({
+export interface ChipOption<T extends string> {
+  value: T;
+  label: string;
+}
+
+export function Chips<T extends string>({
   options,
   value,
   onChange,
+  scroll = true,
 }: {
-  options: string[];
-  value: string | null;
-  onChange: (value: string) => void;
+  options: readonly ChipOption<T>[];
+  value: T | null;
+  onChange: (value: T) => void;
+  scroll?: boolean;
 }) {
   return (
-    <div className="chips" role="group">
+    <div className={`chips ${scroll ? "chips-scroll" : ""}`} role="group">
       {options.map((o) => (
         <button
-          key={o}
+          key={o.value}
           type="button"
-          className={`chip ${value === o ? "chip-active" : ""}`}
-          aria-pressed={value === o}
-          onClick={() => onChange(o)}
+          className={`chip ${value === o.value ? "chip-active" : ""}`}
+          aria-pressed={value === o.value}
+          onClick={() => onChange(o.value)}
         >
-          {o}
+          {o.label}
         </button>
       ))}
     </div>
   );
 }
 
-// --- Status ------------------------------------------------------------------
+// --- Stav: glyf + slovo, barva jen zesiluje ----------------------------------
 
-export function StatusBadge({ status }: { status: OrderStatus }) {
-  return <span className={`status-badge status-${status}`}>{STATUS_LABELS[status]}</span>;
+export function ToneBadge({ tone, children }: { tone: Tone; children: ReactNode }) {
+  return (
+    <span className={`badge tone-${tone}`}>
+      <span className="badge-glyph" aria-hidden="true">
+        {TONE_GLYPHS[tone]}
+      </span>
+      {children}
+    </span>
+  );
+}
+
+/**
+ * Fáze zakázky. Technik vidí „K fakturaci" jako hotovou práci — fakturace je
+ * věc kanceláře a jeho se netýká, proto se popisek i tón liší podle role.
+ */
+export function PhaseBadge({ phase, role }: { phase: OrderPhase; role: Role }) {
+  return <ToneBadge tone={phaseTone(phase, role)}>{phaseLabelFor(phase, role)}</ToneBadge>;
+}
+
+// --- Switch (nastavení) -------------------------------------------------------
+
+export function Switch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (next: boolean) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      className="switch"
+      onClick={() => onChange(!checked)}
+    />
+  );
+}
+
+// --- Skeleton -----------------------------------------------------------------
+
+/** Kostra obsahu; zobrazuje se až po 150 ms čekání (viz useDelayed). */
+export function SkeletonCard({ lines = 3 }: { lines?: number }) {
+  return (
+    <div className="skeleton-card" aria-hidden="true">
+      {Array.from({ length: lines }, (_, i) => (
+        <div key={i} className="skeleton" style={{ width: `${100 - i * 18}%` }} />
+      ))}
+    </div>
+  );
+}
+
+export function SkeletonList({ cards = 3 }: { cards?: number }) {
+  return (
+    <div style={{ display: "grid", gap: 10 }} aria-busy="true" aria-label="Načítám…">
+      {Array.from({ length: Math.min(cards, 3) }, (_, i) => (
+        <SkeletonCard key={i} />
+      ))}
+    </div>
+  );
+}
+
+/** Stav připojení — v terénu vypadává signál a formulář to musí říct nahlas. */
+export function useOnline(): boolean {
+  const [online, setOnline] = useState(() => (typeof navigator === "undefined" ? true : navigator.onLine));
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
+  return online;
+}
+
+/** Krátké čekání se neblikne skeletonem — až od 150 ms. */
+export function useDelayed(active: boolean, ms = 150): boolean {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    if (!active) {
+      setShown(false);
+      return undefined;
+    }
+    const t = setTimeout(() => setShown(true), ms);
+    return () => clearTimeout(t);
+  }, [active, ms]);
+  return shown;
+}
+
+// --- Sekce práce (fronta) ------------------------------------------------------
+
+export function Queue({
+  title,
+  count,
+  children,
+}: {
+  title: string;
+  count: number;
+  children: ReactNode;
+}) {
+  if (count === 0) return null; // prázdná sekce se nevykresluje
+  return (
+    <section className="queue">
+      <div className="queue-head">
+        <span className="queue-title">{title}</span>
+        <span className="queue-count">{count}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{children}</div>
+    </section>
+  );
 }
 
 // --- Drobnosti ----------------------------------------------------------------
@@ -299,9 +420,20 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry?: (
   );
 }
 
-export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
+export function EmptyState({
+  icon = "◇",
+  title,
+  children,
+}: {
+  icon?: string;
+  title: string;
+  children?: ReactNode;
+}) {
   return (
     <div className="empty-state">
+      <span className="empty-icon" aria-hidden="true">
+        {icon}
+      </span>
       <p className="empty-state-title">{title}</p>
       {children}
     </div>

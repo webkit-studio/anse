@@ -1,26 +1,33 @@
-/* Design tokeny — prémiový světlý vzhled (vlna „UI upgrade", srpen 2026):
-   porcelánové pozadí, bílé karty s měkkou elevací, velké rádiusy, Inter +
-   Space Grotesk (self-host přes @fontsource, žádné CDN).
-   Kontrast: zelená --c-green NIKDY jako barva textu na bílé — jen
-   plochy/akcenty, text na zelené vždy inkoustový (--c-ink); odkazy a zelený
-   text řeší tmavá --c-green-deep. */
+/* Design tokeny — prémiový světlý vzhled Anse.
+   Barevné stavy nese pět tónů (todo/work/wait/done/dead + idle), ne per-fázové
+   barvy: stav je vždy čitelný i černobíle (glyf + slovo), barva jen zesiluje.
+   Kontrast: zelená --c-green NIKDY jako barva textu na bílé — jen plochy
+   a akcenty; text na zelené je --c-green-on, zelený text řeší --c-green-deep. */
 :root {
-  /* Sytější smaragdová místo mentolové (feedback Lukáš 4. 8. — „revolutovější"). */
   --c-green: #0dc28b;
   --c-green-dark: #0aa578;
   --c-green-deep: #077a58;
   --c-green-soft: #e2f8f0;
+  /* text na zelených plochách — kontrast 9,1 : 1 */
+  --c-green-on: #06231a;
 
   --c-ink: #0e1513;
   --c-text: #1b201f;
   --c-text-muted: #5b6663;
 
-  /* Stránka je jemně tónovaná, karty a inputy čistě bílé. */
+  /* povrchy */
   --c-page: #f2f6f5;
   --c-bg: #ffffff;
-  --c-surface: #f2f6f5;
+  --c-hairline: #eef3f1; /* linky uvnitř karet, řádky tabulek */
+  --c-sunken: #f8fbfa; /* vnořené bloky, hlavičky tabulek */
   --c-border: #e4eae8;
   --c-border-strong: #c9d4d1;
+
+  /* tmavý povrch: horní lišta, karta termínu dodání, systémová tlačítka */
+  --c-shell: #0f1a17;
+  --c-shell-fg: #f2f6f5;
+  --c-shell-muted: #9fb3ac;
+  --c-shell-accent: #7fd8bb;
 
   --c-error: #c62828;
   --c-error-soft: #fdeaea;
@@ -29,23 +36,47 @@
   --c-info: #135ba1;
   --c-info-soft: #e8f1fb;
 
+  /* pět tónů stavu (+ neutrální idle) */
+  --c-tone-todo-bg: #d6f6ea;
+  --c-tone-todo-fg: #06553d;
+  --c-tone-todo-br: #b6ecda;
+  --c-tone-work-bg: #eef3f1;
+  --c-tone-work-fg: #1b201f;
+  --c-tone-work-br: #d7e2de;
+  --c-tone-wait-bg: #fff3dd;
+  --c-tone-wait-fg: #7a4800;
+  --c-tone-wait-br: #f2e0bd;
+  --c-tone-done-bg: #eef3f1;
+  --c-tone-done-fg: #077a58;
+  --c-tone-done-br: #dbe7e3;
+  --c-tone-dead-bg: #f7f2f2;
+  --c-tone-dead-fg: #8a5b5b;
+  --c-tone-dead-br: #ecdede;
+  --c-tone-idle-bg: #eef3f1;
+  --c-tone-idle-fg: #3f4a47;
+  --c-tone-idle-br: #e0e8e5;
+
   --font: "Inter Variable", "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui,
     sans-serif;
   --font-display: "Space Grotesk Variable", var(--font);
 
   --tap: 48px; /* minimální touch target */
+  --field-h-mobile: 52px;
+  --field-h-desktop: 46px;
+  --row-h-desktop: 44px; /* řádek husté tabulky */
   --radius: 14px; /* inputy, tlačítka */
   --radius-lg: 20px; /* karty */
   --radius-xl: 26px; /* sheets, velké panely */
+  --radius-pill: 999px;
 
-  --shadow-card: 0 1px 2px rgba(14, 21, 19, 0.04), 0 10px 30px rgba(14, 21, 19, 0.06);
-  --shadow-raised: 0 1px 2px rgba(14, 21, 19, 0.06), 0 4px 12px rgba(14, 21, 19, 0.08);
-  --shadow-pop: 0 18px 50px rgba(14, 21, 19, 0.18);
+  --shadow-card: 0 1px 2px rgba(14, 21, 19, 0.04), 0 8px 20px rgba(14, 21, 19, 0.04);
+  --shadow-raised: 0 1px 3px rgba(14, 21, 19, 0.12);
   --shadow-green: 0 6px 16px rgba(13, 194, 139, 0.28);
-  --focus-ring: 0 0 0 3px rgba(13, 194, 139, 0.38);
+  --shadow-pop: 0 18px 40px rgba(14, 21, 19, 0.28);
+  --focus-ring: 0 0 0 3px rgba(13, 194, 139, 0.45);
 
-  /* Glass — jen lišty, sheets a overlay (rozhodnutí „prémiově decentní"). */
-  --glass-bg: rgba(248, 251, 250, 0.78);
+  /* Glass — jen sticky lišta a hlavička v telefonu. Nikde jinde. */
+  --glass-bg: rgba(248, 251, 250, 0.82);
   --glass-blur: saturate(1.5) blur(14px);
 
   --t-fast: 140ms cubic-bezier(0.2, 0.7, 0.3, 1);
@@ -57,4 +88,59 @@
   --sp-4: 16px;
   --sp-5: 24px;
   --sp-6: 32px;
+  --sp-7: 48px;
+
+  /* rozvržení */
+  --nav-h: 64px; /* spodní navigace technika */
+  --footer-h: 78px; /* sticky patka s akcí fáze */
+  --rail-w: 236px; /* levý rail kanceláře */
+}
+
+/* Typografická škála — jediné místo, kde se určují velikosti. */
+.t-display-l {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.t-display-m {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.t-title {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.t-section {
+  font-size: 18px;
+  font-weight: 600;
+}
+.t-body-l {
+  font-size: 16px;
+  font-weight: 400;
+}
+.t-body {
+  font-size: 15px;
+  font-weight: 500;
+}
+.t-body-s {
+  font-size: 13.5px;
+  font-weight: 400;
+}
+.t-caption {
+  font-size: 12.5px;
+  font-weight: 400;
+}
+.t-overline {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.t-num {
+  font-variant-numeric: tabular-nums;
 }

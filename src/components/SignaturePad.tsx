@@ -181,7 +181,7 @@ export function SignaturePad({
     try {
       await api(`/api/orders/${orderId}/signature`, {
         method: "POST",
-        body: { signature_png: png },
+        body: { data: png, signer_name: clientName },
       });
       toast("Podpis uložen.");
       onSaved();

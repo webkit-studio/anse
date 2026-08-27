@@ -3,7 +3,7 @@ import { hasBlocking, validateItem } from "../../shared/form-engine";
 import { formDefinitionSchema, type FormDefinition, type Params } from "../../shared/form-schema";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
-import { makeRoute, parseBody, type Route } from "../router";
+import { makeRoute, parseBody, type Ctx, type Route } from "../router";
 
 // Definice jsou po vzniku immutable → cache na dobu života instance.
 const definitionCache = new Map<string, FormDefinition>();
@@ -41,65 +41,114 @@ function isForeignKeyViolation(err: unknown): boolean {
   return (err as { code?: string }).code === "23503";
 }
 
+/** Technik smí sahat jen na svoje zakázky — cizí pro něj neexistují. */
+async function assertOwnOrder(ctx: Ctx, orderId: string): Promise<void> {
+  if (ctx.user.role !== "technik") return;
+  const [o] = await sql()`select assignee_id from orders where id = ${orderId}`.catch(() => []);
+  if (!o || o.assignee_id !== ctx.user.id) throw new ApiError(404, "Zakázka nenalezena.");
+}
+
+async function assertOwnItem(ctx: Ctx, itemId: string): Promise<void> {
+  if (ctx.user.role !== "technik") return;
+  const [row] = await sql()`
+    select o.assignee_id from items i join orders o on o.id = i.order_id where i.id = ${itemId}
+  `.catch(() => []);
+  if (!row || row.assignee_id !== ctx.user.id) throw new ApiError(404, "Položka nenalezena.");
+}
+
+/** Místnost: id (existující) nebo name (najít/založit). */
+async function resolveRoom(
+  db: ReturnType<typeof sql>,
+  orderId: string,
+  room: { id: string } | { name: string },
+): Promise<string> {
+  if ("id" in room) return room.id;
+  const [existing] = await db`
+    select id from rooms where order_id = ${orderId} and lower(name) = lower(${room.name})
+  `;
+  if (existing) return existing.id as string;
+
+  const [created] = await insertWithPosition(
+    () => db`
+      insert into rooms (order_id, name, position)
+      values (${orderId}, ${room.name},
+              coalesce((select max(position) from rooms where order_id = ${orderId}), 0) + 1)
+      returning id
+    `,
+  ).catch((err) => {
+    if (isForeignKeyViolation(err)) throw new ApiError(404, "Zakázka nenalezena.");
+    throw err;
+  });
+  return created!.id as string;
+}
+
+/** Přepis názvu z nastavení vyhrává nad originálem dodavatele. */
+function withNames(item: Record<string, unknown> | undefined) {
+  if (!item) return item;
+  const { product_type_custom_name, subcategory_custom_name, ...rest } = item as Record<string, string>;
+  return {
+    ...rest,
+    product_type_name: product_type_custom_name || rest.product_type_name,
+    subcategory_name: subcategory_custom_name || rest.subcategory_name,
+    photos: [],
+  };
+}
+
 export const itemRoutes: Route[] = [
-  makeRoute("POST", "/api/items", async (req) => {
+  makeRoute("POST", "/api/items", async (req, ctx) => {
     const db = sql();
     const body = await parseBody(req, itemCreateBody);
+    await assertOwnOrder(ctx, body.order_id);
 
     const [pt] = await db`
-      select id, active, current_definition_id from product_types where id = ${body.product_type_id}
-    `;
-    if (!pt?.active || !pt.current_definition_id) {
-      throw new ApiError(400, "Tento typ produktu zatím není k dispozici.");
-    }
-    const def = await pinnedDefinition(pt.current_definition_id);
-    const params = validateOr422(def, body.params, body.note);
+      select id, active from product_types where id = ${body.product_type_id}
+    `.catch(() => []);
+    if (!pt?.active) throw new ApiError(400, "Tento produkt zatím není k dispozici.");
 
-    // Místnost: id (existující) nebo name (najít/založit). Bez transakce —
-    // nejhorší scénář při pádu je prázdná místnost (jde smazat, reusuje se).
-    let roomId: string;
-    if ("id" in body.room) {
-      roomId = body.room.id;
-    } else {
-      const name = body.room.name;
-      const [existing] = await db`
-        select id from rooms where order_id = ${body.order_id} and lower(name) = lower(${name})
-      `;
-      if (existing) {
-        roomId = existing.id;
-      } else {
-        const [room] = await insertWithPosition(
-          () => db`
-            insert into rooms (order_id, name, position)
-            values (${body.order_id}, ${name},
-                    coalesce((select max(position) from rooms where order_id = ${body.order_id}), 0) + 1)
-            returning id
-          `,
-        ).catch((err) => {
-          if (isForeignKeyViolation(err)) throw new ApiError(404, "Zakázka nenalezena.");
-          throw err;
-        });
-        roomId = room!.id;
+    // Zaměření se vyplňuje podle definice podkategorie; oprava je jen
+    // foto závady + popis (žádný formulář, žádná podkategorie).
+    let definitionId: string | null = null;
+    let subcategoryId: string | null = null;
+    let params: Params = {};
+
+    if (body.kind === "config") {
+      const [sub] = await db`
+        select id, active, current_definition_id from subcategories
+        where id = ${body.subcategory_id} and product_type_id = ${pt.id}
+      `.catch(() => []);
+      if (!sub?.active || !sub.current_definition_id) {
+        throw new ApiError(400, "Tato podkategorie zatím není k dispozici.");
       }
+      const def = await pinnedDefinition(sub.current_definition_id);
+      params = validateOr422(def, body.params, body.note);
+      definitionId = sub.current_definition_id;
+      subcategoryId = sub.id;
     }
 
-    // Jeden dotaz: insert + join na typ (latence US↔EU) — složená FK
+    const roomId = await resolveRoom(db, body.order_id, body.room);
+    const defectNote = body.kind === "oprava" ? body.defect_note : "";
+
+    // Jeden dotaz: insert + join na katalog (latence US↔EU) — složená FK
     // (room_id, order_id) → rooms zajistí, že místnost patří k zakázce.
     try {
       const [item] = await insertWithPosition(
         () => db`
           with ins as (
-            insert into items (order_id, room_id, product_type_id, form_definition_id, params, note, position)
-            values (${body.order_id}, ${roomId}, ${pt.id}, ${pt.current_definition_id},
-                    ${db.json(params as never)}, ${body.note},
+            insert into items (order_id, room_id, kind, product_type_id, subcategory_id,
+                               form_definition_id, params, note, defect_note, position)
+            values (${body.order_id}, ${roomId}, ${body.kind}, ${pt.id}, ${subcategoryId},
+                    ${definitionId}, ${db.json(params as never)}, ${body.note}, ${defectNote},
                     coalesce((select max(position) from items where room_id = ${roomId}), 0) + 1)
             returning *
           )
-          select ins.*, pt.code as product_type_code, pt.name as product_type_name
-          from ins join product_types pt on pt.id = ins.product_type_id
+          select ins.*, pt.name as product_type_name, pt.custom_name as product_type_custom_name,
+                 s.name as subcategory_name, s.custom_name as subcategory_custom_name
+          from ins
+          join product_types pt on pt.id = ins.product_type_id
+          left join subcategories s on s.id = ins.subcategory_id
         `,
       );
-      return json({ item }, { status: 201 });
+      return json({ item: withNames(item) }, { status: 201 });
     } catch (err) {
       if (isForeignKeyViolation(err)) {
         throw new ApiError(400, "Místnost nepatří k této zakázce.");
@@ -108,29 +157,37 @@ export const itemRoutes: Route[] = [
     }
   }),
 
-  makeRoute("PATCH", "/api/items/:id", async (req, _ctx, params) => {
+  makeRoute("PATCH", "/api/items/:id", async (req, ctx, params) => {
     const db = sql();
     const body = await parseBody(req, itemUpdateBody);
+    await assertOwnItem(ctx, params.id!);
 
     const [existing] = await db`
-      select id, form_definition_id from items where id = ${params.id!}
-    `;
+      select id, kind, form_definition_id from items where id = ${params.id!}
+    `.catch(() => []);
     if (!existing) throw new ApiError(404, "Položka nenalezena.");
 
     // Revalidace proti PŘIPNUTÉ verzi definice položky, ne aktuální.
-    const def = await pinnedDefinition(existing.form_definition_id);
-    const normalized = validateOr422(def, body.params, body.note);
+    let normalized: Params = {};
+    if (existing.kind === "config") {
+      const def = await pinnedDefinition(existing.form_definition_id);
+      normalized = validateOr422(def, body.params ?? {}, body.note);
+    }
+    if (existing.kind === "oprava" && body.defect_note !== undefined && !body.defect_note.trim()) {
+      throw new ApiError(400, "Popište závadu.");
+    }
 
     // Jeden dotaz: optimistický zámek + případný přesun místnosti (s novou
-    // pozicí na konci cílové místnosti) + join na typ. Složená FK ohlídá,
+    // pozicí na konci cílové místnosti) + join na katalog. Složená FK ohlídá,
     // že cílová místnost patří ke stejné zakázce; souběh pozic řeší retry.
     try {
       const [updated] = await insertWithPosition(
         () => db`
           with upd as (
             update items set
-              params = ${db.json(normalized as never)},
+              params = case when kind = 'config' then ${db.json(normalized as never)}::jsonb else params end,
               note = ${body.note},
+              defect_note = coalesce(${body.defect_note ?? null}, defect_note),
               room_id = coalesce(${body.room_id ?? null}::uuid, room_id),
               position = case
                 when ${body.room_id ?? null}::uuid is not null and ${body.room_id ?? null}::uuid <> room_id
@@ -140,14 +197,17 @@ export const itemRoutes: Route[] = [
             where id = ${params.id!} and updated_at = ${body.expected_updated_at}
             returning *
           )
-          select upd.*, pt.code as product_type_code, pt.name as product_type_name
-          from upd join product_types pt on pt.id = upd.product_type_id
+          select upd.*, pt.name as product_type_name, pt.custom_name as product_type_custom_name,
+                 s.name as subcategory_name, s.custom_name as subcategory_custom_name
+          from upd
+          join product_types pt on pt.id = upd.product_type_id
+          left join subcategories s on s.id = upd.subcategory_id
         `,
       );
       if (!updated) {
         throw new ApiError(409, "Položku mezitím upravil někdo jiný. Načtěte ji prosím znovu.");
       }
-      return json({ item: updated });
+      return json({ item: withNames(updated) });
     } catch (err) {
       if (isForeignKeyViolation(err)) {
         throw new ApiError(400, "Místnost nepatří k této zakázce.");
@@ -156,33 +216,42 @@ export const itemRoutes: Route[] = [
     }
   }),
 
-  makeRoute("POST", "/api/items/:id/duplicate", async (_req, _ctx, params) => {
+  makeRoute("POST", "/api/items/:id/duplicate", async (_req, ctx, params) => {
     const db = sql();
+    await assertOwnItem(ctx, params.id!);
     // Kopie 1:1 včetně připnuté verze definice (stejná okna vedle sebe) —
-    // jediný dotaz: čtení zdroje + insert + join na typ.
+    // jediný dotaz: čtení zdroje + insert + join na katalog.
     const [copy] = await insertWithPosition(
       () => db`
         with src as (
-          select order_id, room_id, product_type_id, form_definition_id, params, note
+          select order_id, room_id, kind, product_type_id, subcategory_id, form_definition_id,
+                 params, note, defect_note
           from items where id = ${params.id!}
         ), ins as (
-          insert into items (order_id, room_id, product_type_id, form_definition_id, params, note, position)
-          select order_id, room_id, product_type_id, form_definition_id, params, note,
+          insert into items (order_id, room_id, kind, product_type_id, subcategory_id,
+                             form_definition_id, params, note, defect_note, position)
+          select order_id, room_id, kind, product_type_id, subcategory_id, form_definition_id,
+                 params, note, defect_note,
                  coalesce((select max(position) from items i where i.room_id = src.room_id), 0) + 1
           from src
           returning *
         )
-        select ins.*, pt.code as product_type_code, pt.name as product_type_name
-        from ins join product_types pt on pt.id = ins.product_type_id
+        select ins.*, pt.name as product_type_name, pt.custom_name as product_type_custom_name,
+               s.name as subcategory_name, s.custom_name as subcategory_custom_name
+        from ins
+        join product_types pt on pt.id = ins.product_type_id
+        left join subcategories s on s.id = ins.subcategory_id
       `,
     );
     if (!copy) throw new ApiError(404, "Položka nenalezena.");
-    return json({ item: copy }, { status: 201 });
+    return json({ item: withNames(copy) }, { status: 201 });
   }),
 
-  makeRoute("DELETE", "/api/items/:id", async (_req, _ctx, params) => {
+  makeRoute("DELETE", "/api/items/:id", async (_req, ctx, params) => {
     const db = sql();
-    const [deleted] = await db`delete from items where id = ${params.id!} returning id`;
+    await assertOwnItem(ctx, params.id!);
+    const [deleted] = await db`delete from items where id = ${params.id!} returning id`
+      .catch(() => []);
     if (!deleted) throw new ApiError(404, "Položka nenalezena.");
     return json({ ok: true });
   }),
