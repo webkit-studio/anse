@@ -7,6 +7,7 @@ import type { Issue } from "@shared/form-engine";
 import { ApiFetchError, api } from "../api/client";
 import { useInvalidateOrder, useOrder, useProductTypes } from "../api/hooks";
 import { PhotoPicker, uploadPending, type PendingPhoto } from "../components/PhotoPicker";
+import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
 import { TechDetail } from "../components/Shell";
 import { useToast } from "../components/Toast";
@@ -366,7 +367,10 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
         }
       >
         <div className="repair-card">
-          <span className="badge tone-wait">⟳ Oprava</span>
+          <span className="badge tone-wait">
+            <Icon name="oprava" size={12} />
+            Oprava
+          </span>
           <h1 className="t-section" style={{ margin: "10px 0 0" }}>
             {product ? displayName(product) : item?.product_type_name}
           </h1>
@@ -434,12 +438,12 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
         <div style={{ display: "flex", gap: 8 }}>
           {item && (
             <Button variant="ghost" onClick={() => void duplicate()} aria-label="Duplikovat položku">
-              ⧉
+              <Icon name="kopie" size={19} />
             </Button>
           )}
           {product?.note_for_tech && (
             <Button variant="ghost" onClick={() => setNavod(true)}>
-              ◎ Návod
+              <Icon name="navod" size={19} /> Návod
             </Button>
           )}
         </div>

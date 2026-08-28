@@ -72,7 +72,11 @@ export default function StatistikyPage() {
           </div>
 
           <section className="card card-pad">
-            <h2 className="card-section-title">Trychtýř</h2>
+            <h2 className="card-section-title">Z kontaktů měsíce — stav dnes</h2>
+            <p className="muted t-body-s" style={{ marginTop: -6 }}>
+              Kontakty založené v tomhle měsíci a co z nich k dnešku je (zakázka klidně
+              vznikla později — pořád se počítá sem).
+            </p>
             <div className="funnel">
               {data.funnel.map((f) => (
                 <div className="funnel-row" key={f.label}>

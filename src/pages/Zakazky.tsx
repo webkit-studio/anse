@@ -5,7 +5,7 @@ import { PHASE_LABELS } from "@shared/types";
 import { ago, czDateShort, money } from "@shared/format";
 import { useMe, useOrders } from "../api/hooks";
 import { OfficeShell, TechScreen, useOfficeView } from "../components/Shell";
-import { Chips, EmptyState, PhaseBadge, SkeletonList, useDelayed } from "../components/ui";
+import { Chips, EmptyState, PhaseBadge, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
 
 const TECH_FILTERS = [
   { value: "vse", label: "Vše" },
@@ -35,14 +35,7 @@ function OrderCard({ order }: { order: OrderListRow }) {
         <span className="card-main">
           <span className="card-badges">
             <PhaseBadge phase={order.phase} role={me.data?.role ?? "technik"} />
-            {order.signed_at && (
-              <span className="badge tone-done">
-                <span className="badge-glyph" aria-hidden="true">
-                  ✓
-                </span>
-                Podepsáno
-              </span>
-            )}
+            {order.signed_at && <ToneBadge tone="done">Podepsáno</ToneBadge>}
           </span>
           <span className="card-title">{who}</span>
           <span className="card-sub">

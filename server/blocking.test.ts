@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { blockingFor } from "./routes/orders";
 
 const full = {
+  assignee_id: "11111111-1111-1111-1111-111111111111",
   customer_name: "Novák Jan",
   customer_phone: "606 111 222",
   customer_email: "novak@example.cz",
@@ -18,6 +19,12 @@ describe("blokující kroky", () => {
     for (const phase of ["k_zamereni", "k_naceneni", "k_montazi", "k_fakturaci"] as const) {
       expect(blockingFor(phase, full, 3, true)).toEqual([]);
     }
+  });
+
+  it("nepřidělená zakázka nejde poslat dál — nikdo by ji v terénu neviděl", () => {
+    expect(blockingFor("k_zamereni", { ...full, assignee_id: null }, 3, false)).toEqual([
+      "Přidělit technika",
+    ]);
   });
 
   it("zaměření: údaje zákazníka, položka a cena práce", () => {

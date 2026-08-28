@@ -333,6 +333,8 @@ function Ucty() {
                     aria-label={`E-mail ${u.name}`}
                     onBlur={(e) => e.target.value !== u.email && void patch(u.id, { email: e.target.value })}
                   />
+                  {/* bez adresy mu e-mailové notifikace tiše nechodí */}
+                  {!u.email && <span className="badge badge-warn">chybí e-mail</span>}
                 </td>
                 <td className="code-cell">
                   {shown.has(u.id) ? u.code : "••••••"}{" "}

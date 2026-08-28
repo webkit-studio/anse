@@ -307,7 +307,9 @@ export async function buildMontazniListPdf(
   const db = sql();
 
   const [order] = (await db`
-    select o.id, o.addr_montaz, o.addr_fakt, o.order_no, o.invoice_no,
+    select o.id, o.addr_montaz,
+           case when o.addr_fakt_same then o.addr_montaz else o.addr_fakt end as addr_fakt,
+           o.order_no, o.invoice_no,
            o.price_customer, o.price_montage,
            o.customer_name, o.customer_phone, o.customer_email, o.ico, o.dic,
            to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,

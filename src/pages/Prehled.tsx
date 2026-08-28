@@ -31,8 +31,11 @@ function QueueCard({ order }: { order: OrderListRow & { idle_days: number } }) {
                 : "bez termínu montáže"
               : order.phase === "k_fakturaci"
                 ? money(order.price_customer, "bez ceny")
-                : (order.assignee_name ?? "nepřidělen")}
+                : (order.assignee_name ?? "")}
         </span>
+        {!order.assignee_id && order.phase === "k_zamereni" && (
+          <span className="queue-card-old">nepřidělen</span>
+        )}
         {stale && <span className="queue-card-old">{days(order.idle_days)}</span>}
       </span>
     </Link>

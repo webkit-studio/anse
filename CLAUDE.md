@@ -54,8 +54,15 @@ uživatelem, port 5433, DB `anse` — connection string
   `k_montazi` → `k_fakturaci` → `hotovo`, plus `zruseno` mimo linku. Technik
   posouvá terénní kroky (odeslat k nacenění, namontováno), nacenění, objednávku
   a fakturaci dělá kancelář — viz `ALLOWED_PHASE_TRANSITIONS` v `shared/types.ts`.
-- Zakázka **vždy patří kontaktu**; kontakt je databáze čísel, ne pipeline
-  (jediný příznak je `fresh` = „ozvat se").
+  Jediná cesta zpět je obnova zrušené zakázky kanceláří (`POST …/restore`,
+  vrací do fáze z auditu). Tóny odznaků se počítají per role (`phaseTone`) —
+  každá role vidí svoje „na tahu".
+- Zakázka **vždy patří kontaktu**; kontakt je databáze čísel s příznakem
+  `fresh` („ozvat se", rozsvícení vyžaduje poznámku proč) a přidělením
+  `assigned_to` (technik vidí v odznaku/Dnes jen svoje). Technik-zakladatel
+  se přiděluje sám; kancelář přiděluje vědomě (default nikdo).
+- Fakturační adresa je příznak `addr_fakt_same` (odvozuje se z montážní),
+  ne kopie textu.
 - Co brání posunu dál, počítá server (`blockingFor()`); UI to jen vypisuje.
 - Přechody stavů zakázky jsou compare-and-swap (`WHERE status = $expected`),
   editace hlavičky/položek optimistický zámek přes `updated_at` → při konfliktu

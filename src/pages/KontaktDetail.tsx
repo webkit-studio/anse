@@ -3,15 +3,17 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ContactRow } from "@shared/types";
 import { ago, czDateShort } from "@shared/format";
 import { api } from "../api/client";
-import { useContact, useInvalidateContacts, useInvalidateOrder, useMe } from "../api/hooks";
+import { useContact, useInvalidateContacts, useInvalidateOrder, useMe, useUsers } from "../api/hooks";
 import { DateSheet, isoDay } from "../components/DateSheet";
+import { Icon } from "../components/Icon";
 import { TechDetail } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
-  ConfirmButton,
+  CancelBlock,
   ErrorBanner,
   PhaseBadge,
+  SelectSheet,
   SkeletonList,
   Textarea,
   useDelayed,
@@ -50,7 +52,10 @@ function InlineField({
             setEditing(true);
           }}
         >
-          {value || <span className="muted">{placeholder}</span>} <span aria-hidden="true">✎</span>
+          {value || <span className="muted">{placeholder}</span>}{" "}
+          <span aria-hidden="true" style={{ color: "var(--c-text-muted)" }}>
+            <Icon name="tuzka" size={14} />
+          </span>
         </button>
       </div>
     );
@@ -86,6 +91,7 @@ export default function KontaktDetailPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const detail = useContact(contactId);
+  const users = useUsers(true);
   const invalidate = useInvalidateContacts();
   const invalidateOrder = useInvalidateOrder();
   const showSkeleton = useDelayed(detail.isPending);
@@ -111,13 +117,13 @@ export default function KontaktDetailPage() {
     await invalidate(contactId);
   }
 
-  async function createOrder(measured_at: string) {
+  async function createOrder(measured_at: string, measured_time: string | null) {
     if (busy) return;
     setBusy(true);
     try {
       const { id } = await api<{ id: string }>("/api/orders", {
         method: "POST",
-        body: { contact_id: contactId, measured_at },
+        body: { contact_id: contactId, measured_at, measured_time },
       });
       await invalidate(contactId);
       await invalidateOrder(id);
@@ -129,12 +135,7 @@ export default function KontaktDetailPage() {
     }
   }
 
-  async function cancelContact() {
-    const reason = note.trim();
-    if (!reason) {
-      toast("Napiš do poznámky důvod zrušení, pak zruš.");
-      return;
-    }
+  async function cancelContact(reason: string) {
     await api(`/api/contacts/${contactId}/cancel`, { method: "POST", body: { reason } });
     await invalidate(contactId);
     toast("Kontakt zrušený");
@@ -156,7 +157,7 @@ export default function KontaktDetailPage() {
       headRight={
         contact?.phone ? (
           <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className="btn btn-secondary">
-            ✆ Volat
+            <Icon name="volat" size={17} /> Volat
           </a>
         ) : undefined
       }
@@ -187,6 +188,23 @@ export default function KontaktDetailPage() {
           </div>
 
           <section className="card card-pad">
+            <div className="field" style={{ marginBottom: 4 }}>
+              <label className="field-label" htmlFor="c-assignee">
+                Ozvat se má
+              </label>
+              <SelectSheet
+                id="c-assignee"
+                value={contact.assigned_to ?? ""}
+                placeholder="— nikdo —"
+                options={[
+                  { value: "", label: "— nikdo —" },
+                  ...(users.data?.users ?? [])
+                    .filter((u) => u.active)
+                    .map((u) => ({ value: u.id, label: u.name })),
+                ]}
+                onChange={(v) => void patch({ assigned_to: (v || null) as never })}
+              />
+            </div>
             <InlineField
               label="Jméno"
               value={contact.name}
@@ -264,15 +282,11 @@ export default function KontaktDetailPage() {
             </div>
           </section>
 
-          <ConfirmButton
+          <CancelBlock
             label="Zrušit kontakt"
-            confirmLabel="Opravdu zrušit?"
-            className="order-delete"
-            onConfirm={() => void cancelContact()}
+            placeholder="Proč kontakt rušíme? (uloží se jako poznámka)"
+            onCancel={(reason) => void cancelContact(reason)}
           />
-          <p className="muted t-caption" style={{ margin: "-8px 0 0" }}>
-            Zrušení vyžaduje důvod — napiš ho do poznámky nahoře, uloží se k němu.
-          </p>
         </>
       )}
 
@@ -280,11 +294,12 @@ export default function KontaktDetailPage() {
         <DateSheet
           title="Termín zaměření"
           value={isoDay(new Date())}
+          withTime
           confirmLabel="Založit zakázku"
           onClose={() => setDateOpen(false)}
-          onPick={(iso) => {
+          onPick={(iso, time) => {
             setDateOpen(false);
-            void createOrder(iso);
+            void createOrder(iso, time);
           }}
         />
       )}

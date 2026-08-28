@@ -29,12 +29,20 @@ export const statsRoutes: Route[] = [
       const [kontakty] = await db`
         select count(*)::int as n from contacts c where ${range("c.created_at")}
       `;
-      // Kontaktováno = někdo s kontaktem opravdu něco udělal (poznámka nebo zakázka).
-      const [kontaktovano] = await db`
-        select count(*)::int as n from contacts c
-        where ${range("c.created_at")}
-          and (exists (select 1 from contact_notes n where n.contact_id = c.id)
-               or exists (select 1 from orders o where o.contact_id = c.id))
+      // Kohorta: kontakty ZALOŽENÉ v měsíci a co z nich je K DNEŠKU — kontakt
+      // klidně dozraje v zakázku o měsíc později a pořád se počítá sem.
+      const [cohort] = await db`
+        select
+          count(*) filter (where exists
+            (select 1 from orders o where o.contact_id = c.id))::int as se_zakazkou,
+          count(*) filter (where exists (
+            select 1 from orders o where o.contact_id = c.id
+              and (o.phase in ('k_montazi', 'k_fakturaci', 'hotovo')
+                   or exists (select 1 from order_events e
+                              where e.order_id = o.id and e.to_phase = 'k_montazi'))
+          ))::int as objednano,
+          count(*) filter (where c.cancelled)::int as zruseno
+        from contacts c where ${range("c.created_at")}
       `;
       const [zamereno] = await db`
         select count(distinct e.order_id)::int as n from order_events e
@@ -75,10 +83,10 @@ export const statsRoutes: Route[] = [
           hotovo: hotovo?.n ?? 0,
         },
         funnel: [
-          { label: "Nové kontakty", value: kontakty?.n ?? 0 },
-          { label: "Kontaktováno", value: kontaktovano?.n ?? 0 },
-          { label: "Zaměřeno", value: zamereno?.n ?? 0 },
-          { label: "Vyšlo", value: objednano?.n ?? 0 },
+          { label: "Založeno", value: kontakty?.n ?? 0 },
+          { label: "Má zakázku", value: (cohort?.se_zakazkou as number) ?? 0 },
+          { label: "Objednáno", value: (cohort?.objednano as number) ?? 0 },
+          { label: "Zrušeno", value: (cohort?.zruseno as number) ?? 0 },
         ],
         techs,
       });

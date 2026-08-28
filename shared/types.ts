@@ -51,22 +51,32 @@ export const TONE_GLYPHS: Record<Tone, string> = {
   idle: "◇",
 };
 
-const BASE_TONE: Record<OrderPhase, Tone> = {
-  k_zamereni: "work",
-  k_naceneni: "wait",
-  k_montazi: "todo",
-  k_fakturaci: "work",
-  hotovo: "done",
-  zruseno: "dead",
+/**
+ * Tón fáze podle role: „na tahu ty" (todo/work) vs. „čeká se na druhé" (wait).
+ * Technik vidí „K fakturaci" jako hotovou práci (✓ Hotovo) — fakturace je věc
+ * kanceláře a jeho se už netýká.
+ */
+const TONE_BY_ROLE: Record<Role, Record<OrderPhase, Tone>> = {
+  technik: {
+    k_zamereni: "work",
+    k_naceneni: "wait",
+    k_montazi: "todo",
+    k_fakturaci: "done",
+    hotovo: "done",
+    zruseno: "dead",
+  },
+  kancelar: {
+    k_zamereni: "wait",
+    k_naceneni: "todo",
+    k_montazi: "wait",
+    k_fakturaci: "todo",
+    hotovo: "done",
+    zruseno: "dead",
+  },
 };
 
-/**
- * Tón fáze. Technik vidí „K fakturaci" jako hotovou práci (✓ Hotovo) —
- * fakturace je věc kanceláře a jeho se už netýká.
- */
 export function phaseTone(phase: OrderPhase, role: Role): Tone {
-  if (role === "technik" && phase === "k_fakturaci") return "done";
-  return BASE_TONE[phase];
+  return TONE_BY_ROLE[role][phase];
 }
 
 export function phaseLabelFor(phase: OrderPhase, role: Role): string {
@@ -135,6 +145,9 @@ export interface ContactRow {
   place: string;
   /** „● Ozvat se" — zhasne založením zakázky, ručně jde přepnout zpět. */
   fresh: boolean;
+  /** Kdo se má ozvat — ať Jakub nevolá na kontakty, které si bere Marek. */
+  assigned_to: string | null;
+  assignee_name?: string | null;
   cancelled: boolean;
   cancelled_reason: string;
   created_at: string;
@@ -177,6 +190,8 @@ export interface OrderRow {
   customer_email: string;
   addr_montaz: string;
   addr_fakt: string;
+  /** Fakturační adresa je stejná jako montážní (addr_fakt se pak ignoruje). */
+  addr_fakt_same: boolean;
   ico: string;
   dic: string;
 
@@ -188,6 +203,8 @@ export interface OrderRow {
   term_dodani: string | null;
   term_montaz: string | null;
   measured_at: string | null;
+  /** Nepovinný čas zaměření (HH:MM). */
+  measured_time: string | null;
 
   invoice_no: string;
   order_no: string;
@@ -329,9 +346,9 @@ export const NOTIF_EVENTS: NotifEventMeta[] = [
   {
     event: "novy_kontakt",
     to: "technik",
-    label: "Nový kontakt",
+    label: "Přidělený kontakt",
     trigger: "Kontakt přidělen uživateli",
-    template: "{jméno} — kontakt přidělený tobě.",
+    template: "{jméno} — kontakt přidělený tobě. Ozvi se.",
     emailDefault: true,
   },
   {
@@ -340,7 +357,7 @@ export const NOTIF_EVENTS: NotifEventMeta[] = [
     label: "Zakázka zrušena",
     trigger: "Kancelář zruší po nacenění",
     template: "{zakázka} — zákazník nabídku nepřijal. Zakázka je zrušená.",
-    emailDefault: false,
+    emailDefault: true,
   },
   {
     event: "nove_zamereni",

@@ -15,26 +15,32 @@ export function addDays(iso: string, days: number): string {
 
 /**
  * Výběr data na mobilu: rychlé volby + nativní kalendář.
- * `min` odřízne dřívější data (montáž nesmí být před dodáním).
+ * `warnBefore` dřívější data nezakazuje, jen varuje (dodávky chodí i dřív);
+ * `withTime` přidá nepovinný čas (plánování dne technika).
  */
 export function DateSheet({
   title,
   value,
-  min,
+  warnBefore,
+  warnText,
+  withTime = false,
   confirmLabel,
   onClose,
   onPick,
 }: {
   title: string;
   value: string | null;
-  min?: string | null;
+  warnBefore?: string | null;
+  warnText?: string;
+  withTime?: boolean;
   confirmLabel: string;
   onClose: () => void;
-  onPick: (iso: string) => void;
+  onPick: (iso: string, time: string | null) => void;
 }) {
   const today = isoDay(new Date());
-  const floor = min && min > today ? min : today;
+  const floor = today;
   const [picked, setPicked] = useState(value && value >= floor ? value : floor);
+  const [time, setTime] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -93,11 +99,28 @@ export function DateSheet({
           min={floor}
           onChange={(e) => setPicked(e.target.value)}
         />
-        {min && (
-          <p className="field-help">Dřívější termín než dodání {czDate(min)} nejde vybrat.</p>
+
+        {withTime && (
+          <>
+            <label className="field-label" htmlFor="date-sheet-time">
+              Čas (nepovinný)
+            </label>
+            <input
+              id="date-sheet-time"
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
+          </>
         )}
 
-        <Button variant="primary" className="btn-block" onClick={() => onPick(picked)}>
+        {warnBefore && picked < warnBefore && (
+          <p className="field-msg field-msg-warning" role="status">
+            {warnText ?? `Pozor: dodání je až ${czDate(warnBefore)}.`}
+          </p>
+        )}
+
+        <Button variant="primary" className="btn-block" onClick={() => onPick(picked, time || null)}>
           {confirmLabel}
         </Button>
       </div>

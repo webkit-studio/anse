@@ -11,14 +11,15 @@ import { OfficeShell } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
+  CancelBlock,
   ConfirmButton,
   ErrorBanner,
   Field,
   NativeSelect,
   PhaseBadge,
   SkeletonList,
-  Textarea,
   TextInput,
+  ToneBadge,
   useDelayed,
 } from "../components/ui";
 
@@ -53,7 +54,6 @@ export default function ZakazkaDetailOfficePage() {
 
   const [price, setPrice] = useState("");
   const [invoice, setInvoice] = useState("");
-  const [cancelReason, setCancelReason] = useState("");
   const [calOpen, setCalOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -132,7 +132,7 @@ export default function ZakazkaDetailOfficePage() {
             <section className="card card-pad">
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                 <PhaseBadge phase={order.phase} role="kancelar" />
-                {order.signed_at && <span className="badge tone-done">✓ Podepsáno</span>}
+                {order.signed_at && <ToneBadge tone="done">Podepsáno</ToneBadge>}
                 <span className="muted t-caption" style={{ marginLeft: "auto" }}>
                   {czItems(d.items.length)}
                 </span>
@@ -148,7 +148,11 @@ export default function ZakazkaDetailOfficePage() {
               </div>
               <div className="meta-row">
                 <span className="meta-label">Fakturační adresa</span>
-                <span className="meta-value">{order.addr_fakt || order.addr_montaz || "—"}</span>
+                <span className="meta-value">
+                  {order.addr_fakt_same
+                    ? `${order.addr_montaz || "—"}${order.addr_montaz ? " (stejná jako montážní)" : ""}`
+                    : order.addr_fakt || "—"}
+                </span>
               </div>
               <div className="meta-row">
                 <span className="meta-label">IČO / DIČ</span>
@@ -158,7 +162,10 @@ export default function ZakazkaDetailOfficePage() {
               </div>
               <div className="meta-row">
                 <span className="meta-label">Zaměřeno</span>
-                <span className="meta-value">{czDate(order.measured_at)}</span>
+                <span className="meta-value">
+                  {czDate(order.measured_at)}
+                  {order.measured_time ? ` v ${order.measured_time}` : ""}
+                </span>
               </div>
               <div className="meta-row">
                 <span className="meta-label">Cena práce technika</span>
@@ -207,7 +214,7 @@ export default function ZakazkaDetailOfficePage() {
                           <td className="cell-muted">{room?.name ?? "—"}</td>
                           <td className="cell-strong">
                             {i.kind === "oprava"
-                              ? `⟳ Oprava — ${i.product_type_name}`
+                              ? `Oprava — ${i.product_type_name}`
                               : i.subcategory_name || i.product_type_name}
                           </td>
                           <td className="num">{w && h ? `${w} × ${h}` : "—"}</td>
@@ -400,29 +407,35 @@ export default function ZakazkaDetailOfficePage() {
             )}
 
             {order.phase === "zruseno" && (
-              <p className="muted t-body-s">Zrušeno: {order.cancelled_reason || "bez důvodu"}</p>
+              <>
+                <p className="muted t-body-s">Zrušeno: {order.cancelled_reason || "bez důvodu"}</p>
+                <Button
+                  variant="system"
+                  className="btn-block"
+                  disabled={busy}
+                  onClick={async () => {
+                    setBusy(true);
+                    try {
+                      await api(`/api/orders/${orderId}/restore`, { method: "POST" });
+                      await invalidate(orderId);
+                      toast("Zakázka obnovená — vrací se tam, kde byla.");
+                    } catch (err) {
+                      toast(err instanceof Error ? err.message : "Obnova se nepodařila.");
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  Obnovit zakázku
+                </Button>
+              </>
             )}
 
             {order.phase !== "hotovo" && order.phase !== "zruseno" && (
-              <div style={{ display: "grid", gap: 8, borderTop: "1px solid var(--c-hairline)", paddingTop: 12 }}>
-                <Textarea
-                  value={cancelReason}
-                  rows={2}
-                  placeholder="Důvod zrušení (nutný)"
-                  aria-label="Důvod zrušení"
-                  onChange={(e) => setCancelReason(e.target.value)}
-                />
-                <ConfirmButton
+              <div style={{ borderTop: "1px solid var(--c-hairline)", paddingTop: 12 }}>
+                <CancelBlock
                   label="Zrušit zakázku"
-                  confirmLabel="Opravdu zrušit?"
-                  className="order-delete"
-                  onConfirm={() => {
-                    if (!cancelReason.trim()) {
-                      toast("Napiš důvod zrušení.");
-                      return;
-                    }
-                    void movePhase("zruseno", cancelReason.trim());
-                  }}
+                  onCancel={(reason) => void movePhase("zruseno", reason)}
                 />
               </div>
             )}

@@ -13,8 +13,8 @@ import { makeRoute, parseBody, type Route } from "../router";
 // a zrušení s důvodem. Vidí je obě role v plném rozsahu.
 
 const CONTACT_COLS = (db: ReturnType<typeof sql>) => db.unsafe(`
-  c.id, c.name, c.phone, c.place, c.fresh, c.cancelled, c.cancelled_reason,
-  c.created_at, c.updated_at
+  c.id, c.name, c.phone, c.place, c.fresh, c.assigned_to, c.cancelled,
+  c.cancelled_reason, c.created_at, c.updated_at
 `);
 
 /** Nevalidní uuid v URL = nenalezeno; ostatní chyby DB propadnou do 500. */
@@ -38,12 +38,13 @@ export const contactRoutes: Route[] = [
     const filter = url.searchParams.get("filter") ?? "vse"; // vse | fresh
 
     const rows = await db`
-      select ${CONTACT_COLS(db)},
+      select ${CONTACT_COLS(db)}, au.name as assignee_name,
         (select count(*)::int from orders o where o.contact_id = c.id) as order_count,
         (select count(*)::int from orders o
           where o.contact_id = c.id and o.phase not in ('hotovo', 'zruseno')) as open_order_count,
         (select count(*)::int from contact_notes n where n.contact_id = c.id) as notes_count
       from contacts c
+      left join users au on au.id = c.assigned_to
       where not c.cancelled
         and (${filter} <> 'fresh' or c.fresh)
         and (
@@ -59,9 +60,14 @@ export const contactRoutes: Route[] = [
   }),
 
   // Odznak v navigaci = počet kontaktů „ozvat se".
-  makeRoute("GET", "/api/contacts/fresh-count", async () => {
+  // Technik počítá jen kontakty přidělené jemu; kancelář vidí všechny.
+  makeRoute("GET", "/api/contacts/fresh-count", async (_req, ctx) => {
     const db = sql();
-    const [row] = await db`select count(*)::int as n from contacts where fresh and not cancelled`;
+    const mine = ctx.user.role === "technik";
+    const [row] = await db`
+      select count(*)::int as n from contacts
+      where fresh and not cancelled and (${!mine} or assigned_to = ${ctx.user.id})
+    `;
     return json({ count: row?.n ?? 0 });
   }),
 
@@ -69,28 +75,23 @@ export const contactRoutes: Route[] = [
     const db = sql();
     const body = await parseBody(req, contactCreateBody);
 
+    // Technik, který kontakt zapsal, si ho rovnou bere; kancelář nechává
+    // nepřidělené a rozdá je z Přehledu.
+    const assignee = ctx.user.role === "technik" ? ctx.user.id : null;
     const [contact] = await db`
-      insert into contacts as c (name, phone, place, fresh, created_by)
-      values (${body.name}, ${body.phone}, ${body.place}, true, ${ctx.user.id})
+      insert into contacts as c (name, phone, place, fresh, assigned_to, created_by)
+      values (${body.name}, ${body.phone}, ${body.place}, true, ${assignee}, ${ctx.user.id})
       returning ${CONTACT_COLS(db)}
     `;
-
-    await notify({
-      event: "novy_kontakt",
-      subject: contactLabel(contact!),
-      vars: { "jméno": contactLabel(contact!) },
-      contactId: contact!.id as string,
-      actorId: ctx.user.id,
-      url: `${appOrigin(req)}/kontakty/${contact!.id}`,
-    });
-
     return json({ contact }, { status: 201 });
   }),
 
   makeRoute("GET", "/api/contacts/:id", async (_req, _ctx, params) => {
     const db = sql();
     const [contact] = await db`
-      select ${CONTACT_COLS(db)} from contacts c where c.id = ${params.id!}
+      select ${CONTACT_COLS(db)}, au.name as assignee_name
+      from contacts c left join users au on au.id = c.assigned_to
+      where c.id = ${params.id!}
     `.catch(invalidUuidAsMissing);
     if (!contact) throw new ApiError(404, "Kontakt nenalezen.");
 
@@ -112,15 +113,16 @@ export const contactRoutes: Route[] = [
     return json({ contact, notes, orders });
   }),
 
-  makeRoute("PATCH", "/api/contacts/:id", async (req, _ctx, params) => {
+  makeRoute("PATCH", "/api/contacts/:id", async (req, ctx, params) => {
     const db = sql();
     const body = await parseBody(req, contactUpdateBody);
 
-    const patch: Record<string, string | boolean> = {};
+    const patch: Record<string, string | boolean | null> = {};
     for (const key of ["name", "phone", "place"] as const) {
       if (body[key] !== undefined) patch[key] = body[key]!;
     }
     if (body.fresh !== undefined) patch.fresh = body.fresh;
+    if (body.assigned_to !== undefined) patch.assigned_to = body.assigned_to;
     if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
 
     // Kontakt musí mít pořád jméno nebo telefon.
@@ -134,11 +136,38 @@ export const contactRoutes: Route[] = [
       throw new ApiError(400, "Kontakt musí mít jméno nebo telefon.");
     }
 
-    const [updated] = await db`
-      update contacts c set ${db(patch)} where c.id = ${params.id!}
-      returning ${CONTACT_COLS(db)}
-    `;
-    return json({ contact: updated });
+    let updated;
+    try {
+      [updated] = await db`
+        update contacts c set ${db(patch)} where c.id = ${params.id!}
+        returning ${CONTACT_COLS(db)}
+      `;
+    } catch (err) {
+      if ((err as { code?: string }).code === "23503") throw new ApiError(400, "Uživatel nenalezen.");
+      throw err;
+    }
+
+    // Přidělení kontaktu někomu jinému → notifikace „ozvi se".
+    if (
+      body.assigned_to !== undefined &&
+      body.assigned_to !== null &&
+      body.assigned_to !== ctx.user.id
+    ) {
+      await notify({
+        event: "novy_kontakt",
+        subject: contactLabel(updated!),
+        vars: { "jméno": contactLabel(updated!) },
+        contactId: updated!.id as string,
+        actorId: ctx.user.id,
+        userIds: [body.assigned_to],
+        url: `${appOrigin(req)}/kontakty/${updated!.id}`,
+      });
+    }
+
+    const [au] = updated!.assigned_to
+      ? await db`select name from users where id = ${updated!.assigned_to}`
+      : [undefined];
+    return json({ contact: { ...updated, assignee_name: au?.name ?? null } });
   }),
 
   makeRoute("POST", "/api/contacts/:id/notes", async (req, ctx, params) => {

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anse — jak běží zakázka</title>
+<style>
+  :root {
+    --green: #0dc28b;
+    --green-deep: #077a58;
+    --green-soft: #e2f8f0;
+    --green-on: #06231a;
+    --ink: #0e1513;
+    --text: #1b201f;
+    --muted: #5b6663;
+    --page: #f2f6f5;
+    --bg: #ffffff;
+    --hairline: #eef3f1;
+    --sunken: #f8fbfa;
+    --border: #e4eae8;
+    --shell: #0f1a17;
+    --shell-fg: #f2f6f5;
+    --shell-muted: #9fb3ac;
+    --warn: #9a5b00;
+    --warn-soft: #fff3dd;
+    --todo-bg: #d6f6ea; --todo-fg: #06553d; --todo-br: #b6ecda;
+    --work-bg: #eef3f1; --work-fg: #1b201f; --work-br: #d7e2de;
+    --wait-bg: #fff3dd; --wait-fg: #7a4800; --wait-br: #f2e0bd;
+    --done-bg: #eef3f1; --done-fg: #077a58; --done-br: #dbe7e3;
+    --dead-bg: #f7f2f2; --dead-fg: #8a5b5b; --dead-br: #ecdede;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+    color: var(--text);
+    background: var(--page);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .sheet {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 28px 64px;
+  }
+  header.doc {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 26px;
+  }
+  .brand { font-size: 20px; font-weight: 800; letter-spacing: 3px; color: var(--ink); }
+  .brand small { font-weight: 500; letter-spacing: 0; color: var(--muted); margin-left: 8px; font-size: 13px; }
+  .doc-meta { color: var(--muted); font-size: 12.5px; text-align: right; }
+  h1 { font-size: 27px; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 6px; color: var(--ink); }
+  .lede { color: var(--muted); font-size: 15px; max-width: 60ch; }
+  h2 {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase;
+    color: var(--green-deep); margin: 34px 0 12px;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  h3 { font-size: 15.5px; margin: 18px 0 6px; color: var(--ink); }
+  p + p { margin-top: 8px; }
+  .card {
+    background: var(--bg); border: 1px solid var(--hairline); border-radius: 14px;
+    padding: 16px 18px; margin: 10px 0;
+  }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+
+  /* odznaky stavů — stejné jako v aplikaci */
+  .b { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px;
+       font-size: 11.5px; font-weight: 600; white-space: nowrap; border: 1px solid transparent; vertical-align: 1px; }
+  .b svg { display: block; }
+  .todo { background: var(--todo-bg); color: var(--todo-fg); border-color: var(--todo-br); }
+  .work { background: var(--work-bg); color: var(--work-fg); border-color: var(--work-br); }
+  .wait { background: var(--wait-bg); color: var(--wait-fg); border-color: var(--wait-br); }
+  .done { background: var(--done-bg); color: var(--done-fg); border-color: var(--done-br); }
+  .dead { background: var(--dead-bg); color: var(--dead-fg); border-color: var(--dead-br); }
+
+  table { width: 100%; border-collapse: collapse; background: var(--bg); border-radius: 12px; overflow: hidden;
+          border: 1px solid var(--hairline); margin: 10px 0; }
+  th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+       color: #7c8785; background: var(--sunken); padding: 8px 12px; border-bottom: 1px solid var(--hairline); }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--hairline); font-size: 13px; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.who { white-space: nowrap; font-weight: 600; }
+
+  ol.steps { counter-reset: krok; list-style: none; margin: 10px 0; }
+  ol.steps > li {
+    position: relative; padding: 0 0 14px 40px; counter-increment: krok;
+  }
+  ol.steps > li::before {
+    content: counter(krok);
+    position: absolute; left: 0; top: -1px;
+    width: 26px; height: 26px; border-radius: 999px;
+    background: var(--shell); color: var(--shell-fg);
+    font-size: 12.5px; font-weight: 700;
+    display: grid; place-items: center;
+  }
+  ol.steps > li::after {
+    content: ""; position: absolute; left: 12.5px; top: 28px; bottom: 2px; width: 1px; background: var(--border);
+  }
+  ol.steps > li:last-child::after { display: none; }
+  ol.steps b { color: var(--ink); }
+  .stepnote { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+
+  .btn-demo { display: inline-block; padding: 4px 12px; border-radius: 10px; font-size: 12px; font-weight: 700;
+              background: var(--green); color: var(--green-on); white-space: nowrap; }
+  .btn-demo.secondary { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
+  .btn-demo.system { background: var(--shell); color: var(--shell-fg); }
+  .btn-demo.disabled { background: var(--border); color: #8a9491; }
+
+  .rulebox { background: var(--shell); color: var(--shell-fg); border-radius: 14px; padding: 16px 18px; margin: 10px 0; }
+  .rulebox h3 { color: var(--shell-fg); margin-top: 0; }
+  .rulebox li { margin-left: 18px; margin-top: 5px; }
+  .rulebox b { color: #7fd8bb; }
+  .warnbox { background: var(--warn-soft); color: var(--warn); border-radius: 12px; padding: 10px 14px; font-size: 13px; margin: 10px 0; }
+  ul.plain { margin: 6px 0 6px 18px; }
+  ul.plain li { margin-top: 4px; }
+  .muted { color: var(--muted); }
+  code { background: var(--sunken); border: 1px solid var(--hairline); border-radius: 6px; padding: 1px 6px; font-size: 12px; }
+
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .sheet { max-width: none; padding: 0; }
+    h2 { break-after: avoid; }
+    .card, table, .rulebox, ol.steps > li { break-inside: avoid; }
+    @page { margin: 14mm 13mm; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="doc">
+  <div>
+    <div class="brand">ANSE<small>interní aplikace</small></div>
+  </div>
+  <div class="doc-meta">Provozní příručka · srpen 2026<br>platí pro aktuální verzi aplikace</div>
+</header>
+
+<h1>Jak běží zakázka</h1>
+<p class="lede">Jedna linka od prvního telefonátu po montážní list. Dva pohledy nad stejnými daty:
+<b>technik</b> pracuje z telefonu v terénu, <b>kancelář</b> z počítače. Každý vidí svoje „na tahu" —
+aplikace nikoho nenechá poslat dál nic, čemu něco chybí.</p>
+
+<h2>1 · Kontakt — začíná se telefonátem</h2>
+<div class="card">
+  <p><b>Kontakt je databáze čísel, ne evidence stavu.</b> Založit ho může kdokoli a stačí
+  <b>jméno nebo telefon</b> — zbytek (místo, poznámky) se doplňuje, až je čas.</p>
+  <ul class="plain">
+    <li><span class="b todo">● Ozvat se</span> — hvězdička ★ u kontaktu. Svítí u čerstvě založených;
+        zhasne založením zakázky nebo jedním tapnutím. <b>Rozsvícení naopak vždy chce poznámku</b>
+        („volal znovu, chce doplnit síť") — ať ten, kdo bude volat, ví proč.</li>
+    <li><b>Ozvat se má…</b> — kontakt jde přidělit konkrétnímu člověku. Technik u sebe vidí
+        (a v odznaku navigace počítá) jen kontakty přidělené jemu; kancelář vidí všechny.
+        Technik, který kontakt sám zapsal, ho má automaticky u sebe.</li>
+    <li><b>Poznámky</b> — píše kdokoli, s autorem a časem, zůstávají navždy.</li>
+    <li><b>Zrušení kontaktu</b> — jde jen s důvodem; ten se uloží jako poznámka a kontakt zmizí ze seznamů.</li>
+  </ul>
+</div>
+<p class="muted">Kancelář na Přehledu vidí zelený pruh „N nových kontaktů — ozvat se" a rozdává je
+výběrem v tabulce Kontaktů. Přidělenému přijde zpráva <i>„…kontakt přidělený tobě. Ozvi se."</i></p>
+
+<h2>2 · Pět fází zakázky</h2>
+<p>Zakázka <b>vždy vzniká z kontaktu</b> — tlačítkem „Zadat termín zaměření" (datum, volitelně i čas).
+Pak už jde jen dopředu:</p>
+<table>
+  <tr><th>Fáze</th><th>Na tahu</th><th>Co se v ní děje</th><th>Dál to pustí až…</th></tr>
+  <tr>
+    <td><span class="b work">◐ K zaměření</span></td>
+    <td class="who">technik</td>
+    <td>Technik u zákazníka měří: přidává položky (formuláře podle výrobce), vyplní údaje zákazníka
+        a svou cenu práce. Kancelář jen čte.</td>
+    <td>přidělený technik · údaje zákazníka · aspoň 1 položka · cena práce</td>
+  </tr>
+  <tr>
+    <td><span class="b todo">● K nacenění</span></td>
+    <td class="who">kancelář</td>
+    <td>Kancelář nacení (jedno pole „cena zakázky"), zadá termín dodání, případně exportuje podklady
+        dodavateli. Tlačítko <span class="btn-demo">Objednáno</span> posílá dál.</td>
+    <td>cena zakázky · termín dodání</td>
+  </tr>
+  <tr>
+    <td><span class="b todo">● K montáži</span></td>
+    <td class="who">technik</td>
+    <td>Technik vidí termín dodání (tmavá karta, zadává kancelář), zadá termín montáže, namontuje,
+        nechá podepsat a přiloží foto realizace. <span class="btn-demo system">✓ Hotovo</span>
+        posune zakázku samo.</td>
+    <td>termín montáže · podpis zákazníka</td>
+  </tr>
+  <tr>
+    <td><span class="b todo">● K fakturaci</span></td>
+    <td class="who">kancelář</td>
+    <td>Kancelář doplní číslo faktury a vystaví montážní list (PDF s podpisem).
+        Technik už tuhle fázi vidí jako <span class="b done">✓ Hotovo</span> — jeho práce skončila.</td>
+    <td>číslo faktury (montážní list chce i podpis)</td>
+  </tr>
+  <tr>
+    <td><span class="b done">✓ Hotovo</span></td>
+    <td class="who">—</td>
+    <td>Jen ke čtení, montážní list ke stažení. Zakázka je v archivu obou.</td>
+    <td>—</td>
+  </tr>
+  <tr>
+    <td><span class="b dead">✕ Zrušeno</span></td>
+    <td class="who">—</td>
+    <td>Mimo linku, vždy s důvodem. Technik ruší jen do nacenění („na místě to neklaplo"),
+        kancelář kdykoli mimo hotovo (zákazník nepřijal cenu).
+        <b>Kancelář umí zakázku obnovit</b> — vrátí se přesně tam, kde byla.</td>
+    <td>—</td>
+  </tr>
+</table>
+<p class="muted">Barevné odznaky čtou obě role po svém: <span class="b todo">●</span> = na tahu jsi ty,
+<span class="b wait">○</span> = čeká se na druhou stranu. Stejná zakázka tedy technikovi svítí
+„čeká na kancelář" a kanceláři „na tahu ty".</p>
+
+<h2>3 · Den technika (telefon)</h2>
+<div class="card">
+<ol class="steps">
+  <li><b>Dnes</b> — po přihlášení tři sekce: <i>Namontovat</i> (montáže s termínem),
+    <i>Dokončit zaměření</i> (rozpracované) a <i>Ozvat se</i> (kontakty přidělené mně).
+    Šedý řádek dole říká, kolik zakázek leží u kanceláře.</li>
+  <li><b>Kontakt → zakázka</b> — zavolám, domluvím termín →
+    <span class="btn-demo">Zadat termín zaměření</span> (datum + klidně čas).
+    Tím vzniká zakázka a hvězdička „ozvat se" zhasne.</li>
+  <li><b>U zákazníka: první položka</b> — tlačítko mě nejdřív provede
+    <b>údaji zákazníka</b> (jméno, telefon, e-mail, adresa montáže; fakturační adresa je
+    zaškrtnutá jako „stejná" — odškrtnu jen, když je jiná, typicky firmy a SVJ).</li>
+  <li><b>Položky po místnostech</b> — vyberu produkt a podkategorii, formulář hlídá povinná pole
+    (ukazatel „Povinná 4/6", chybějící pole vyjmenuje a doskroluje). Stejná okna
+    <b>duplikuju</b> a přepíšu rozměry. Foto a poznámka ke každé položce; rozepsaná položka
+    přežije i výpadek signálu.
+    <div class="stepnote">Reklamace? Přepínač <b>Oprava</b>: jen produkt + foto závady + popis. Bez formuláře.</div></li>
+  <li><b>Poslední krok: cena práce</b> — moje částka za montáž (presety podle 850 Kč/h, nebo napíšu svoje).
+    Kancelář ji promítne do ceny pro zákazníka, proto se zadává hned při zaměření.</li>
+  <li><b><span class="btn-demo">K nacenění — odeslat</span></b> — hlavní tlačítko vždy říká, co ještě chybí:
+    <div class="stepnote">„Přidat první položku" → „Doplnit údaje zákazníka" → „Doplnit cenu práce" →
+    teprve pak „K nacenění — odeslat". Žádné chybové hlášky na slepo.</div></li>
+  <li><b>Čekám na kancelář</b> — zakázka svítí <span class="b wait">○ Čeká</span>. Až kancelář objedná,
+    přijde mi zpráva s termínem dodání.</li>
+  <li><b>Montáž</b> — zadám termín montáže (dřívější datum než dodání aplikace jen oranžově okomentuje,
+    nezakazuje), namontuju, zákazník se <b>podepíše prstem</b>, případně vyfotím realizaci →
+    <span class="btn-demo system">✓ Hotovo</span>. Fakturace už je věc kanceláře — u mě zakázka
+    spadne do archivu jako <span class="b done">✓ Hotovo</span>.</li>
+</ol>
+</div>
+
+<h2>4 · Den kanceláře (počítač)</h2>
+<div class="card">
+<ol class="steps">
+  <li><b>Přehled</b> — zelený pruh nových kontaktů, čtyři fronty (K zaměření / K nacenění / K montáži /
+    K fakturaci) a pás počtů. Co stojí déle než týden, svítí oranžově; zakázka bez technika má štítek
+    <b>„nepřidělen"</b>.</li>
+  <li><b>Rozdat kontakty</b> — v tabulce Kontaktů sloupec „Ozvat se má" → vyberu člověka,
+    tomu přijde zpráva. Hvězdičkou označím kontakt, kterému se máme ozvat znovu (chce to poznámku proč).</li>
+  <li><b>Nová zakázka</b> — vždy přes kontakt (tlačítko „+ Nová zakázka" vede do Kontaktů).
+    Když ji zakládám já, technika musím přidělit vědomě — klidně sebe (Marek měří taky),
+    ale nic se nepřiděluje potichu.</li>
+  <li><b>Nacenění</b> — v detailu zakázky pravý panel: <b>cena zakázky</b> (skládá se mimo aplikaci,
+    cena práce technika je vidět hned vedle), <b>termín dodání</b> z minikalendáře, podklady pro
+    dodavatele přes <span class="btn-demo secondary">Export XML</span>.
+    Pak <span class="btn-demo">Objednáno</span> — technikovi odejde termín dodání.</li>
+  <li><b>Fakturace</b> — po namontování přijde „podpis uložen, zakázka je k fakturaci".
+    Doplním číslo faktury → <span class="btn-demo system">Vystavit montážní list</span> (PDF s podpisem,
+    bez faktury a podpisu ho aplikace nevydá) → <span class="btn-demo">Hotovo</span>.</li>
+  <li><b>Zrušení a vzkříšení</b> — zrušit jde kdykoli mimo hotovo, vždy s důvodem.
+    Když si to zákazník rozmyslí, <span class="btn-demo secondary">Obnovit zakázku</span> ji vrátí
+    do fáze, ze které se rušila — nic se nezakládá znovu.</li>
+  <li><b>Statistiky</b> — měsíční KPI (kontakty, zaměřeno, objednáno, hotovo), tabulka po technicích
+    a kohorta <i>„z kontaktů měsíce"</i>: kolik z kontaktů založených v daném měsíci má k dnešku
+    zakázku, objednávku, nebo skončilo zrušením — i když to dozrálo později.</li>
+</ol>
+</div>
+
+<h2>5 · Zprávy — kdo se co dozví</h2>
+<p>Zprávy v aplikaci (zvonek) chodí vždy a nevypínají se. <b>E-mail si každý řídí sám</b>
+(zvonek → ⚙, kancelář i v Nastavení → Notifikace). Bez vyplněného e-mailu u účtu e-maily nechodí —
+Účty to hlásí štítkem.</p>
+<table>
+  <tr><th>Událost</th><th>Kdy</th><th>Komu</th><th>E-mail výchozí</th></tr>
+  <tr><td class="who">Přidělený kontakt</td><td>někdo mi přidělí kontakt</td><td>přidělený</td><td>zapnutý</td></tr>
+  <tr><td class="who">Nové zaměření</td><td>technik odešle „K nacenění"</td><td>kancelář</td><td>zapnutý</td></tr>
+  <tr><td class="who">Termín dodání</td><td>kancelář dá „Objednáno"</td><td>technik zakázky</td><td>zapnutý</td></tr>
+  <tr><td class="who">Namontováno</td><td>technik podepíše a dá „Hotovo"</td><td>kancelář</td><td>zapnutý</td></tr>
+  <tr><td class="who">Zakázka zrušena</td><td>kancelář zruší po nacenění</td><td>technik zakázky</td><td>zapnutý</td></tr>
+  <tr><td class="who">Zrušeno technikem</td><td>technik zruší kontakt/zakázku</td><td>kancelář</td><td>vypnutý</td></tr>
+  <tr><td class="who">Zakázka stojí</td><td>zaměření/montáž ≥ 7 dní bez pohybu (ráno)</td><td>kancelář</td><td>vypnutý</td></tr>
+</table>
+<p class="muted">Kdo akci sám provedl, zprávu o ní nedostává. Kancelář bez osobních adres spadne na
+společnou adresu z Nastavení.</p>
+
+<h2>6 · Pravidla, na která se dá spolehnout</h2>
+<div class="rulebox">
+  <ul>
+    <li><b>Technik nikdy nevidí cenu zakázky pro zákazníka.</b> Server mu ji vůbec neposílá —
+      není to jen schované tlačítko.</li>
+    <li><b>Jen dopředu.</b> Fáze se nevrací; jediná cesta zpět je obnova zrušené zakázky kanceláří.</li>
+    <li><b>Co chybí, počítá server.</b> Aplikace to jen vypisuje — na telefonu i na počítači platí
+      stejná pravidla a nejdou obejít.</li>
+    <li><b>Souběh řeší aplikace.</b> Když zakázku mezitím posune někdo jiný, druhý dostane
+      „Načíst znovu" — nic se tiše nepřepíše.</li>
+    <li><b>Bez podpisu není hotovo</b> a bez čísla faktury není montážní list.</li>
+    <li><b>Vše se ukládá průběžně</b> — rozepsaný formulář drží i bez signálu a odešle se po připojení.</li>
+  </ul>
+</div>
+
+<div class="warnbox">Přihlašuje se šestimístným kódem. Kódy vydává a mění kancelář v Nastavení → Účty;
+při podezření na únik stačí tlačítkem „nový" vydat jiný — starý přestane platit okamžitě.</div>
+
+</div>
+</body>
+</html>

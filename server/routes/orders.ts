@@ -27,12 +27,13 @@ function orderCols(db: ReturnType<typeof sql>, role: Role) {
   return db.unsafe(`
     o.id, o.contact_id, o.phase, o.assignee_id,
     o.customer_name, o.customer_phone, o.customer_email,
-    o.addr_montaz, o.addr_fakt, o.ico, o.dic,
+    o.addr_montaz, o.addr_fakt, o.addr_fakt_same, o.ico, o.dic,
     ${role === "kancelar" ? "o.price_customer," : ""}
     o.price_montage,
     to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
     to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
     to_char(o.measured_at, 'YYYY-MM-DD') as measured_at,
+    to_char(o.measured_time, 'HH24:MI') as measured_time,
     o.invoice_no, o.order_no, o.note, o.cancelled_reason,
     o.created_at, o.updated_at
   `);
@@ -58,6 +59,7 @@ function orderLabel(row: { customer_name?: string; contact_name?: string; addr_m
 export function blockingFor(
   phase: OrderPhase,
   o: {
+    assignee_id: string | null;
     customer_name: string;
     customer_phone: string;
     customer_email: string;
@@ -73,6 +75,8 @@ export function blockingFor(
 ): string[] {
   const missing: string[] = [];
   if (phase === "k_zamereni") {
+    // Bez technika zakázku nikdo v terénu neuvidí — kancelář musí přidělit.
+    if (!o.assignee_id) missing.push("Přidělit technika");
     if (!o.customer_name.trim() || !o.customer_phone.trim() || !o.customer_email.trim() || !o.addr_montaz.trim()) {
       missing.push("Údaje zákazníka");
     }
@@ -167,9 +171,11 @@ export const orderRoutes: Route[] = [
       order by coalesce(o.term_montaz, o.measured_at, current_date), o.created_at
     `;
     const contacts = await db`
-      select id, name, phone, place, fresh, cancelled, cancelled_reason, created_at, updated_at
-      from contacts where fresh and not cancelled
-      order by created_at desc limit 20
+      select c.id, c.name, c.phone, c.place, c.fresh, c.assigned_to, c.cancelled,
+             c.cancelled_reason, c.created_at, c.updated_at, au.name as assignee_name
+      from contacts c left join users au on au.id = c.assigned_to
+      where c.fresh and not c.cancelled and (${!mine} or c.assigned_to = ${ctx.user.id})
+      order by c.created_at desc limit 20
     `;
     const [waiting] = await db`
       select count(*)::int as n from orders
@@ -237,9 +243,9 @@ export const orderRoutes: Route[] = [
     const db = sql();
     const body = await parseBody(req, orderCreateBody);
 
-    // Technik si zakázku bere na sebe; kancelář může přidělit technika.
-    const assignee =
-      ctx.user.role === "technik" ? ctx.user.id : (body.assignee_id ?? ctx.user.id);
+    // Technik si zakázku bere na sebe. Kancelář musí přidělit vědomě —
+    // default je prázdno (klidně sama sobě, ale žádné tiché autopřidělení).
+    const assignee = ctx.user.role === "technik" ? ctx.user.id : (body.assignee_id ?? null);
 
     const id = await db.begin(async (tx) => {
       const [contact] = await tx`
@@ -256,9 +262,10 @@ export const orderRoutes: Route[] = [
       `;
 
       const [o] = await tx`
-        insert into orders (contact_id, assignee_id, phase, measured_at, created_by,
+        insert into orders (contact_id, assignee_id, phase, measured_at, measured_time, created_by,
                             customer_name, customer_phone, customer_email, addr_fakt, ico, dic)
-        values (${contact.id}, ${assignee}, 'k_zamereni', ${body.measured_at ?? null}, ${ctx.user.id},
+        values (${contact.id}, ${assignee}, 'k_zamereni', ${body.measured_at ?? null},
+                ${body.measured_time ?? null}, ${ctx.user.id},
                 ${prev?.customer_name ?? contact.name ?? ""}, ${prev?.customer_phone ?? contact.phone ?? ""},
                 ${prev?.customer_email ?? ""}, ${prev?.addr_fakt ?? ""},
                 ${prev?.ico ?? ""}, ${prev?.dic ?? ""})
@@ -335,7 +342,7 @@ export const orderRoutes: Route[] = [
       throw new ApiError(403, "Tyto údaje může měnit jen kancelář.");
     }
 
-    const patch: Record<string, string | null> = {};
+    const patch: Record<string, string | boolean | null> = {};
     for (const key of [
       "customer_name",
       "customer_phone",
@@ -347,23 +354,14 @@ export const orderRoutes: Route[] = [
       "note",
       "price_montage",
       "measured_at",
+      "measured_time",
       "term_montaz",
       ...OFFICE_ONLY_FIELDS,
     ] as const) {
       if (body[key] !== undefined) patch[key] = body[key] as string | null;
     }
+    if (body.addr_fakt_same !== undefined) patch.addr_fakt_same = body.addr_fakt_same;
     if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
-
-    // Montáž nemůže být dřív než dodání — technik by čekal na zboží.
-    if (patch.term_montaz) {
-      const [row] = await db`
-        select to_char(term_dodani, 'YYYY-MM-DD') as term_dodani from orders where id = ${params.id!}
-      `;
-      const dodani = (patch.term_dodani as string | undefined) ?? row?.term_dodani;
-      if (dodani && String(patch.term_montaz) < String(dodani)) {
-        throw new ApiError(400, "Termín montáže nemůže být dřív než termín dodání.");
-      }
-    }
 
     const [updated] = await db`
       update orders o set ${db(patch)}
@@ -392,6 +390,37 @@ export const orderRoutes: Route[] = [
     { officeOnly: true },
   ),
 
+  // Obnova zrušené zakázky — vrací ji do fáze, ze které se rušilo (audit
+  // v order_events). Jediná povolená cesta „zpět"; dělá ji jen kancelář.
+  makeRoute(
+    "POST",
+    "/api/orders/:id/restore",
+    async (req, ctx, params) => {
+      const db = sql();
+      const [ev] = await db`
+        select from_phase from order_events
+        where order_id = ${params.id!} and to_phase = 'zruseno'
+        order by created_at desc limit 1
+      `.catch(invalidUuidAsMissing);
+      const target = (ev?.from_phase as OrderPhase | undefined) ?? "k_zamereni";
+
+      const [restored] = await db`
+        update orders o set phase = ${target}, cancelled_reason = ''
+        where o.id = ${params.id!} and o.phase = 'zruseno'
+        returning ${orderCols(db, ctx.user.role)}
+      `;
+      if (!restored) throw new ApiError(404, "Zakázka nenalezena nebo není zrušená.");
+
+      await db`
+        insert into order_events (order_id, user_id, from_phase, to_phase)
+        values (${params.id!}, ${ctx.user.id}, 'zruseno', ${target})
+      `;
+      void req;
+      return json({ order: restored });
+    },
+    { officeOnly: true },
+  ),
+
   // Posun fáze — jen vpřed, compare-and-swap, blokace hlídá server.
   makeRoute("POST", "/api/orders/:id/phase", async (req, ctx, params) => {
     const db = sql();
@@ -415,8 +444,8 @@ export const orderRoutes: Route[] = [
     if (to !== "zruseno") {
       // Kancelář kontroluje i cenu zakázky, kterou technikův pohled nezná.
       const [full] = await db`
-        select customer_name, customer_phone, customer_email, addr_montaz, price_montage,
-               price_customer, invoice_no,
+        select assignee_id, customer_name, customer_phone, customer_email, addr_montaz,
+               price_montage, price_customer, invoice_no,
                to_char(term_dodani, 'YYYY-MM-DD') as term_dodani,
                to_char(term_montaz, 'YYYY-MM-DD') as term_montaz
         from orders where id = ${order.id}

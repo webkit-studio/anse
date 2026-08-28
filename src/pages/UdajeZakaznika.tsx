@@ -46,7 +46,7 @@ export default function UdajeZakaznikaPage() {
       ico: order.ico,
       dic: order.dic,
     });
-    setSameAddr(!order.addr_fakt.trim() || order.addr_fakt === order.addr_montaz);
+    setSameAddr(order.addr_fakt_same);
     setLoaded(true);
   }, [order, loaded]);
 
@@ -83,7 +83,8 @@ export default function UdajeZakaznikaPage() {
         method: "PATCH",
         body: {
           ...form,
-          addr_fakt: sameAddr ? form.addr_montaz : form.addr_fakt,
+          // příznak, ne kopie — pozdější změna adresy montáže se propíše sama
+          addr_fakt_same: sameAddr,
           expected_updated_at: order.updated_at,
         },
       });

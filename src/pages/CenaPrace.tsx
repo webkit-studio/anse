@@ -97,7 +97,7 @@ export default function CenaPracePage() {
       {order && (
         <>
           <p className="queue-title" style={{ marginTop: 4 }}>
-            Krok 2 ze 2
+            Poslední krok
           </p>
           <h1 className="t-title" style={{ margin: "2px 0 0" }}>
             Cena práce

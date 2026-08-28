@@ -50,7 +50,7 @@ test("technik: kontakt → zakázka → položka → cena práce → k naceněn�
   orderUrl = page.url();
 
   // první položka se neobejde bez údajů zákazníka — appka tam pošle sama
-  await page.getByRole("button", { name: "＋ Položka" }).click();
+  await page.getByRole("button", { name: "Přidat první položku" }).click();
   await expect(page).toHaveURL(/\/zakaznik\?dal=polozka$/);
   await page.locator("#u-email").fill("novak@example.cz");
   await page.locator("#u-addr").fill("Nádražní 12, Ostrava");
@@ -72,10 +72,10 @@ test("technik: kontakt → zakázka → položka → cena práce → k naceněn�
   await expect(page).toHaveURL(orderUrl);
   await expect(page.getByText("Kuchyně")).toBeVisible();
 
-  // bez ceny práce nejde odeslat — tlačítko vede na krok 2 ze 2
-  await page.getByRole("button", { name: "K nacenění — odeslat" }).click();
+  // bez ceny práce nejde odeslat — CTA rovnou říká, co chybí
+  await page.getByRole("button", { name: "Doplnit cenu práce" }).click();
   await expect(page).toHaveURL(/\/cena$/);
-  await expect(page.getByText("Krok 2 ze 2")).toBeVisible();
+  await expect(page.getByText("Poslední krok")).toBeVisible();
   await page.locator(".preset", { hasText: "Půl dne" }).click();
   await page.getByRole("button", { name: "Odeslat k nacenění" }).click();
 

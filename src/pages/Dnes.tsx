@@ -3,7 +3,7 @@ import type { ContactRow, OrderListRow } from "@shared/types";
 import { czDateShort } from "@shared/format";
 import { useMe, useToday } from "../api/hooks";
 import { TechScreen } from "../components/Shell";
-import { EmptyState, PhaseBadge, Queue, SkeletonList, useDelayed } from "../components/ui";
+import { EmptyState, PhaseBadge, Queue, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
 
 /** „Dobré ráno" / „Dobrý den" / „Dobrý večer" podle hodiny. */
 function greeting(now: Date): string {
@@ -53,12 +53,7 @@ function ContactCard({ contact }: { contact: ContactRow }) {
       <Link to={`/kontakty/${contact.id}`} className="card-link">
         <span className="card-main">
           <span className="card-badges">
-            <span className="badge tone-todo">
-              <span className="badge-glyph" aria-hidden="true">
-                ●
-              </span>
-              Ozvat se
-            </span>
+            <ToneBadge tone="todo">Ozvat se</ToneBadge>
           </span>
           <span className="card-title">{contact.name || contact.phone}</span>
           <span className="card-sub">

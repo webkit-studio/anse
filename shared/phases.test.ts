@@ -52,10 +52,18 @@ describe("stavový stroj zakázky", () => {
     }
   });
 
-  it("technikovi je fakturace hotová práce, kanceláři běžící krok", () => {
+  it("tón fáze sleduje, kdo je na tahu — každá role vidí svoje todo", () => {
+    // technik: terénní fáze jsou jeho, kancelářské čekání/hotovo
+    expect(phaseTone("k_zamereni", "technik")).toBe("work");
+    expect(phaseTone("k_montazi", "technik")).toBe("todo");
+    expect(phaseTone("k_naceneni", "technik")).toBe("wait");
     expect(phaseTone("k_fakturaci", "technik")).toBe("done");
     expect(phaseLabelFor("k_fakturaci", "technik")).toBe("Hotovo");
-    expect(phaseTone("k_fakturaci", "kancelar")).toBe("work");
+    // kancelář: nacenění a fakturace jsou její fronty, terén je čekání
+    expect(phaseTone("k_naceneni", "kancelar")).toBe("todo");
+    expect(phaseTone("k_fakturaci", "kancelar")).toBe("todo");
+    expect(phaseTone("k_zamereni", "kancelar")).toBe("wait");
+    expect(phaseTone("k_montazi", "kancelar")).toBe("wait");
     expect(phaseLabelFor("k_fakturaci", "kancelar")).toBe("K fakturaci");
   });
 

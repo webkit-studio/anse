@@ -8,7 +8,8 @@ import { notify } from "../../server/notify";
 
 const STALE_DAYS = 7;
 
-/** Zakázky bez pohybu — hlásí se jednou za `STALE_DAYS`, ne při každém pingu. */
+/** Zakázky bez pohybu v terénních fázích (nacenění a fakturace čekají
+ *  na rozhodnutí lidí a klidně týdny — ty se nehlásí). */
 async function reportStale(origin: string): Promise<void> {
   const db = sql();
   const rows = await db`
@@ -16,7 +17,7 @@ async function reportStale(origin: string): Promise<void> {
            extract(day from now() - o.updated_at)::int as idle_days
     from orders o
     join contacts c on c.id = o.contact_id
-    where o.phase in ('k_zamereni', 'k_naceneni', 'k_montazi', 'k_fakturaci')
+    where o.phase in ('k_zamereni', 'k_montazi')
       and o.updated_at < now() - make_interval(days => ${STALE_DAYS})
       and not exists (
         select 1 from notifications n

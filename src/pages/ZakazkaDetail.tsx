@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import type { FormDefinition } from "@shared/form-schema";
 import type { ItemRow, OrderDetail } from "@shared/types";
 import { czDate, czDateShort, items as czItems, money } from "@shared/format";
 import { api } from "../api/client";
 import { useInvalidateOrder, useMe, useOrder } from "../api/hooks";
 import { DateSheet } from "../components/DateSheet";
+import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
 import { TechDetail } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
-  ConfirmButton,
+  CancelBlock,
   ErrorBanner,
   PhaseBadge,
   SkeletonList,
-  Textarea,
   ToneBadge,
   useDelayed,
 } from "../components/ui";
@@ -26,14 +27,31 @@ function missingCustomer(o: OrderDetail["order"]): number {
   ).length;
 }
 
-function ItemCard({ item, orderId }: { item: ItemRow; orderId: string }) {
-  const summary =
-    item.kind === "oprava"
-      ? item.defect_note
-      : Object.entries(item.params)
-          .slice(0, 3)
-          .map(([, v]) => String(v))
-          .join(" · ");
+/** Souhrn položky: rozměr · strana · barva (přes printMap definice). */
+function itemSummary(item: ItemRow, def?: FormDefinition): string {
+  if (item.kind === "oprava") return item.defect_note;
+  if (!def) return "";
+  const v = (key: string | null) => {
+    const raw = key ? item.params[key] : undefined;
+    return raw === undefined || raw === null || raw === "" ? "" : String(raw);
+  };
+  const w = v(def.printMap.sirka);
+  const h = v(def.printMap.vyska);
+  return [w && h ? `${w} × ${h} mm` : "", v(def.printMap.strana), v(def.printMap.barva)]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function ItemCard({
+  item,
+  orderId,
+  def,
+}: {
+  item: ItemRow;
+  orderId: string;
+  def?: FormDefinition;
+}) {
+  const summary = itemSummary(item, def);
 
   return (
     <Link
@@ -46,13 +64,17 @@ function ItemCard({ item, orderId }: { item: ItemRow; orderId: string }) {
       </span>
       <span className="card-main">
         <span className="card-title" style={{ fontSize: 15 }}>
-          {item.kind === "oprava" ? "⟳ Oprava" : item.subcategory_name || item.product_type_name}
+          {item.kind === "oprava" ? "Oprava" : item.subcategory_name || item.product_type_name}
         </span>
         <span className="card-sub">{summary || item.product_type_name}</span>
       </span>
       {item.photos.length > 0 && (
-        <span className="muted t-caption" style={{ flex: "none" }}>
-          {item.photos.length} 📷
+        <span
+          className="muted t-caption"
+          style={{ flex: "none", display: "inline-flex", alignItems: "center", gap: 3 }}
+        >
+          {item.photos.length}
+          <Icon name="foto" size={15} />
         </span>
       )}
       <span className="card-chevron" aria-hidden="true">
@@ -73,7 +95,6 @@ export default function ZakazkaDetailPage() {
 
   const [showCustomer, setShowCustomer] = useState(false);
   const [montazOpen, setMontazOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState("");
   const [busy, setBusy] = useState(false);
 
   const role = me.data?.role ?? "technik";
@@ -123,32 +144,30 @@ export default function ZakazkaDetailPage() {
   let footer: JSX.Element | undefined;
   if (order) {
     if (order.phase === "k_zamereni") {
+      // CTA říká rovnou, jaký krok chybí — místo obecného tlačítka s překvapením.
+      const blocking = d?.blocking ?? [];
+      const noItems = (d?.items.length ?? 0) === 0;
+      const next = noItems
+        ? { label: "Přidat první položku", act: () => navigate(`/zakazky/${orderId}/polozka/nova`) }
+        : blocking.includes("Údaje zákazníka")
+          ? { label: "Doplnit údaje zákazníka", act: () => navigate(`/zakazky/${orderId}/zakaznik`) }
+          : blocking.includes("Cena práce")
+            ? { label: "Doplnit cenu práce", act: () => navigate(`/zakazky/${orderId}/cena`) }
+            : { label: "K nacenění — odeslat", act: () => void movePhase("k_naceneni") };
+
       footer = (
         <>
-          <Button
-            variant="secondary"
-            className="btn-narrow"
-            onClick={() => navigate(`/zakazky/${orderId}/polozka/nova`)}
-          >
-            ＋ Položka
-          </Button>
-          <Button
-            variant="primary"
-            disabled={busy}
-            onClick={() => {
-              // Cena práce je vlastní krok — bez ní posíláme technika tam, ne do chyby.
-              if (!order.price_montage.trim()) {
-                navigate(`/zakazky/${orderId}/cena`);
-                return;
-              }
-              if ((d?.blocking.length ?? 0) > 0) {
-                navigate(`/zakazky/${orderId}/zakaznik`);
-                return;
-              }
-              void movePhase("k_naceneni");
-            }}
-          >
-            K nacenění — odeslat
+          {!noItems && (
+            <Button
+              variant="secondary"
+              className="btn-narrow"
+              onClick={() => navigate(`/zakazky/${orderId}/polozka/nova`)}
+            >
+              ＋ Položka
+            </Button>
+          )}
+          <Button variant="primary" disabled={busy} onClick={next.act}>
+            {next.label}
           </Button>
         </>
       );
@@ -250,7 +269,10 @@ export default function ZakazkaDetailPage() {
             <div className="card-pad" style={{ paddingBottom: 0 }}>
               <div className="meta-row">
                 <span className="meta-label">Zaměření</span>
-                <span className="meta-value">{czDateShort(order.measured_at)}</span>
+                <span className="meta-value">
+                  {czDateShort(order.measured_at)}
+                  {order.measured_time ? ` v ${order.measured_time}` : ""}
+                </span>
               </div>
               <div className="meta-row">
                 <span className="meta-label">Položek</span>
@@ -299,7 +321,11 @@ export default function ZakazkaDetailPage() {
                 </div>
                 <div className="meta-row">
                   <span className="meta-label">Fakturační adresa</span>
-                  <span className="meta-value">{order.addr_fakt || order.addr_montaz || "—"}</span>
+                  <span className="meta-value">
+                    {order.addr_fakt_same
+                      ? `${order.addr_montaz || "—"}${order.addr_montaz ? " (stejná)" : ""}`
+                      : order.addr_fakt || "—"}
+                  </span>
                 </div>
                 {(order.ico || order.dic) && (
                   <div className="meta-row">
@@ -332,7 +358,16 @@ export default function ZakazkaDetailPage() {
                     </div>
                     <div style={{ padding: "0 6px 6px" }}>
                       {items.map((i) => (
-                        <ItemCard key={i.id} item={i} orderId={orderId} />
+                        <ItemCard
+                          key={i.id}
+                          item={i}
+                          orderId={orderId}
+                          def={
+                            i.form_definition_id
+                              ? d.definitions[i.form_definition_id]?.definition
+                              : undefined
+                          }
+                        />
                       ))}
                     </div>
                     {order.phase === "k_zamereni" && (
@@ -383,27 +418,10 @@ export default function ZakazkaDetailPage() {
           )}
 
           {["k_zamereni", "k_naceneni"].includes(order.phase) && (
-            <section style={{ display: "grid", gap: 8 }}>
-              <Textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Důvod zrušení (nutný)"
-                rows={2}
-                aria-label="Důvod zrušení"
-              />
-              <ConfirmButton
-                label="Zrušit zakázku"
-                confirmLabel="Opravdu zrušit?"
-                className="order-delete"
-                onConfirm={() => {
-                  if (!cancelReason.trim()) {
-                    toast("Napiš důvod zrušení.");
-                    return;
-                  }
-                  void movePhase("zruseno", cancelReason.trim());
-                }}
-              />
-            </section>
+            <CancelBlock
+              label="Zrušit zakázku"
+              onCancel={(reason) => void movePhase("zruseno", reason)}
+            />
           )}
         </>
       )}
@@ -412,7 +430,8 @@ export default function ZakazkaDetailPage() {
         <DateSheet
           title="Termín montáže"
           value={order.term_montaz}
-          min={order.term_dodani}
+          warnBefore={order.term_dodani}
+          warnText={`Pozor: dodání je až ${czDate(order.term_dodani)}. Dřívější montáž ověř s kanceláří.`}
           confirmLabel="Uložit termín"
           onClose={() => setMontazOpen(false)}
           onPick={(iso) => {

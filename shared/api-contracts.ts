@@ -15,6 +15,14 @@ const dateString = z
   .optional()
   .or(z.literal("").transform(() => null));
 
+/** HH:MM nebo prázdno (→ null). */
+const timeString = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Neplatný čas.")
+  .nullable()
+  .optional()
+  .or(z.literal("").transform(() => null));
+
 export const loginBody = z.object({
   code: z.string().regex(/^\d{6}$/, "Kód má 6 číslic."),
 });
@@ -38,6 +46,7 @@ export const contactUpdateBody = z.object({
   phone: trimmed.optional(),
   place: trimmed.optional(),
   fresh: z.boolean().optional(),
+  assigned_to: z.string().uuid().nullable().optional(),
 });
 
 export const contactNoteBody = z.object({
@@ -54,6 +63,7 @@ export const contactCancelBody = z.object({
 export const orderCreateBody = z.object({
   contact_id: z.string().uuid(),
   measured_at: dateString,
+  measured_time: timeString,
   assignee_id: z.string().uuid().nullable().optional(),
 });
 
@@ -68,6 +78,8 @@ export const orderUpdateBody = z.object({
   dic: trimmed.optional(),
   note: trimmed.optional(),
   measured_at: dateString,
+  measured_time: timeString,
+  addr_fakt_same: z.boolean().optional(),
 
   /** Cena práce technika — smí měnit technik i kancelář. */
   price_montage: trimmed.optional(),

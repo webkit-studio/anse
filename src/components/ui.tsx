@@ -11,7 +11,8 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 import type { OrderPhase, Role, Tone } from "@shared/types";
-import { TONE_GLYPHS, phaseLabelFor, phaseTone } from "@shared/types";
+import { phaseLabelFor, phaseTone } from "@shared/types";
+import { ToneGlyph } from "./Icon";
 
 // --- Button -------------------------------------------------------------
 
@@ -286,9 +287,7 @@ export function Chips<T extends string>({
 export function ToneBadge({ tone, children }: { tone: Tone; children: ReactNode }) {
   return (
     <span className={`badge tone-${tone}`}>
-      <span className="badge-glyph" aria-hidden="true">
-        {TONE_GLYPHS[tone]}
-      </span>
+      <ToneGlyph tone={tone} />
       {children}
     </span>
   );
@@ -437,6 +436,56 @@ export function EmptyState({
       <p className="empty-state-title">{title}</p>
       {children}
     </div>
+  );
+}
+
+/**
+ * Zrušení s povinným důvodem: pole se odkryje až po prvním tapu — dokud nikdo
+ * neruší, formulář nestraší červenou textareou.
+ */
+export function CancelBlock({
+  label,
+  placeholder = "Důvod zrušení (nutný)",
+  onCancel,
+}: {
+  label: string;
+  placeholder?: string;
+  onCancel: (reason: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
+
+  if (!open) {
+    return (
+      <Button variant="ghost" className="order-delete" onClick={() => setOpen(true)}>
+        {label}
+      </Button>
+    );
+  }
+  return (
+    <section className="field-revealed" style={{ display: "grid", gap: 8 }}>
+      <Textarea
+        value={reason}
+        rows={2}
+        autoFocus
+        placeholder={placeholder}
+        aria-label={placeholder}
+        onChange={(e) => setReason(e.target.value)}
+      />
+      <div style={{ display: "flex", gap: 8 }}>
+        <Button variant="secondary" onClick={() => setOpen(false)}>
+          Zpět
+        </Button>
+        <Button
+          variant="danger"
+          disabled={!reason.trim()}
+          onClick={() => onCancel(reason.trim())}
+          style={{ flex: 1 }}
+        >
+          {label}
+        </Button>
+      </div>
+    </section>
   );
 }
 
