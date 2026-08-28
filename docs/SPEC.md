@@ -1,5 +1,11 @@
 # Anse — zakázky: kompletní specifikace
 
+> ⚠️ **Historický dokument.** Popisuje stav k 12. 8. 2026 — před přestavbou
+> z 27.–28. 8. 2026 (kontakty s přidělováním, pět fází místo stavů, dva pohledy
+> technik/kancelář, dvouúrovňový katalog, notifikace per uživatel). Aktuální
+> přehled: [`README.md`](../README.md) v rootu, procesně
+> [`proces-zakazky.html`](./proces-zakazky.html), pravidla `CLAUDE.md`.
+
 > Referenční dokument pro AI/vývojáře, kteří na projektu pokračují.
 > Stav k **12. 8. 2026**, commit `331c3dd`, 31 commitů, ~10 400 řádků TS/TSX/CSS.
 > Produkce: <https://anse-zakazky.netlify.app> · repo: `Webkit-Studio/anse-zakazky`

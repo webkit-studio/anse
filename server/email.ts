@@ -3,7 +3,7 @@
 // Odeslání nikdy neshodí požadavek: chyby se jen zalogují.
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
-const DEFAULT_FROM = "Anse <zakazky@anse.cz>";
+const DEFAULT_FROM = "Anse Aplikace <zakazky@anse.cz>";
 const SEND_TIMEOUT_MS = 4000;
 
 export interface NotifMailData {

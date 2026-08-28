@@ -12,7 +12,9 @@ aplikace"). Tento soubor drží jen build konvence.
 
 - Vite + React 18 + TypeScript (strict) · react-router · TanStack Query
 - Čisté CSS s custom properties (`src/styles/tokens.css`) — žádný CSS framework
-- Netlify: SPA + funkce (`netlify/functions/api.ts` = celé API, `ping.ts` = denní keepalive)
+- Netlify: SPA + funkce (`netlify/functions/api.ts` = celé API přes `/api/*`,
+  `export.ts` = PDF/XML přes `/export/*` — cesty MUSÍ zůstat disjunktní,
+  `ping.ts` = keepalive à 5 min + ranní hlídka stojících zakázek)
 - Postgres na Supabase free — připojení výhradně ze serveru přes `postgres.js`
   (transaction pooler, `prepare: false`); klient s DB nikdy nemluví přímo
 
@@ -69,8 +71,10 @@ uživatelem, port 5433, DB `anse` — connection string
   409 a klient nabídne obnovení.
 - Notifikace mají dva kanály: in-app (tabulka `notifications`, nevypíná se)
   a e-mail podle `notif_prefs` per uživatel a událost (`server/notify.ts`,
-  `server/email.ts`, Resend). Odeslání nikdy neshodí požadavek — bez
-  `RESEND_API_KEY` se přeskočí. Události jsou v `NOTIF_EVENTS`.
+  `server/email.ts`, Resend; odesílatel `RESEND_FROM`, jinak
+  „Anse Aplikace <zakazky@anse.cz>"). Odeslání nikdy neshodí požadavek — bez
+  `RESEND_API_KEY` se přeskočí. Události jsou v `NOTIF_EVENTS`; zprovoznění
+  e-mailů viz `docs/notifikace-resend.md`.
 - UI texty **výhradně česky**, chybové hlášky přímo u pole. Touch targety
   min. 48 px (`--tap`), číselná pole `inputmode="numeric"/"decimal"`,
   fonty inputů min. 16 px (jinak iOS zoomuje).
