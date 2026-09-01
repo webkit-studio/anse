@@ -31,6 +31,20 @@ describe("loader — kontrakt s daty", () => {
     expect(suys.reduce((n, p) => n + p.rules.length, 0)).toBe(119);
   });
 
+  it("SUYS: rozměry jsou povinné, i když dodavatel povinnost neznačí", () => {
+    // mandatory je v datech všude false — bez tohoto by šla uložit prázdná položka
+    for (const p of suys) {
+      for (const code of ["WIDTH_01", "HEIGHT_01"]) {
+        expect({ kod: p.kod, code, required: p.fields.find((f) => f.code === code)?.required }).toEqual(
+          { kod: p.kod, code, required: true },
+        );
+      }
+    }
+    const lock = suys.find((p) => p.kod === "C-SC_01")!;
+    const { issues } = validateKonfig(lock, {});
+    expect(issues.filter((i) => i.message === "Povinné pole.").length).toBeGreaterThanOrEqual(2);
+  });
+
   it("povinný sirotčí test: Jack West nemá ŽÁDNÉ pravidlo mířící mimo fields", () => {
     for (const p of jw) expect({ kod: p.kod, latent: p.latentTargets }).toEqual({ kod: p.kod, latent: [] });
   });

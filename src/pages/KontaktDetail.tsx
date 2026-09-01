@@ -183,7 +183,7 @@ export default function KontaktDetailPage() {
               aria-pressed={contact.fresh}
               onClick={() => void patch({ fresh: !contact.fresh })}
             >
-              {contact.fresh ? "● Ozvat se" : "Označit „ozvat se"}
+              {contact.fresh ? "● Ozvat se" : "Označit „ozvat se“"}
             </button>
           </div>
 

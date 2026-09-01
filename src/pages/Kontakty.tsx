@@ -93,7 +93,7 @@ function FreshSheet({
           onChange={(e) => setNote(e.target.value)}
         />
         <Button variant="primary" className="btn-block" disabled={busy} onClick={() => void save()}>
-          Označit „ozvat se"
+          Označit „ozvat se“
         </Button>
       </div>
     </div>

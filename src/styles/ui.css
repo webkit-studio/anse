@@ -2291,6 +2291,7 @@ input[type="date"] {
 }
 
 .funnel-fill {
+  display: block; /* span je inline — bez tohohle se šířka výplně nevykreslí */
   height: 100%;
   background: var(--c-green);
   border-radius: 8px;

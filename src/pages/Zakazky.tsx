@@ -180,7 +180,7 @@ export default function ZakazkyPage() {
           <p>
             {filter === "vse"
               ? `Zakázky vznikají z kontaktů${me.data?.role === "technik" ? " a přidělují se ti" : ""}.`
-              : `Ve fázi „${filter === "archiv" ? "Archiv" : PHASE_LABELS[filter as OrderPhase]}" nic není.`}
+              : `Ve fázi „${filter === "archiv" ? "Archiv" : PHASE_LABELS[filter as OrderPhase]}“ nic není.`}
           </p>
         </EmptyState>
       )}

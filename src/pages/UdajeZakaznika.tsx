@@ -95,7 +95,7 @@ export default function UdajeZakaznikaPage() {
       });
     } catch (err) {
       if (isConflict(err)) {
-        toast("Zakázku mezitím upravil někdo jiný. Načítám znovu.");
+        toast("Zakázku mezitím někdo změnil. Načítám znovu.");
         void detail.refetch();
         setLoaded(false);
       } else {

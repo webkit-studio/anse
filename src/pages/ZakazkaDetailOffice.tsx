@@ -93,7 +93,7 @@ export default function ZakazkaDetailOfficePage() {
         body: { to, expected: order.phase, reason },
       });
       await invalidate(orderId);
-      toast(`Posunuto na „${PHASE_LABELS[to]}"`);
+      toast(`Posunuto na „${PHASE_LABELS[to]}“`);
     } catch (err) {
       toast(err instanceof Error ? err.message : "Nepodařilo se posunout zakázku.");
     } finally {

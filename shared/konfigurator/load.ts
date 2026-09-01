@@ -113,7 +113,9 @@ function suysField(f: SuysProduct["fields"][number]): KonfigField {
     label: f.label,
     section: f.page,
     input: suysInput(f),
-    required: f.mandatory,
+    // SUYS neoznačuje povinnost vůbec (mandatory je všude false) — screen bez
+    // rozměrů ale objednat nejde, takže šířku a výšku vynucujeme sami.
+    required: f.mandatory || f.code === "WIDTH_01" || f.code === "HEIGHT_01",
     defaultValue: f.defaultValue ?? "",
     defaultVisible: f.visible,
     defaultLocked: !f.editable,
