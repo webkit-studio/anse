@@ -1,8 +1,10 @@
 import { itemCreateBody, itemUpdateBody } from "../../shared/api-contracts";
-import { hasBlocking, validateItem } from "../../shared/form-engine";
+import { hasBlocking, validateItem, type Issue } from "../../shared/form-engine";
 import { formDefinitionSchema, type FormDefinition, type Params } from "../../shared/form-schema";
+import { validateKonfig, validateSuysDimensions, type KonfigProduct } from "../../shared/konfigurator";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
+import { getKonfigProduct } from "../konfigurator";
 import { makeRoute, parseBody, type Ctx, type Route } from "../router";
 
 // Definice jsou po vzniku immutable → cache na dobu života instance.
@@ -25,6 +27,32 @@ function validateOr422(def: FormDefinition, rawParams: Params, note: string) {
     throw new ApiError(422, "Formulář obsahuje chyby — zkontrolujte zvýrazněná pole.", { issues });
   }
   return params;
+}
+
+/**
+ * Validace proti naměřeným podkladům dodavatele (konfigurátor).
+ * Server nevěří klientovi — stejný vyhodnocovač běží na obou stranách.
+ * Vrací stav ořezaný na stringy (params jsou v DB jsonb map kód → hodnota).
+ */
+function validateKonfigOr422(product: KonfigProduct, rawParams: Params): Params {
+  const state: Record<string, string> = {};
+  for (const [k, v] of Object.entries(rawParams)) {
+    if (v !== undefined && v !== null && String(v) !== "") state[k] = String(v);
+  }
+  const { issues } = validateKonfig(product, state);
+  const dims = product.dodavatel === "suys" ? validateSuysDimensions(product, state) : [];
+  const all = [...issues, ...dims];
+  if (all.some((i) => i.level === "error")) {
+    const mapped: Issue[] = all.map((i) => ({
+      level: i.level,
+      fieldKey: i.fieldCode,
+      message: i.message,
+    }));
+    throw new ApiError(422, "Formulář obsahuje chyby — zkontrolujte zvýrazněná pole.", {
+      issues: mapped,
+    });
+  }
+  return state;
 }
 
 /** Vložení s pozicí max+1; při souběhu (unique room_id+position) jeden retry. */
@@ -109,20 +137,29 @@ export const itemRoutes: Route[] = [
     // foto závady + popis (žádný formulář, žádná podkategorie).
     let definitionId: string | null = null;
     let subcategoryId: string | null = null;
+    let konfigKey: string | null = null;
     let params: Params = {};
 
     if (body.kind === "config") {
       const [sub] = await db`
-        select id, active, current_definition_id from subcategories
+        select id, active, current_definition_id, konfig_key from subcategories
         where id = ${body.subcategory_id} and product_type_id = ${pt.id}
       `.catch(() => []);
-      if (!sub?.active || !sub.current_definition_id) {
+      if (!sub?.active) throw new ApiError(400, "Tato podkategorie zatím není k dispozici.");
+      subcategoryId = sub.id;
+
+      if (sub.konfig_key) {
+        const product = getKonfigProduct(sub.konfig_key as string);
+        if (!product) throw new ApiError(400, "Podklady produktu nejsou k dispozici.");
+        params = validateKonfigOr422(product, body.params);
+        konfigKey = sub.konfig_key as string;
+      } else if (sub.current_definition_id) {
+        const def = await pinnedDefinition(sub.current_definition_id);
+        params = validateOr422(def, body.params, body.note);
+        definitionId = sub.current_definition_id;
+      } else {
         throw new ApiError(400, "Tato podkategorie zatím není k dispozici.");
       }
-      const def = await pinnedDefinition(sub.current_definition_id);
-      params = validateOr422(def, body.params, body.note);
-      definitionId = sub.current_definition_id;
-      subcategoryId = sub.id;
     }
 
     const roomId = await resolveRoom(db, body.order_id, body.room);
@@ -135,9 +172,9 @@ export const itemRoutes: Route[] = [
         () => db`
           with ins as (
             insert into items (order_id, room_id, kind, product_type_id, subcategory_id,
-                               form_definition_id, params, note, defect_note, position)
+                               form_definition_id, konfig_key, params, note, defect_note, position)
             values (${body.order_id}, ${roomId}, ${body.kind}, ${pt.id}, ${subcategoryId},
-                    ${definitionId}, ${db.json(params as never)}, ${body.note}, ${defectNote},
+                    ${definitionId}, ${konfigKey}, ${db.json(params as never)}, ${body.note}, ${defectNote},
                     coalesce((select max(position) from items where room_id = ${roomId}), 0) + 1)
             returning *
           )
@@ -163,13 +200,17 @@ export const itemRoutes: Route[] = [
     await assertOwnItem(ctx, params.id!);
 
     const [existing] = await db`
-      select id, kind, form_definition_id from items where id = ${params.id!}
+      select id, kind, form_definition_id, konfig_key from items where id = ${params.id!}
     `.catch(() => []);
     if (!existing) throw new ApiError(404, "Položka nenalezena.");
 
     // Revalidace proti PŘIPNUTÉ verzi definice položky, ne aktuální.
     let normalized: Params = {};
-    if (existing.kind === "config") {
+    if (existing.kind === "config" && existing.konfig_key) {
+      const product = getKonfigProduct(existing.konfig_key as string);
+      if (!product) throw new ApiError(400, "Podklady produktu nejsou k dispozici.");
+      normalized = validateKonfigOr422(product, body.params ?? {});
+    } else if (existing.kind === "config") {
       const def = await pinnedDefinition(existing.form_definition_id);
       normalized = validateOr422(def, body.params ?? {}, body.note);
     }
@@ -225,13 +266,13 @@ export const itemRoutes: Route[] = [
       () => db`
         with src as (
           select order_id, room_id, kind, product_type_id, subcategory_id, form_definition_id,
-                 params, note, defect_note
+                 konfig_key, params, note, defect_note
           from items where id = ${params.id!}
         ), ins as (
           insert into items (order_id, room_id, kind, product_type_id, subcategory_id,
-                             form_definition_id, params, note, defect_note, position)
+                             form_definition_id, konfig_key, params, note, defect_note, position)
           select order_id, room_id, kind, product_type_id, subcategory_id, form_definition_id,
-                 params, note, defect_note,
+                 konfig_key, params, note, defect_note,
                  coalesce((select max(position) from items i where i.room_id = src.room_id), 0) + 1
           from src
           returning *

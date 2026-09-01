@@ -27,9 +27,11 @@ function missingCustomer(o: OrderDetail["order"]): number {
   ).length;
 }
 
-/** Souhrn položky: rozměr · strana · barva (přes printMap definice). */
+/** Souhrn položky: rozměr · strana · barva (printMap definice, u konfigurátoru
+ *  ho počítá server). */
 function itemSummary(item: ItemRow, def?: FormDefinition): string {
   if (item.kind === "oprava") return item.defect_note;
+  if (item.konfig_summary) return item.konfig_summary;
   if (!def) return "";
   const v = (key: string | null) => {
     const raw = key ? item.params[key] : undefined;

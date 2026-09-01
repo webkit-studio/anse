@@ -103,6 +103,7 @@ function Produkty() {
                 />
                 <span className="settings-orig">
                   {s.name} · {s.field_count ?? 0} polí
+                  {s.konfig_key ? " · z podkladů dodavatele" : ""}
                 </span>
               </div>
               <div style={{ flex: 1 }}>

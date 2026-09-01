@@ -261,6 +261,10 @@ export interface ItemRow {
   subcategory_id: string | null;
   subcategory_name: string | null;
   form_definition_id: string | null;
+  /** Klíč naměřených podkladů dodavatele (konfigurátor); null = ruční definice. */
+  konfig_key: string | null;
+  /** Souhrn spočítaný serverem pro položky z konfigurátoru. */
+  konfig_summary?: string;
   params: Params;
   note: string;
   /** Jen u oprav: popis závady (povinný). */
@@ -293,6 +297,8 @@ export interface SubcategoryRow {
   sort: number;
   definition?: FormDefinition;
   definition_version?: number;
+  /** Naměřené podklady dodavatele (konfigurátor) — klient si je stáhne zvlášť. */
+  konfig_key?: string | null;
   field_count?: number;
 }
 

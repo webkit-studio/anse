@@ -1,7 +1,9 @@
 import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { formDefinitionSchema, type FormDefinition } from "../../shared/form-schema";
+import { konfigPrintValues } from "../../shared/konfigurator";
 import { aggregateForList, missingForPdf, totalPieces } from "../../shared/print";
+import { getKonfigProduct } from "../konfigurator";
 import { sql } from "../db";
 import { ApiError } from "../http";
 import { FONT_BOLD_B64, FONT_REGULAR_B64 } from "./font.b64";
@@ -342,7 +344,7 @@ export async function buildMontazniListPdf(
   `;
   const items = await db`
     select i.room_id, i.kind, i.product_type_id, i.subcategory_id, i.form_definition_id,
-           i.params, i.note, i.defect_note, i.position,
+           i.konfig_key, i.params, i.note, i.defect_note, i.position,
            coalesce(nullif(pt.custom_name, ''), pt.name) as product_type_name,
            coalesce(nullif(sc.custom_name, ''), sc.name) as subcategory_name
     from items i
@@ -364,18 +366,22 @@ export async function buildMontazniListPdf(
 
   const groups = aggregateForList(
     rooms.map((r) => ({ id: r.id, name: r.name, position: r.position })),
-    items.map((i) => ({
-      room_id: i.room_id,
-      kind: i.kind,
-      product_type_id: i.product_type_id,
-      product_type_name: i.product_type_name,
-      subcategory_name: i.subcategory_name,
-      form_definition_id: i.form_definition_id,
-      params: i.params,
-      note: i.note,
-      defect_note: i.defect_note,
-      position: i.position,
-    })),
+    items.map((i) => {
+      const product = i.konfig_key ? getKonfigProduct(i.konfig_key as string) : undefined;
+      return {
+        room_id: i.room_id,
+        kind: i.kind,
+        product_type_id: i.product_type_id,
+        product_type_name: i.product_type_name,
+        subcategory_name: i.subcategory_name,
+        form_definition_id: i.form_definition_id,
+        params: i.params,
+        note: i.note,
+        defect_note: i.defect_note,
+        position: i.position,
+        ...(product ? { printValues: konfigPrintValues(product, i.params ?? {}) } : {}),
+      };
+    }),
     definitions,
   );
 

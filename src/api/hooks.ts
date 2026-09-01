@@ -4,6 +4,7 @@ import {
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
+import type { KonfigProduct } from "@shared/konfigurator";
 import type {
   ContactDetail,
   ContactRow,
@@ -213,6 +214,19 @@ export function useProductTypes() {
     queryKey: ["product-types"],
     queryFn: () => api<{ product_types: ProductTypeRow[] }>("/api/product-types"),
     staleTime: 10 * 60_000,
+  });
+}
+
+/** Naměřené podklady dodavatele — schéma polí a pravidel jednoho produktu.
+ *  Mění se jen s deployem, takže se drží v cache dlouho. */
+export function useKonfigProduct(key: string | null | undefined) {
+  return useQuery({
+    queryKey: ["konfigurator", key],
+    queryFn: () =>
+      api<{ product: KonfigProduct }>(`/api/konfigurator/${encodeURIComponent(key!)}`),
+    enabled: Boolean(key),
+    staleTime: 60 * 60_000,
+    gcTime: 60 * 60_000,
   });
 }
 

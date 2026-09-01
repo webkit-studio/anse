@@ -5,7 +5,7 @@ import type { ProductTypeRow, SubcategoryRow } from "@shared/types";
 import { ROOM_PRESETS, displayName } from "@shared/types";
 import type { Issue } from "@shared/form-engine";
 import { ApiFetchError, api } from "../api/client";
-import { useInvalidateOrder, useOrder, useProductTypes } from "../api/hooks";
+import { useInvalidateOrder, useKonfigProduct, useOrder, useProductTypes } from "../api/hooks";
 import { PhotoPicker, uploadPending, type PendingPhoto } from "../components/PhotoPicker";
 import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
@@ -22,6 +22,7 @@ import {
   useOnline,
 } from "../components/ui";
 import { DefinitionForm } from "../form-engine/DefinitionForm";
+import { KonfiguratorForm } from "../form-engine/KonfiguratorForm";
 import { useDraft } from "../form-engine/useDraft";
 
 type Kind = "config" | "oprava";
@@ -153,6 +154,11 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   const definition = item
     ? (item.form_definition_id ? d?.definitions[item.form_definition_id]?.definition : undefined)
     : sub?.definition;
+
+  // Produkty z podkladů dodavatele (konfigurátor) nemají definici v DB —
+  // schéma polí a pravidel se stahuje zvlášť a formulář řídí vyhodnocovač.
+  const konfigKey = item ? item.konfig_key : (sub?.konfig_key ?? null);
+  const konfig = useKonfigProduct(konfigKey);
 
   const draftKey = mode === "edit" ? `item:${itemId}` : productId && subId ? `new:${orderId}:${subId}` : null;
   const draft = useDraft(draftKey);
@@ -412,8 +418,21 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
     );
   }
 
-  // --- konfigurace podle definice --------------------------------------------
-  if (!definition) {
+  // --- konfigurace podle definice / podkladů dodavatele ----------------------
+  if (konfigKey && konfig.isError) {
+    return (
+      <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
+        <p className="muted t-body-s">
+          Podklady produktu se nepodařilo načíst. Zkontroluj připojení a zkus to znovu.
+        </p>
+        <Button variant="ghost" onClick={() => void konfig.refetch()}>
+          Zkusit znovu
+        </Button>
+      </TechDetail>
+    );
+  }
+  const konfigProduct = konfig.data?.product;
+  if (konfigKey ? !konfigProduct : !definition) {
     return (
       <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
         <Spinner />
@@ -455,49 +474,66 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
         </div>
       )}
 
-      <DefinitionForm
-        definition={definition}
-        initialParams={initial.params}
-        initialNote={initial.note}
-        title={title}
-        submitLabel={mode === "edit" ? "Uložit změny" : "Uložit položku"}
-        busy={busy}
-        serverIssues={serverIssues}
-        savedLabel={savedAt ? `Uloženo automaticky v ${savedAt}` : undefined}
-        offline={!online}
-        onChange={(params, noteText) => {
-          draft.save(params, noteText);
-          // indikátor „uloženo" až po první skutečné změně, ne hned po otevření
-          if (touchedRef.current) {
-            setSavedAt(new Date().toLocaleTimeString("cs-CZ", { hour: "numeric", minute: "2-digit" }));
-          }
-          touchedRef.current = true;
-        }}
-        onSubmit={(params, noteText) => void saveConfig(params, noteText)}
-      >
-        <section className="form-group">
-          <h2 className="form-group-title">Fotky</h2>
-          <PhotoPicker
-            label="Foto k položce"
-            kind="zamereni"
-            orderId={orderId}
-            itemId={item?.id}
-            saved={item?.photos ?? []}
-            pending={photos}
-            onPendingChange={setPhotos}
-            onUploaded={() => invalidate(orderId)}
-          />
-        </section>
+      {(() => {
+        // Fotky a mazání jsou stejné pro oba druhy formuláře.
+        const extras = (
+          <>
+            <section className="form-group">
+              <h2 className="form-group-title">Fotky</h2>
+              <PhotoPicker
+                label="Foto k položce"
+                kind="zamereni"
+                orderId={orderId}
+                itemId={item?.id}
+                saved={item?.photos ?? []}
+                pending={photos}
+                onPendingChange={setPhotos}
+                onUploaded={() => invalidate(orderId)}
+              />
+            </section>
 
-        {item && (
-          <ConfirmButton
-            label="Smazat položku"
-            confirmLabel="Opravdu smazat?"
-            className="order-delete"
-            onConfirm={() => void remove()}
-          />
-        )}
-      </DefinitionForm>
+            {item && (
+              <ConfirmButton
+                label="Smazat položku"
+                confirmLabel="Opravdu smazat?"
+                className="order-delete"
+                onConfirm={() => void remove()}
+              />
+            )}
+          </>
+        );
+        const shared = {
+          initialParams: initial.params,
+          initialNote: initial.note,
+          title,
+          submitLabel: mode === "edit" ? "Uložit změny" : "Uložit položku",
+          busy,
+          serverIssues,
+          savedLabel: savedAt ? `Uloženo automaticky v ${savedAt}` : undefined,
+          offline: !online,
+          onChange: (params: Params, noteText: string) => {
+            draft.save(params, noteText);
+            // indikátor „uloženo" až po první skutečné změně, ne hned po otevření
+            if (touchedRef.current) {
+              setSavedAt(new Date().toLocaleTimeString("cs-CZ", { hour: "numeric", minute: "2-digit" }));
+            }
+            touchedRef.current = true;
+          },
+          onSubmit: (params: Params, noteText: string) => void saveConfig(params, noteText),
+        };
+        if (konfigProduct) {
+          return (
+            <KonfiguratorForm product={konfigProduct} {...shared}>
+              {extras}
+            </KonfiguratorForm>
+          );
+        }
+        return definition ? (
+          <DefinitionForm definition={definition} {...shared}>
+            {extras}
+          </DefinitionForm>
+        ) : null;
+      })()}
 
       {navod && product?.note_for_tech && (
         <Navod text={product.note_for_tech} onClose={() => setNavod(false)} />

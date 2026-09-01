@@ -1,4 +1,6 @@
 import { formDefinitionSchema, type FormDefinition } from "../../shared/form-schema";
+import { konfigLabels } from "../../shared/konfigurator";
+import { getKonfigProduct } from "../konfigurator";
 import { sql } from "../db";
 import { ApiError } from "../http";
 
@@ -45,7 +47,7 @@ export async function buildDodavatelXml(
   if (!order) throw new ApiError(404, "Zakázka nenalezena.");
 
   const items = await db`
-    select i.id, i.kind, i.params, i.note, i.position, i.form_definition_id,
+    select i.id, i.kind, i.params, i.note, i.position, i.form_definition_id, i.konfig_key,
            r.name as room_name,
            pt.code as product_code, sc.code as subcategory_code, sc.manufacturer
     from items i
@@ -73,7 +75,10 @@ export async function buildDodavatelXml(
 
   const body = items
     .map((i) => {
-      const labels = labelsByDef.get(i.form_definition_id as string) ?? new Map<string, string>();
+      const product = i.konfig_key ? getKonfigProduct(i.konfig_key as string) : undefined;
+      const labels = product
+        ? konfigLabels(product)
+        : (labelsByDef.get(i.form_definition_id as string) ?? new Map<string, string>());
       const params = Object.entries((i.params ?? {}) as Record<string, string | number>)
         .map(
           ([key, value]) =>

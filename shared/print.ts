@@ -33,6 +33,8 @@ export interface ListItemInput {
   note: string;
   defect_note: string;
   position: number;
+  /** Předpočítané sloupce pro položky z konfigurátoru (nemají printMap). */
+  printValues?: { barva: string; sirka: string; vyska: string; strana: string; ovladani: string };
 }
 
 export interface ListRoomInput {
@@ -104,17 +106,18 @@ export function aggregateForList(
       const def = item.form_definition_id
         ? definitions[item.form_definition_id]?.definition
         : undefined;
+      const pv = item.printValues;
       const row: ListRow = {
         stineni:
           item.kind === "oprava"
             ? `${item.product_type_name} — oprava`
             : [item.product_type_name, item.subcategory_name].filter(Boolean).join(" · "),
-        barva: def ? paramText(item.params, def.printMap.barva) : "",
-        sirka: def ? paramText(item.params, def.printMap.sirka) : "",
-        vyska: def ? paramText(item.params, def.printMap.vyska) : "",
+        barva: pv ? pv.barva : def ? paramText(item.params, def.printMap.barva) : "",
+        sirka: pv ? pv.sirka : def ? paramText(item.params, def.printMap.sirka) : "",
+        vyska: pv ? pv.vyska : def ? paramText(item.params, def.printMap.vyska) : "",
         ks: 1,
-        strana: def ? paramText(item.params, def.printMap.strana) : "",
-        ovladani: def ? paramText(item.params, def.printMap.ovladani) : "",
+        strana: pv ? pv.strana : def ? paramText(item.params, def.printMap.strana) : "",
+        ovladani: pv ? pv.ovladani : def ? paramText(item.params, def.printMap.ovladani) : "",
         poznamka: [item.kind === "oprava" ? item.defect_note.trim() : "", item.note.trim()]
           .filter(Boolean)
           .join(" – "),

@@ -1,5 +1,6 @@
 import { orderCreateBody, orderUpdateBody, phaseBody } from "../../shared/api-contracts";
 import { czDate, items as czItems } from "../../shared/format";
+import { konfigSummary } from "../../shared/konfigurator";
 import {
   ARCHIVE_PHASES,
   ORDER_PHASES,
@@ -10,6 +11,7 @@ import {
 } from "../../shared/types";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
+import { getKonfigProduct } from "../konfigurator";
 import { appOrigin, notify } from "../notify";
 import { makeRoute, parseBody, type Ctx, type Route } from "../router";
 
@@ -288,7 +290,7 @@ export const orderRoutes: Route[] = [
     `;
     const items = await db`
       select i.id, i.order_id, i.room_id, i.kind, i.product_type_id, i.subcategory_id,
-             i.form_definition_id, i.params, i.note, i.defect_note, i.position, i.updated_at,
+             i.form_definition_id, i.konfig_key, i.params, i.note, i.defect_note, i.position, i.updated_at,
              pt.name as product_type_name, pt.custom_name as product_type_custom_name,
              s.name as subcategory_name, s.custom_name as subcategory_custom_name
       from items i
@@ -319,12 +321,16 @@ export const orderRoutes: Route[] = [
     return json({
       order,
       rooms,
-      items: items.map((i) => ({
-        ...i,
-        product_type_name: i.product_type_custom_name || i.product_type_name,
-        subcategory_name: i.subcategory_custom_name || i.subcategory_name,
-        photos: photos.filter((p) => p.item_id === i.id),
-      })),
+      items: items.map((i) => {
+        const product = i.konfig_key ? getKonfigProduct(i.konfig_key as string) : undefined;
+        return {
+          ...i,
+          product_type_name: i.product_type_custom_name || i.product_type_name,
+          subcategory_name: i.subcategory_custom_name || i.subcategory_name,
+          konfig_summary: product ? konfigSummary(product, i.params ?? {}) : undefined,
+          photos: photos.filter((p) => p.item_id === i.id),
+        };
+      }),
       photos: photos.filter((p) => !p.item_id),
       definitions: Object.fromEntries(
         defs.map((d) => [d.id, { version: d.version, definition: d.definition }]),

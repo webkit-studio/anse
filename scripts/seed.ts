@@ -6,6 +6,10 @@ import { randomInt } from "node:crypto";
 import postgres from "postgres";
 import { CODE_REGEX, isTrivialCode } from "../shared/codes";
 import { sslFor } from "../server/db";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+import { loadAll, type JwCatalog, type SuysCatalog } from "../shared/konfigurator";
 import { loadEnv, requireEnv } from "./lib/env";
 import { loadAndValidate } from "./validate-definitions";
 
@@ -162,6 +166,58 @@ async function seedCatalog() {
   }
 }
 
+/**
+ * Naměřené produkty dodavatelů (podklady/data/*) → podkategorie s `konfig_key`.
+ * Zakládají se NEAKTIVNÍ — kancelář zapíná v Nastavení → Produkty, co se má
+ * technikům nabízet. Aktivitu už existujících řádků seed nikdy nepřepisuje.
+ */
+async function seedKonfigurator() {
+  const rootDir = fileURLToPath(new URL("..", import.meta.url));
+  const read = async (p: string) => JSON.parse(await readFile(path.join(rootDir, p), "utf8"));
+
+  const mapa = (await read("db/seeds/konfigurator-mapa.json")) as {
+    noveTypy: { code: string; name: string; sort: number }[];
+    skupiny: Record<string, string>;
+    vyjimky: Record<string, string>;
+  };
+  const jw = (await read("podklady/data/jack-west/produkty-davka-2.json")) as JwCatalog;
+  const suys = (await read("podklady/data/suys/produkty.json")) as SuysCatalog;
+  const products = loadAll(jw, suys);
+
+  for (const t of mapa.noveTypy) {
+    await sql`
+      insert into product_types (code, name, active, sort)
+      values (${t.code}, ${t.name}, false, ${t.sort})
+      on conflict (code) do update set name = excluded.name, sort = excluded.sort
+    `;
+  }
+
+  const typeIds = new Map<string, string>();
+  for (const row of await sql`select id, code from product_types`) {
+    typeIds.set(row.code as string, row.id as string);
+  }
+
+  let created = 0;
+  for (const [key, p] of products) {
+    const typeCode = mapa.vyjimky[p.kod] ?? mapa.skupiny[p.skupina];
+    if (!typeCode) throw new Error(`Konfigurátor: skupina ${p.skupina} (${p.kod}) nemá mapování.`);
+    const typeId = typeIds.get(typeCode);
+    if (!typeId) throw new Error(`Konfigurátor: typ ${typeCode} pro ${p.kod} v DB není.`);
+
+    const name = p.dodavatel === "jackwest" ? `Jack West · ${p.nazev}` : `SUYS · ${p.nazev}`;
+    const [row] = await sql`
+      insert into subcategories (product_type_id, code, name, manufacturer, active, sort, konfig_key)
+      values (${typeId}, ${p.kod}, ${name},
+              ${p.dodavatel === "jackwest" ? "jackwest" : "susy"}, false, 100, ${key})
+      on conflict (product_type_id, code) do update
+        set name = excluded.name, konfig_key = excluded.konfig_key
+      returning (xmax = 0) as inserted
+    `;
+    if (row?.inserted) created += 1;
+  }
+  if (created > 0) console.log(`Konfigurátor: založeno ${created} podkategorií (neaktivní).`);
+}
+
 async function seedSettings() {
   await sql`
     insert into settings (key, value)
@@ -173,6 +229,7 @@ async function seedSettings() {
 async function main() {
   await seedUsers();
   await seedCatalog();
+  await seedKonfigurator();
   await seedSettings();
   console.log("Seed hotový.");
 }

@@ -1,0 +1,34 @@
+{
+  "_komentar": "Mapování naměřených produktů dodavatelů na katalog aplikace. skupiny = default podle JW skupiny, vyjimky = per zkratka. Podkategorie z konfigurátoru se zakládají NEAKTIVNÍ — zapíná je kancelář v Nastavení → Produkty.",
+  "noveTypy": [
+    { "code": "DVERNI-SIT", "name": "Dveřní a posuvné sítě", "sort": 7 },
+    { "code": "VERT-ZALUZIE", "name": "Vertikální žaluzie", "sort": 8 },
+    { "code": "LATKOVA-ROLETKA", "name": "Látkové roletky", "sort": 9 },
+    { "code": "GARAZ", "name": "Garážové rolety a vrata", "sort": 10 },
+    { "code": "NAHRADNI-DILY", "name": "Náhradní díly", "sort": 11 }
+  ],
+  "skupiny": {
+    "OS": "OKENNI-SIT",
+    "DS": "DVERNI-SIT",
+    "P": "PLISSE",
+    "HŽ": "INT-ZALUZIE",
+    "EŽ": "VENK-ZALUZIE",
+    "VŽ": "VERT-ZALUZIE",
+    "LR": "LATKOVA-ROLETKA",
+    "VR": "VENK-ROLETA",
+    "RS": "OKENNI-SIT",
+    "ND": "NAHRADNI-DILY",
+    "PS": "NAHRADNI-DILY",
+    "SC": "SCREEN"
+  },
+  "vyjimky": {
+    "SR-DV": "DVERNI-SIT",
+    "GV52": "GARAZ",
+    "GV77": "GARAZ",
+    "NDRF43": "NAHRADNI-DILY",
+    "NDRK39": "NAHRADNI-DILY",
+    "NDRK43": "NAHRADNI-DILY",
+    "NDRK52": "NAHRADNI-DILY",
+    "ND VŽ": "NAHRADNI-DILY"
+  }
+}

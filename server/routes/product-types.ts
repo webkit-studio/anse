@@ -1,6 +1,7 @@
 import { productTypeUpdateBody, subcategoryUpdateBody } from "../../shared/api-contracts";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
+import { getKonfigProduct } from "../konfigurator";
 import { makeRoute, parseBody, type Route } from "../router";
 
 // Katalog má dvě úrovně: produkt (Okenní síť) → podkategorie (Jack West · SEL 15).
@@ -8,6 +9,14 @@ import { makeRoute, parseBody, type Route } from "../router";
 // u dodavatele, v aplikaci jde měnit jen název, poznámka pro technika a aktivita.
 
 export const productTypeRoutes: Route[] = [
+  // Naměřený produkt dodavatele — celé schéma polí a pravidel pro formulář.
+  // Klient si ho cachuje; podklady se mění jen s deployem.
+  makeRoute("GET", "/api/konfigurator/:key", async (_req, _ctx, params) => {
+    const product = getKonfigProduct(params.key!);
+    if (!product) throw new ApiError(404, "Podklady produktu nenalezeny.");
+    return json({ product }, { headers: { "cache-control": "private, max-age=3600" } });
+  }),
+
   makeRoute("GET", "/api/product-types", async () => {
     const db = sql();
     const types = await db`
@@ -16,7 +25,7 @@ export const productTypeRoutes: Route[] = [
     `;
     const subs = await db`
       select s.id, s.product_type_id, s.code, s.name, s.custom_name, s.note, s.active, s.sort,
-             s.current_definition_id, fd.version as definition_version, fd.definition
+             s.konfig_key, s.current_definition_id, fd.version as definition_version, fd.definition
       from subcategories s
       left join form_definitions fd on fd.id = s.current_definition_id
       order by s.sort, s.name
@@ -29,14 +38,17 @@ export const productTypeRoutes: Route[] = [
           .filter((s) => s.product_type_id === t.id)
           .map((s) => ({
             ...s,
-            // Definice se posílá jen u aktivních podkategorií.
-            definition: s.active && t.active ? (s.definition ?? undefined) : undefined,
-            field_count: s.definition
-              ? (s.definition as { groups?: { fields?: unknown[] }[] }).groups?.reduce(
-                  (n, g) => n + (g.fields?.length ?? 0),
-                  0,
-                )
-              : 0,
+            // Definice se posílá jen u aktivních podkategorií; produkty
+            // z konfigurátoru si klient stahuje zvlášť přes /api/konfigurator.
+            definition: s.active && t.active && !s.konfig_key ? (s.definition ?? undefined) : undefined,
+            field_count: s.konfig_key
+              ? (getKonfigProduct(s.konfig_key as string)?.fields.length ?? 0)
+              : s.definition
+                ? (s.definition as { groups?: { fields?: unknown[] }[] }).groups?.reduce(
+                    (n, g) => n + (g.fields?.length ?? 0),
+                    0,
+                  )
+                : 0,
           })),
       })),
     });

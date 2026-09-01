@@ -207,8 +207,11 @@ export default function ZakazkaDetailOfficePage() {
                   <tbody>
                     {d.items.map((i) => {
                       const room = d.rooms.find((r) => r.id === i.room_id);
+                      // U položek z konfigurátoru posílá souhrn server (klíče
+                      // polí jsou kódy dodavatele, ne sirka/vyska).
                       const w = i.params.sirka ?? i.params.width;
                       const h = i.params.vyska ?? i.params.height;
+                      const rozmer = i.konfig_summary || (w && h ? `${w} × ${h}` : "—");
                       return (
                         <tr key={i.id}>
                           <td className="cell-muted">{room?.name ?? "—"}</td>
@@ -217,7 +220,7 @@ export default function ZakazkaDetailOfficePage() {
                               ? `Oprava — ${i.product_type_name}`
                               : i.subcategory_name || i.product_type_name}
                           </td>
-                          <td className="num">{w && h ? `${w} × ${h}` : "—"}</td>
+                          <td className="num">{rozmer}</td>
                           <td className="cell-muted">
                             {[i.kind === "oprava" ? i.defect_note : "", i.note]
                               .filter(Boolean)
