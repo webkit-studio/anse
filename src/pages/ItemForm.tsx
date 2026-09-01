@@ -7,6 +7,7 @@ import type { Issue } from "@shared/form-engine";
 import { ApiFetchError, api } from "../api/client";
 import { useInvalidateOrder, useKonfigProduct, useOrder, useProductTypes } from "../api/hooks";
 import { PhotoPicker, uploadPending, type PendingPhoto } from "../components/PhotoPicker";
+import { NavodOverlay, navodySlugsFor } from "../components/NavodOverlay";
 import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
 import { TechDetail } from "../components/Shell";
@@ -31,26 +32,6 @@ const KINDS = [
   { value: "config", label: "Zaměření" },
   { value: "oprava", label: "Oprava" },
 ] as const;
-
-/** Fullscreen návod — otevírá se nad formulářem, ne místo něj. */
-function Navod({ text, onClose }: { text: string; onClose: () => void }) {
-  return (
-    <div className="overlay" role="dialog" aria-modal="true" aria-label="Návod k zaměření">
-      <div className="overlay-head">
-        <strong>Návod k zaměření</strong>
-        <Button variant="ghost" onClick={onClose}>
-          Zavřít
-        </Button>
-      </div>
-      <div className="overlay-body">
-        <p className="overlay-hint">Rozepsaná položka zůstává uložená.</p>
-        <div className="card card-pad" style={{ whiteSpace: "pre-wrap", lineHeight: 1.55 }}>
-          {text}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /** Výběr místnosti: existující v zakázce, běžné presety, nebo vlastní název. */
 function RoomPicker({
@@ -159,6 +140,7 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   // schéma polí a pravidel se stahuje zvlášť a formulář řídí vyhodnocovač.
   const konfigKey = item ? item.konfig_key : (sub?.konfig_key ?? null);
   const konfig = useKonfigProduct(konfigKey);
+  const navodySlugy = navodySlugsFor(sub);
 
   const draftKey = mode === "edit" ? `item:${itemId}` : productId && subId ? `new:${orderId}:${subId}` : null;
   const draft = useDraft(draftKey);
@@ -460,7 +442,7 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
               <Icon name="kopie" size={19} />
             </Button>
           )}
-          {product?.note_for_tech && (
+          {(navodySlugy.length > 0 || product?.note_for_tech) && (
             <Button variant="ghost" onClick={() => setNavod(true)}>
               <Icon name="navod" size={19} /> Návod
             </Button>
@@ -535,8 +517,12 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
         ) : null;
       })()}
 
-      {navod && product?.note_for_tech && (
-        <Navod text={product.note_for_tech} onClose={() => setNavod(false)} />
+      {navod && (
+        <NavodOverlay
+          slugs={navodySlugy}
+          fallbackText={product?.note_for_tech || undefined}
+          onClose={() => setNavod(false)}
+        />
       )}
     </div>
   );

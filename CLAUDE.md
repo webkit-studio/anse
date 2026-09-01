@@ -66,6 +66,17 @@ uživatelem, port 5433, DB `anse` — connection string
 - Fakturační adresa je příznak `addr_fakt_same` (odvozuje se z montážní),
   ne kopie textu.
 - Co brání posunu dál, počítá server (`blockingFor()`); UI to jen vypisuje.
+- **Konfigurátor** (`shared/konfigurator/`, čistý modul): produkty se schématem
+  naměřeným z konfigurátorů dodavatelů (`podklady/data/*`). Podkategorie
+  s `konfig_key` nemá definici v DB — klient stahuje schéma přes
+  `GET /api/konfigurator/:key`, vyhodnocení pravidel i validace běží identicky
+  na obou stranách (server nevěří klientovi). Seed je zakládá **neaktivní**,
+  zapíná je kancelář v Nastavení → Produkty. Repo je veřejné — podklady NESMÍ
+  obsahovat ceny, marže ani jiná obchodní data dodavatelů.
+- **Návody** (`navody/`): montážní podklady z veřejného webu výrobce, servírují
+  se staticky na `/navody/*` (vite plugin je kopíruje do dist; Netlify soubor
+  vyhraje nad SPA fallbackem). Párování podkategorie → slug drží
+  `src/navody-mapa.json`; chybějící soubor = klidná hláška, ne chyba.
 - Přechody stavů zakázky jsou compare-and-swap (`WHERE status = $expected`),
   editace hlavičky/položek optimistický zámek přes `updated_at` → při konfliktu
   409 a klient nabídne obnovení.

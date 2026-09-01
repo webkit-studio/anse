@@ -1,0 +1,130 @@
+{
+  "jackwest:SDEKM": [
+    "dverni-site-sde-k-m"
+  ],
+  "jackwest:SDEKMR": [
+    "sde-k-m-r-s-ramem"
+  ],
+  "jackwest:SP1": [
+    "sp-1-posuvna-ve-vodicich-profilech-s-jednim-kridlem"
+  ],
+  "jackwest:SP+R1": [
+    "spr1-posuvna-v-ramu-s-jednim-kridlem"
+  ],
+  "jackwest:SP+R2": [
+    "spr2-posuvna-v-ramu-s-dvemi-kridly"
+  ],
+  "jackwest:SR-AL": [
+    "okenni-site-sr-al"
+  ],
+  "jackwest:SR-DV": [
+    "sr-al-dv-rolovaci-hlinikova-dverni"
+  ],
+  "jackwest:SPRING": [
+    "spring-screen-hak"
+  ],
+  "jackwest:SEL-13": [
+    "okenni-site-sel-13"
+  ],
+  "jackwest:SEL-LU": [
+    "okenni-site-sel-lux"
+  ],
+  "jackwest:SEHO": [
+    "okenni-site-seho"
+  ],
+  "jackwest:SEO-24": [
+    "okenni-site-seo-24"
+  ],
+  "jackwest:SVS": [
+    "okenni-site-svs"
+  ],
+  "jackwest:Z90": [
+    "venkovni-zaluzie-z-90"
+  ],
+  "jackwest:ŽV": [
+    "vertikalni-zaluzie"
+  ],
+  "jackwest:PD": [
+    "domykava-horizontalni-zaluzie-s-kryci-listou"
+  ],
+  "jackwest:MAGNA": [
+    "latkova-roletka-magna",
+    "latkova-roletka-magna-dn"
+  ],
+  "jackwest:MAGmin": [
+    "latkova-roletka-magna-mini",
+    "latkova-roletka-magna-mini-dn"
+  ],
+  "jackwest:CODA": [
+    "latkova-roletka-coda",
+    "latkova-roletka-coda-dn"
+  ],
+  "jackwest:CODA X": [
+    "latkova-roletka-coda-xl",
+    "latkova-roletka-coda-xl-dn"
+  ],
+  "jackwest:DESIGN": [
+    "latkova-roletka-designrollo",
+    "latkova-roletka-designrollo-dn"
+  ],
+  "jackwest:LOLLA": [
+    "latkova-roletka-lolla",
+    "latkova-roletka-lolla-dn"
+  ],
+  "jackwest:LOLLA+": [
+    "latkova-roletka-lolla-plus",
+    "latkova-roletka-lolla-plus-dn"
+  ],
+  "jackwest:SMART": [
+    "latkova-roletka-smartrollo",
+    "latkova-roletka-smartrollo-dn"
+  ],
+  "jackwest:LR SO": [
+    "latkova-roletka-stresni-okno"
+  ],
+  "jackwest:PSO": [
+    "plisse-stresni-okno-pso-dn"
+  ],
+  "jackwest:PSOLUX": [
+    "plisse-stresni-okno-pso-lux"
+  ],
+  "jackwest:PZZ": [
+    "plisse-zimni-zahrada"
+  ],
+  "jackwest:RKPA43": [
+    "rk-mono-pa43",
+    "rk-kombi-pa43",
+    "priplatky-k-venkovnim-roletam",
+    "motory-a-ovladace"
+  ],
+  "jackwest:RKPA52": [
+    "rk-mono-pa52",
+    "priplatky-k-venkovnim-roletam",
+    "motory-a-ovladace"
+  ],
+  "jackwest:RFPA43": [
+    "rf-mono-pa43",
+    "rf-kombi-pa43",
+    "priplatky-k-venkovnim-roletam",
+    "motory-a-ovladace"
+  ],
+  "jackwest:GV52": [
+    "komponenty-k-vyrobe-garazovych-rolet-pa52",
+    "motory-a-ovladace-ke-garazovym-roletam",
+    "priplatky-ke-garazovym-roletam"
+  ],
+  "jackwest:GV77": [
+    "komponenty-k-vyrobe-garazovych-rolet-pa77",
+    "motory-a-ovladace-ke-garazovym-roletam",
+    "priplatky-ke-garazovym-roletam"
+  ],
+  "SEL-15": [
+    "okenni-site-sel-15"
+  ],
+  "ESD": [
+    "domykava-horizontalni-zaluzie"
+  ],
+  "PLISSE-KLASIK": [
+    "plisse-klasik"
+  ]
+}

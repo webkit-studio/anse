@@ -1535,6 +1535,67 @@ input[type="date"] {
   color: var(--c-text-muted);
 }
 
+/* Návody dodavatele: sekce s výkresy, hledání, poznámka kanceláře */
+.navod-note {
+  line-height: 1.55;
+  border-left: 3px solid var(--c-green);
+}
+
+.navod-h1 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  margin: var(--sp-2) 0 calc(-1 * var(--sp-2));
+}
+
+.navod-sekce {
+  padding: var(--sp-3);
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.navod-sekce-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.navod-sekce-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.navod-img {
+  width: 100%;
+  height: auto;
+  background: #fff;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--radius-md);
+}
+
+.navod-hits {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.navod-hit {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: var(--sp-3);
+  min-height: var(--tap);
+  background: var(--c-bg);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.navod-hit-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
 /* === Fotky ============================================================== */
 
 .photo-grid {

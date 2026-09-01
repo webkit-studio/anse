@@ -23,6 +23,14 @@ telefonátu po montážní list s podpisem.
 - **Formuláře podle výrobce** — data-driven JSON definice (versované,
   immutable), podmíněná pole, validace identická na klientu i serveru,
   autosave, položka typu **Oprava** (foto závady + popis).
+- **Konfigurátor dodavatelů** — 45 produktů (Jack West, SUYS) jede přímo
+  z naměřených podkladů konfigurátorů (`podklady/`, bez cen a marží):
+  pravidla skrývání/zámků, setsValue, zpřísňování limitů, u SUYS odvozené
+  limity látek. Schéma stahuje klient per produkt
+  (`GET /api/konfigurator/:key`), validace opět na obou stranách.
+- **Návody u zaměřování** — tlačítko Návod na formuláři položky otevírá
+  montážní a vyměřovací podklady výrobce (`navody/`, statické výkresy
+  + fulltext hledání bez diakritiky).
 - **Dva pohledy nad jedněmi daty** — technik: mobil, spodní navigace
   Dnes/Kontakty/Zakázky; kancelář: desktop, rail s Přehledem, tabulkami,
   fázovým panelem, statistikami a nastavením. **Technik nikdy nevidí cenu
