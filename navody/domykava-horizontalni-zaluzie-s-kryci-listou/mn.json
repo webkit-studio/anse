@@ -1,0 +1,34 @@
+{
+  "slug": "domykava-horizontalni-zaluzie-s-kryci-listou",
+  "dokument": "mn.pdf",
+  "nazev": "Montážní návod (pdf)",
+  "url": "/data/products/zaluzie-pd/downloads/mn.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Vyměřovací a montážní návody",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací a montážní návody",
+      "popisky": [
+        "výrobní šířka (mm)",
+        "výrobní výška (mm)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "28",
+        "49",
+        "30"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1325,
+        1095
+      ]
+    }
+  ]
+}

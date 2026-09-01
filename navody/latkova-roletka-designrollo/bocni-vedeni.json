@@ -1,0 +1,33 @@
+{
+  "slug": "latkova-roletka-designrollo",
+  "dokument": "bocni-vedeni.pdf",
+  "nazev": "Boční vedení (pdf)",
+  "url": "/data/products/latkova-roletka-designrollo-lrdr/downloads/bocni-vedeni.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "bocni-vedeni__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Boční vedení ocelovým lankem",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Boční vedení ocelovým lankem",
+      "popisky": [
+        "Boční vedení",
+        "ocelovým lankem"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "30",
+        "14"
+      ],
+      "obrazek": "bocni-vedeni__s01.png",
+      "px": [
+        386,
+        476
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "slug": "priplatky-k-venkovnim-roletam",
+  "dokument": "ostatni.pdf",
+  "nazev": "Ostatní (pdf)",
+  "url": "/data/products/priplatky-k-venkovnim-roletam/downloads/ostatni.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "ostatni__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Ostatní příplatky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Ostatní příplatky",
+      "popisky": [
+        "Společný box pro dvě vodící lišty PP53, PPD79",
+        "Větší velikost boxu než je tabulkový rozměr",
+        "Box kulatý – extrudovaný SKO",
+        "Box 45° – extrudovaný SK-E",
+        "Lamela PA39, PA43 – aretovaný pancíř, lamela koncová",
+        "Lamela PA52 – aretovaný pancíř, lamela koncová",
+        "Hřídel 40 mm",
+        "Hřídel 60 mm",
+        "Samostatně - box, vodící nohy, bočnice",
+        "Lamela PA39, PA43 příplatková (viz Barevné varianty lamel PA39, PA43)",
+        "Lamela PA52 příplatková (viz Barevné varianty lamel PA52)",
+        "Lamela PA39, PA43, PA52 – lakování dle RAL, oboustranné",
+        "Easylink",
+        "Pružinový závěs (Motorické ovládání SIRAL k lamele PA39)",
+        "Pružinový závěs (Manuální ovládání WM130 k lamele PA39)",
+        "Pružinový závěs (WMA170 k lamele PA52)",
+        "AL Box pro SKT PA39",
+        "Montáž solárního panelu na RK/box"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
+        "40",
+        "41",
+        "42",
+        "43",
+        "44",
+        "45",
+        "46",
+        "47",
+        "48",
+        "49"
+      ],
+      "obrazek": "ostatni__s01.png",
+      "px": [
+        1581,
+        689
+      ]
+    }
+  ]
+}

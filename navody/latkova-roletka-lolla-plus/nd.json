@@ -1,0 +1,35 @@
+{
+  "slug": "latkova-roletka-lolla-plus",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Náhradní díly",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Sada příslušenství pro levý/pravý řetězec",
+        "PVC ucpávka spodního závaží",
+        "Závaží na řetízek MINI – bílá, šedá"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        882,
+        170
+      ]
+    }
+  ]
+}

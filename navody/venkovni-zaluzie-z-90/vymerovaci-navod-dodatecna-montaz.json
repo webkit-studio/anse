@@ -1,0 +1,44 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "vymerovaci-navod-dodatecna-montaz.pdf",
+  "nazev": "Vyměřovací návod - dodatečná montáž celá (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-dodatecna-montaz.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "vymerovaci-navod-dodatecna-montaz__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací návod – Dodatečná montáž – Z 90 celá",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací návod – Dodatečná montáž – Z 90 celá",
+      "popisky": [
+        "Způsob vyměření je z pohledu z interiéru zleva doprava. Při zadání vyměřovací výšky se automaticky vypočítá výška krycího plechu. Je možnost i jiná výška krycího",
+        "plechu po vyplnění buňky rozměr A jiná.",
+        "výška krycího plechu",
+        "výška stažené žaluzie",
+        "výška žaluzie B (mm)",
+        "vyměřovací výška  (mm)",
+        "šířka žaluzie A (mm)",
+        "min 20 mm",
+        "vyměřovací šířka (mm)",
+        "vzdálenost",
+        "vodicí lišty"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "15",
+        "140",
+        "25",
+        "25"
+      ],
+      "obrazek": "vymerovaci-navod-dodatecna-montaz__s01.png",
+      "px": [
+        1584,
+        2226
+      ]
+    }
+  ]
+}

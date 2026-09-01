@@ -1,0 +1,159 @@
+{
+  "slug": "plisse-klasik",
+  "dokument": "mn.pdf",
+  "nazev": "Montážní návod a způsoby montáže (pdf)",
+  "url": "/data/products/plisse-klasik-pk-dn/downloads/mn.pdf",
+  "sekci": 6,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací a montážní návody",
+      "h2": "vyměření mezi zasklívací lišty  | Minimální hloubka zasklení je 15 mm.",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "vyměření mezi zasklívací lišty  | Minimální hloubka zasklení je 15 mm.",
+      "popisky": [
+        "výrobní výška (celková)",
+        "výrobní šířka (celková)",
+        "měřeno od středu gumového",
+        "těsnění po střed gumového těsnění"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "7",
+        "7",
+        "4x"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1426,
+        609
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací a montážní návody",
+      "h2": "vyměření na rám",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "vyměření na rám",
+      "popisky": [
+        "výrobní výška (celková)",
+        "výrobní šířka (celková)",
+        "měřeno včetně zasklívací lišty"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "4x"
+      ],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1425,
+        550
+      ]
+    },
+    {
+      "id": "mn__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací a montážní návody",
+      "h2": "vyměření bezinvazivní",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "vyměření bezinvazivní",
+      "popisky": [
+        "výrobní výška (celková)",
+        "výrobní šířka (celková)",
+        "měřeno včetně zasklívací lišty"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "4x"
+      ],
+      "obrazek": "mn__s03.png",
+      "px": [
+        1425,
+        556
+      ]
+    },
+    {
+      "id": "mn__s04",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Mezi",
+        "Pomocí vynášecího",
+        "Bezinvazivním",
+        "zasklívací lišty",
+        "držáku na rám",
+        "držákem"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s04.png",
+      "px": [
+        1543,
+        285
+      ]
+    },
+    {
+      "id": "mn__s05",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Montážní držáky",
+      "h2": "vynášecí držák pro montáž",
+      "krok": null,
+      "varianta": "B",
+      "nadpis": "vynášecí držák pro montáž",
+      "popisky": [],
+      "poznamky": [],
+      "kotace": [
+        "23",
+        "17,5",
+        "21"
+      ],
+      "obrazek": "mn__s05.png",
+      "px": [
+        498,
+        391
+      ]
+    },
+    {
+      "id": "mn__s06",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Montážní držáky",
+      "h2": "bezinvazivní držák",
+      "krok": null,
+      "varianta": "C",
+      "nadpis": "bezinvazivní držák",
+      "popisky": [
+        "max 25"
+      ],
+      "poznamky": [
+        "Vhodné pro okna s gumovým",
+        "těsněním, kdy mezi křídlem",
+        "a rámem okna je 3 mm spára."
+      ],
+      "kotace": [
+        "45",
+        "19",
+        "30"
+      ],
+      "obrazek": "mn__s06.png",
+      "px": [
+        723,
+        366
+      ]
+    }
+  ]
+}

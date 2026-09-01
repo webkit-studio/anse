@@ -1,0 +1,53 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "zpusoby-montaze.pdf",
+  "nazev": "Způsoby montáže (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/zpusoby-montaze.pdf?=v1",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "zpusoby-montaze__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": null,
+      "krok": null,
+      "varianta": "A",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Dodatečná montáž.",
+        "Žaluzie namontovaná na stěně",
+        "budovy."
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s01.png",
+      "px": [
+        710,
+        555
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s02",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": "Způsoby montáže",
+      "h2": null,
+      "krok": null,
+      "varianta": "B",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Fasádní montáž. Žaluzie",
+        "namontovaná do vytvořené kapsy",
+        "(strop/stěna)."
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s02.png",
+      "px": [
+        745,
+        510
+      ]
+    }
+  ]
+}

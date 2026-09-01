@@ -1,0 +1,72 @@
+{
+  "slug": "latkova-roletka-lolla-plus",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/mn.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "vyměření a montáž na zasklívací lišty",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "vyměření a montáž na zasklívací lišty",
+      "popisky": [
+        "včetně zasklívacích lišt",
+        "vyměřovací výška",
+        "vyměřovací výška B (mm)",
+        "vyměřovací šířka",
+        "včetně zasklívacích lišt",
+        "Zasklívací lišta",
+        "Sklo",
+        "Křídlo okna",
+        "Rám okna",
+        "Ostění",
+        "vyměřovací šířka A (mm)"
+      ],
+      "poznamky": [
+        "Poznámky",
+        "– Celková šířka boxu včetně bočních krytek",
+        "je o 20 mm širší než vyměřovací šířka.",
+        "– Systém umožňuje přidat na řetízek dorazovou spojku, aby se",
+        "dala nastavit přesná dolní poloha."
+      ],
+      "kotace": [
+        "46",
+        "18",
+        "24"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1696,
+        2240
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": "Pouze na okenní křídlo",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Pouze na okenní křídlo",
+      "popisky": [
+        "Za předpokladu, že zasklívací lišty mají tvar vhodný pro nalepení vodících lišt",
+        "a dostatečnou hloubku pro závaží látky",
+        "min 15",
+        "min 15"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1514,
+        471
+      ]
+    }
+  ]
+}

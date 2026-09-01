@@ -1,0 +1,43 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "bocnice.pdf",
+  "nazev": "Bočnice (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/bocnice.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "bocnice__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Bočnice",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Bočnice",
+      "popisky": [
+        "Krycí plech",
+        "Krycí plech",
+        "Krycí plech",
+        "A",
+        "C",
+        "Ohýbaná",
+        "Nýtovaná",
+        "Přiložená",
+        "(nepředvrtaná, nýty přiložené)"
+      ],
+      "poznamky": [
+        "Upozornění",
+        "– umístění bočnice se zadává při pohledu z interiéru. Bočnice u KP zmenšují prostor pro žaluzii přibližně o 5 mm, proto je nutno krycí plech objednat delší (minimálně o tloušťku",
+        "bočnic)."
+      ],
+      "kotace": [
+        "20"
+      ],
+      "obrazek": "bocnice__s01.png",
+      "px": [
+        1505,
+        499
+      ]
+    }
+  ]
+}

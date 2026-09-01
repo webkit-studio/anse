@@ -1,0 +1,66 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "pruchodky-a-klika.pdf",
+  "nazev": "Průchodky a klika (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/pruchodky-a-klika.pdf?=v2",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "pruchodky-a-klika__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Průchodky",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Průchodky",
+      "popisky": [
+        "Průchodka",
+        "45°",
+        "Průchodka",
+        "90°"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "17,6",
+        "73",
+        "61",
+        "6",
+        "22,8",
+        "73",
+        "85",
+        "6"
+      ],
+      "obrazek": "pruchodky-a-klika__s01.png",
+      "px": [
+        193,
+        1245
+      ]
+    },
+    {
+      "id": "pruchodky-a-klika__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Klika pevná",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Klika pevná",
+      "popisky": [
+        "45°",
+        "L – délka kliky",
+        "90°"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "370",
+        "140"
+      ],
+      "obrazek": "pruchodky-a-klika__s02.png",
+      "px": [
+        1336,
+        1391
+      ]
+    }
+  ]
+}

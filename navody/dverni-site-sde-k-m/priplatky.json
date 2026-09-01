@@ -1,0 +1,109 @@
+{
+  "slug": "dverni-site-sde-k-m",
+  "dokument": "priplatky.pdf",
+  "nazev": "Příplatky (pdf)",
+  "url": "/data/products/dverni-site-sde-k-m/downloads/priplatky.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "priplatky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky",
+      "popisky": [
+        "Madlopříčka použitá jako okopová – Bílá RAL 9003, Hnědá RAL8019,",
+        "Sv. hnědá RAL 8003, Stříbrná RAL 9006, Antracit RAL 7016",
+        "Madlopříčka použitá jako okopová – ID Zlatý dub, ID Třešeň amaretto, ID Tmavý ořech",
+        "Profil (madlopříčka použitá jako okopová) v renolitové fólii R1 – seřízení stroje",
+        "Profil (madlopříčka použitá jako okopová) v renolitové fólii R2 – seřízení stroje",
+        "Madlopříčka použitá jako okopová – R1 jednostranný polep (+ příplatek za seřízení stroje bod č. 3)",
+        "Madlopříčka použitá jako okopová – R2 oboustranný polep (+ příplatek za seřízení stroje bod č. 4)",
+        "Madlopříčka použitá jako okopová – RAL",
+        "Samozavírací pant PVC v barvě – Bílá, Tm. hnědá, Sv. hnědá RAL 8003, Antracit, Šedá, Černá",
+        "Obyčejný pant PVC v barvě – Bílá, Tm. hnědá, Sv. hnědá RAL 8003, Antracit, Šedá, Černá",
+        "Samozavírací pant hliníkový v barvě – Bílá, Tm. hnědá, Antracit, Sv. hnědá RAL 8003",
+        "Obyčejný pant hliníkový v barvě – Bílá, Tm. hnědá, Antracit, Sv. hnědá RAL 8003",
+        "Madlo v barvě – Bílá RAL 9016, Hnědá RAL 8019, Sv. hnědá RAL 8003, Antracit RAL 7016",
+        "Madélko – Šedé, Tm.hnědé",
+        "Magnet v barvě – Bílá, Tm. hnědá",
+        "Magnet v barvě – Antracit, Stříbrná, ID 8003",
+        "Pásový magnet se samolepící magnetickou páskou na výšku dveří",
+        "Síťovina petscreen (pro domácí mazlíčky) – Šedá, šíře 1,8 m, Černá, šíře 1,6 m",
+        "Síťovina protipylová – Černá, šíře 1,6 m",
+        "Síťovina transparentní – Černá, šíře 1 m, 1,8 m",
+        "Síťovina nanovlákenná Respilon RWN 6.0 – Černá, šíře 1,5 m",
+        "Průlez pro kočku 240×290 mm (otvor 210×250 mm) – Černá",
+        "Průlez pro psa 370×420 mm (otvor 310×340 mm) – Černá"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "obrazek": "priplatky__s01.png",
+      "px": [
+        1581,
+        834
+      ]
+    },
+    {
+      "id": "priplatky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky bez nároku na slevy",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky bez nároku na slevy",
+      "popisky": [
+        "Práce firmy (minimální účtovaný čas je 0,5 hod)",
+        "Manipulační poplatek (nakládka, rozvoz, vykládka výrobku),",
+        "pokud bude výrobek odeslán přepravní službou, platí ceny viz. bod 3, 4, 5, 6, 7",
+        "PPL doprava – maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "Toptrans"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "obrazek": "priplatky__s02.png",
+      "px": [
+        1581,
+        334
+      ]
+    }
+  ]
+}

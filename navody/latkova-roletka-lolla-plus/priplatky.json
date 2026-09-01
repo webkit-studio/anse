@@ -1,0 +1,70 @@
+{
+  "slug": "latkova-roletka-lolla-plus",
+  "dokument": "priplatky.pdf",
+  "nazev": "Příplatky (pdf)",
+  "url": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/priplatky.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "priplatky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Příplatky",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky",
+      "popisky": [
+        "Provedení v imitaci dřeva – zlatý dub, ořech",
+        "Dětská pojistka",
+        "Závaží na řetízek MINI – bílá, šedá"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3"
+      ],
+      "obrazek": "priplatky__s01.png",
+      "px": [
+        875,
+        170
+      ]
+    },
+    {
+      "id": "priplatky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Příplatky bez nároku na slevy",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky bez nároku na slevy",
+      "popisky": [
+        "Práce firmy (minimální účtovaný čas je 0,5 hod)",
+        "Manipulační poplatek (nakládka, rozvoz, vykládka výrobku),",
+        "pokud bude výrobek odeslán přepravní službou, platí ceny viz bod 3, 4, 5, 6, 7",
+        "PPL doprava – maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "Toptrans"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "obrazek": "priplatky__s02.png",
+      "px": [
+        1259,
+        336
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "slug": "spring-screen-hak",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/spring-screen-hak-ssh/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Náhradní díly",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Hák",
+        "Montážní klip",
+        "PVC ucpávka spodního závaží",
+        "PVC krytka bočnice",
+        "Madýlko na spodní závaží (madýlko, šňůra, závaží šňůry)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        1582,
+        250
+      ]
+    }
+  ]
+}

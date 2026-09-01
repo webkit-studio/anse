@@ -1,0 +1,83 @@
+{
+  "slug": "latkova-roletka-lolla-dn",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/latkova-roletka-lolla-dn-lrl-dn/downloads/mn.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "vyměření a montáž na zasklívací lišty",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "vyměření a montáž na zasklívací lišty",
+      "popisky": [
+        "± 3 mm",
+        "celková výška včetně krycích lišt",
+        "vyměřovací výška B (mm)",
+        "kryt okraje látky",
+        "nalepen pomocí",
+        "oboustranné pásky",
+        "měřeno včetně zasklívací lišty",
+        "výrobní výška",
+        "výrobní šířka",
+        "měřeno včetně zasklívací lišty",
+        "Zasklívací lišta",
+        "Sklo",
+        "Křídlo okna",
+        "Rám okna",
+        "Ostění",
+        "vyměřovací šířka A (mm)"
+      ],
+      "poznamky": [
+        "Poznámky",
+        "– Výrobní šířka – pro správné vyměření šířky je nutné použít vyměřovací",
+        "přípravek.",
+        "– Vyměřovací výška – měřit od středu horní zasklívací lišty až po hranu spodní",
+        "zasklívací lišty. Měření na střed horní zasklívací lišty umožní regulaci umístění",
+        "boxu ve výšce +/- 3 mm.",
+        "– Celková výška = box + krycí lišty.",
+        "– Spodní závaží se nesmí dotýkat spodní zasklívací lišty!",
+        "Systém umožňuje přidat na řetízek",
+        "dorazovou spojku, aby se dala",
+        "nastavit přesná dolní poloha."
+      ],
+      "kotace": [
+        "35",
+        "32"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1537,
+        2253
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": "Pouze na okenní křídlo",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Pouze na okenní křídlo",
+      "popisky": [
+        "Za předpokladu, že zasklívací lišty mají tvar vhodný pro nalepení vodících lišt a dostatečnou",
+        "hloubku pro závaží látky",
+        "min 10",
+        "min 10",
+        "min 10"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1450,
+        477
+      ]
+    }
+  ]
+}

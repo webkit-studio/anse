@@ -1,0 +1,61 @@
+{
+  "slug": "plisse-klasik",
+  "dokument": "cenove-kategorie.pdf",
+  "nazev": "Cenové kategorie plissé látek (pdf)",
+  "url": "/data/products/plisse-klasik-pk-dn/downloads/cenove-kategorie.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "cenove-kategorie__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Cenové kategorie plissé látek",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Cenové kategorie plissé látek",
+      "popisky": [
+        "Ballet, Butterfly pearl, Canzone BO,",
+        "Bellagio, Boston, Calypso, Canzone,",
+        "Blues, Bollero, Buffa print, Cancan",
+        "Andante, Aria pearl, Conga, Dance,",
+        "Clover, Disco BO, Flowers, Gioconda,",
+        "Carioca, Castelo, Cities, Conga pearl,",
+        "fulltone, Castelo BO, Flowers",
+        "Flamenco, Flowers print, Jazz, Lakme,",
+        "Infinity, Lambada, Lambada BO,",
+        "Disco, Falliero metalic, Flamenco",
+        "metalic, Gardenia, Gioconda BO,",
+        "Bianca",
+        "Opera",
+        "Largo, Mambo, Mesh, Mezzo, Opera",
+        "Largo BO, Opera BO, Opera dimout,",
+        "print, Fusion, Levante, Madame",
+        "Rock, Rueda, Rueda transparent,",
+        "pearl, Samba, Samba pearl, Shimmy,",
+        "Oriental metalic, Papyrus, Pasodoble,",
+        "butterfly, Milonga, Oslo pearl,",
+        "Salsa, Scala BO, Scala print BO,",
+        "Tosca, Twist pearl, Zorba",
+        "Patience, Screen, Tivoli, Tre, Waltz,",
+        "Rumba, Rustic, Tosca pearl",
+        "Toccata, Vanessa",
+        "Zorba BO"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "cenove-kategorie__s01.png",
+      "px": [
+        1581,
+        367
+      ]
+    }
+  ]
+}

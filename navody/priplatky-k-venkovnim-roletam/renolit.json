@@ -1,0 +1,47 @@
+{
+  "slug": "priplatky-k-venkovnim-roletam",
+  "dokument": "renolit.pdf",
+  "nazev": "Renolit (pdf)",
+  "url": "/data/products/priplatky-k-venkovnim-roletam/downloads/renolit.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "renolit__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Renolit – základní nabídka",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Renolit – základní nabídka",
+      "popisky": [
+        "Box (RK) 30R, 52R, 53R",
+        "Bočnice (RK) 26R, 28R, 30R, 52R, 53R",
+        "Revizní klapka (RF) 23R, 28R, 30R, 52R, 53R",
+        "Omítková lišta (RF) 23R, 28R, 30R, 52R, 53R",
+        "Vodící lišta R1– renolit jednostranný 26R, 28R, 30R, 52R, 53R",
+        "Koncová lamela R2 – renolit oboustranný 26R, 28R, 30R, 52R, 53R",
+        "Koncová lamela sítě R1 – renolit jednostranný 26R, 28R, 30R, 52R",
+        "Renolitový polep mimo základní nabídku"
+      ],
+      "poznamky": [
+        "Poznámka – V případě renolitového polepu mimo základní nabídku (bod č. 14) činí minimální účtovaný rozměr 6 bm od každého profilu."
+      ],
+      "kotace": [
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14"
+      ],
+      "obrazek": "renolit__s01.png",
+      "px": [
+        1581,
+        420
+      ]
+    }
+  ]
+}

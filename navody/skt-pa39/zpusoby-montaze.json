@@ -1,0 +1,101 @@
+{
+  "slug": "skt-pa39",
+  "dokument": "zpusoby-montaze.pdf",
+  "nazev": "Způsoby montáže (pdf)",
+  "url": "/data/products/skt-pa39/downloads/zpusoby-montaze.pdf",
+  "sekci": 4,
+  "sekce": [
+    {
+      "id": "zpusoby-montaze__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "A",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Skříňka rolety",
+        "zabudovaná z vnějšku",
+        "objektu, otevíraná",
+        "zespodu nebo zepředu"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s01.png",
+      "px": [
+        358,
+        580
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s02",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "B",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Skříňka rolety",
+        "zabudovaná zevnitř",
+        "objektu, otevíraná",
+        "zespodu"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s02.png",
+      "px": [
+        315,
+        480
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s03",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "C",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Skříňka rolety",
+        "zabudovaná z vnějšku",
+        "i zevnitř objektu,",
+        "otevíraná zespodu"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s03.png",
+      "px": [
+        350,
+        480
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s04",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "D",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Skříňka rolety bez",
+        "zabudování, otevíraná",
+        "zespodu nebo",
+        "zepředu"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s04.png",
+      "px": [
+        360,
+        480
+      ]
+    }
+  ]
+}

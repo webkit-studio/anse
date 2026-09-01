@@ -1,0 +1,35 @@
+{
+  "slug": "priplatky-k-venkovnim-roletam",
+  "dokument": "zamykani.pdf",
+  "nazev": "Zamykání (pdf)",
+  "url": "/data/products/priplatky-k-venkovnim-roletam/downloads/zamykani.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "zamykani__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Zamykání",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zamykání",
+      "popisky": [
+        "RA-ABZ – automatická bezpečnostní zarážka koncové lamely",
+        "ZMS/A – zámek do koncové lamely (3 klíče)",
+        "RY – mechanické zarážky"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "63",
+        "64",
+        "65"
+      ],
+      "obrazek": "zamykani__s01.png",
+      "px": [
+        1583,
+        184
+      ]
+    }
+  ]
+}

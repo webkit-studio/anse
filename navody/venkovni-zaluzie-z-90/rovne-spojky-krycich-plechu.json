@@ -1,0 +1,42 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "rovne-spojky-krycich-plechu.pdf",
+  "nazev": "Rovné spojky krycích plechů (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/rovne-spojky-krycich-plechu.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "rovne-spojky-krycich-plechu__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Schéma rovné spojky a krycích plechů",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Schéma rovné spojky a krycích plechů",
+      "popisky": [
+        "Krycí plech",
+        "Krycí plech",
+        "Spojka",
+        "60 mm",
+        "60 mm",
+        "10 mm",
+        "KPP 1a / KPP 1b / KP 1c",
+        "KPP 3a / KPP 3ac",
+        "KPP 2a / KPP 2b / KP 2c",
+        "KPP 3az / KP 3c / KP 3cz"
+      ],
+      "poznamky": [
+        "Upozornění",
+        "– při spojení krycích plechů je nutno dodržet dilatační mezeru (10 mm). Při spojení krycích plechů se nýtuje spojka pouze k jednomu plechu.",
+        "Šířka spojky je 60 mm."
+      ],
+      "kotace": [],
+      "obrazek": "rovne-spojky-krycich-plechu__s01.png",
+      "px": [
+        1524,
+        605
+      ]
+    }
+  ]
+}

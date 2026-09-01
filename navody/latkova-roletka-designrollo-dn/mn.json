@@ -1,0 +1,107 @@
+{
+  "slug": "latkova-roletka-designrollo-dn",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/latkova-roletka-designrollo-dn-lrdr-dn/downloads/mn.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací a montážní návody",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací a montážní návody",
+      "popisky": [
+        "výrobní výška (celková)",
+        "světlost parapet–strop",
+        "výrobní výška (celková)",
+        "světlost parapet–překlad",
+        "světlost špalet",
+        "světlost špalet",
+        "výrobní šířka (celková)",
+        "výrobní šířka (celková)"
+      ],
+      "poznamky": [
+        "Poznámka",
+        "Poznámka",
+        "První a poslední klip",
+        "První a poslední klip",
+        "montovat v ose špalet,",
+        "montovat v ose špalet,",
+        "všechny pak srovnat do",
+        "všechny pak srovnat do",
+        "vodováhy.",
+        "vodováhy."
+      ],
+      "kotace": [
+        "100",
+        "20",
+        "20",
+        "50",
+        "50",
+        "50",
+        "50"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1549,
+        1039
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": null,
+      "krok": null,
+      "varianta": "A",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Pomocí klipu",
+        "Pomocí klipu,",
+        "do stropu nebo",
+        "na stěnu",
+        "do překladu"
+      ],
+      "poznamky": [
+        "Poznámka",
+        "– V případě nerovnosti stropu nebo stěny nutno použít podložky ø8 mm velké ZN."
+      ],
+      "kotace": [],
+      "obrazek": "mn__s02.png",
+      "px": [
+        795,
+        422
+      ]
+    },
+    {
+      "id": "mn__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Montážní klip",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Montážní klip",
+      "popisky": [
+        "Pomocí klipu,",
+        "na stěnu"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "50",
+        "27,5",
+        "61"
+      ],
+      "obrazek": "mn__s03.png",
+      "px": [
+        787,
+        393
+      ]
+    }
+  ]
+}

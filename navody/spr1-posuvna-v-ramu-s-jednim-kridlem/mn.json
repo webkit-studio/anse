@@ -1,0 +1,35 @@
+{
+  "slug": "spr1-posuvna-v-ramu-s-jednim-kridlem",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/spr1-posuvna-v-ramu-s-jednim-kridlem/downloads/mn.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "upevnění na rám",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "upevnění na rám",
+      "popisky": [
+        "celková vyměřovací šířka celoobvodového rámu A (mm)",
+        "celková šířka křídla (mm)",
+        "Sklo",
+        "Křídlo dveří",
+        "Rám dveří",
+        "Ostění",
+        "celková vyměřovací výška celoobvodového rámu B (mm)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1528,
+        2147
+      ]
+    }
+  ]
+}

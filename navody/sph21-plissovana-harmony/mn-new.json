@@ -1,0 +1,291 @@
+{
+  "slug": "sph21-plissovana-harmony",
+  "dokument": "mn-new.pdf",
+  "nazev": "Montážní návod (pdf)",
+  "url": "/data/products/sph21-plissovana-harmony/downloads/mn-new.pdf",
+  "sekci": 12,
+  "sekce": [
+    {
+      "id": "mn-new__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Montážní návod",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Montážní návod",
+      "popisky": [],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn-new__s01.png",
+      "px": [
+        452,
+        67
+      ]
+    },
+    {
+      "id": "mn-new__s02",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Montážní návod",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Montážní návod",
+      "popisky": [
+        "Otevřete balík s plisovanou sítí a odstraňte všechny ochranné fólie z profilů.",
+        "Rozložte jednotlivé svazky."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1.",
+        "2."
+      ],
+      "obrazek": "mn-new__s02.png",
+      "px": [
+        1135,
+        349
+      ]
+    },
+    {
+      "id": "mn-new__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "Sestavte rám a pomocí imbusového klíče utáhněte rohové spoje.",
+        "Poznámka: Rám je předvrtaný podle požadavku zákazníka pro montáž",
+        "do ostění nebo na rám dveří."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "3."
+      ],
+      "obrazek": "mn-new__s03.png",
+      "px": [
+        1068,
+        169
+      ]
+    },
+    {
+      "id": "mn-new__s04",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "Připevněte rám do ostění nebo na rám dveří.",
+        "Profil přilepte nebo připevněte pomocí šroubů:"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "4.",
+        "5."
+      ],
+      "obrazek": "mn-new__s04.png",
+      "px": [
+        783,
+        168
+      ]
+    },
+    {
+      "id": "mn-new__s05",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "o",
+        "o"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn-new__s05.png",
+      "px": [
+        668,
+        85
+      ]
+    },
+    {
+      "id": "mn-new__s06",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "o",
+        "Určení strany ovládání",
+        "Horní strana je ta, kde síťovina přesahuje z posuvného profilu",
+        "(je také označena na profilu)."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "6."
+      ],
+      "obrazek": "mn-new__s06.png",
+      "px": [
+        1177,
+        168
+      ]
+    },
+    {
+      "id": "mn-new__s07",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "Zkontrolujte, zda jsou ovládací šňůrky správně vedeny v drážkách horního i spodního",
+        "profilu. Nesmí se křížit ani být přiskřípnuté.",
+        "Vložte celý svazek do horního profilu rámu a zacvakněte jej do spodního vodicího",
+        "profilu."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "7.",
+        "8."
+      ],
+      "obrazek": "mn-new__s07.png",
+      "px": [
+        1269,
+        253
+      ]
+    },
+    {
+      "id": "mn-new__s08",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "Nůžkami rozstřihněte fólii, která fixuje svazek plisované síťoviny s posuvným",
+        "profilem.",
+        "Uvolněte ovládací šňůrky a vyjměte magnet."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "9.",
+        "10."
+      ],
+      "obrazek": "mn-new__s08.png",
+      "px": [
+        1144,
+        210
+      ]
+    },
+    {
+      "id": "mn-new__s09",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Sestavení rámu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Sestavení rámu",
+      "popisky": [
+        "Zacvakněte profil se síťovinou a profil pro magnetickou pásku.",
+        "Ověřte správný chod posuvného profilu."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "11.",
+        "12."
+      ],
+      "obrazek": "mn-new__s09.png",
+      "px": [
+        1440,
+        486
+      ]
+    },
+    {
+      "id": "mn-new__s10",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Seřízení z výroby",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Seřízení z výroby",
+      "popisky": [
+        "Síť HARMONY 21 je předem seřízena ve výrobě."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "13."
+      ],
+      "obrazek": "mn-new__s10.png",
+      "px": [
+        754,
+        70
+      ]
+    },
+    {
+      "id": "mn-new__s11",
+      "strana": 2,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Seřízení z výroby",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Seřízení z výroby",
+      "popisky": [
+        "Pokud je chod profilu šikmý, upravte ovládací šňůrky: v protilehlém rohu je povolte",
+        "nebo přitáhněte imbusovým klíčem o 1–2 mm.",
+        "Znovu ověřte správný chod."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "14.",
+        "15."
+      ],
+      "obrazek": "mn-new__s11.png",
+      "px": [
+        1223,
+        210
+      ]
+    },
+    {
+      "id": "mn-new__s12",
+      "strana": 2,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Seřízení z výroby",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Seřízení z výroby",
+      "popisky": [
+        "Pokud je síť správně seřízena, zacvakněte magnetickou pásku.",
+        "Plissé síť je nyní připravena k používání."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "16.",
+        "17."
+      ],
+      "obrazek": "mn-new__s12.png",
+      "px": [
+        1440,
+        1685
+      ]
+    }
+  ]
+}

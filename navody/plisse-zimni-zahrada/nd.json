@@ -1,0 +1,35 @@
+{
+  "slug": "plisse-zimni-zahrada",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/plisse-zimni-zahrada-pzz/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Náhradní díly",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Madlo profilu pevné",
+        "Magnet",
+        "Adaptér ovládací tyče"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        1581,
+        184
+      ]
+    }
+  ]
+}

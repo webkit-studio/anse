@@ -1,0 +1,111 @@
+{
+  "slug": "vertikalni-zaluzie",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/vertikalni-zaluzie-vz/downloads/mn.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací návod",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací návod",
+      "popisky": [
+        "výrobní výška (celková)",
+        "světlost parapet–strop",
+        "výrobní výška (celková)",
+        "světlost parapet–překlad",
+        "světlost špalet",
+        "světlost špalet",
+        "výrobní šířka (celková)",
+        "výrobní šířka (celková)",
+        "šířka svazku",
+        "výrobní délka látky",
+        "x – šířka 1 látkové lamely*"
+      ],
+      "poznamky": [
+        "*",
+        "překrytí špalet (otvoru) záleží na",
+        "způsobu ovládání – pak je potřeba",
+        "zohlednit šířku svazku látek, aby",
+        "svazek nezůstal ve světlosti otvoru"
+      ],
+      "kotace": [
+        "100",
+        "20",
+        "20",
+        "x",
+        "x",
+        "x",
+        "x",
+        "40"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1568,
+        1051
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Montážní klip",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Montážní klip",
+      "popisky": [
+        "Pomocí klipu",
+        "Pomocí klipu",
+        "do stropu nebo",
+        "a konzoly",
+        "do překladu",
+        "na stěnu"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "49",
+        "22",
+        "13"
+      ],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1638,
+        273
+      ]
+    },
+    {
+      "id": "mn__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Montážní konzoly",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Montážní konzoly",
+      "popisky": [
+        "B1",
+        "B2"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "170",
+        "26",
+        "105",
+        "30",
+        "45",
+        "60"
+      ],
+      "obrazek": "mn__s03.png",
+      "px": [
+        1668,
+        414
+      ]
+    }
+  ]
+}

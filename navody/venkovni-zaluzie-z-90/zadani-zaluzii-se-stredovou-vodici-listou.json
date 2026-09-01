@@ -1,0 +1,45 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "zadani-zaluzii-se-stredovou-vodici-listou.pdf",
+  "nazev": "Zadání žaluzií se středovou vodící lištou (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/zadani-zaluzii-se-stredovou-vodici-listou.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "zadani-zaluzii-se-stredovou-vodici-listou__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Zadání žaluzií se středovou vodící lištou VL3",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zadání žaluzií se středovou vodící lištou VL3",
+      "popisky": [
+        "Poznámka – pokud jsou žaluzie stejně vysoké,",
+        "Poznámka – pokud žaluzie nejsou stejně vysoké,",
+        "zadejte VL3 dle tohoto nákresu (pohled z interiéru):",
+        "zadejte VL3 u vyšší žaluzie, viz tento nákres (pohled z interiéru):",
+        "VL2",
+        "VL3",
+        "X VL3",
+        "VL2",
+        "VL2",
+        "X VL3",
+        "VL3",
+        "VL2"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "1",
+        "2"
+      ],
+      "obrazek": "zadani-zaluzii-se-stredovou-vodici-listou__s01.png",
+      "px": [
+        1391,
+        426
+      ]
+    }
+  ]
+}

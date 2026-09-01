@@ -1,0 +1,177 @@
+{
+  "slug": "plisse-zimni-zahrada",
+  "dokument": "mn.pdf",
+  "nazev": "Montážní návod a způsoby montáže (pdf)",
+  "url": "/data/products/plisse-zimni-zahrada-pzz/downloads/mn.pdf",
+  "sekci": 7,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací návod",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací návod",
+      "popisky": [
+        "3. měření",
+        "2. měření",
+        "pole",
+        "1. měření",
+        "výrobní šířka (mm)",
+        "výrobní výška (mm)"
+      ],
+      "poznamky": [
+        "3× světlost šířky každého pole",
+        "Výrobní výška (vv) = naměřená světlost",
+        "výrobní šířka (vš) = nejmenší světlost",
+        "Při zaměření nutno zohlednit typ ukončení a montážní vůli.",
+        "(rozdíl nesmí být větší než 10 mm)."
+      ],
+      "kotace": [],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1541,
+        738
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Montážní návod",
+      "h2": null,
+      "krok": "1. Montáž podpěrného L profilu",
+      "varianta": null,
+      "nadpis": "1. Montáž podpěrného L profilu",
+      "popisky": [
+        "Horní hrana L profilu (30×20 mm) minimálně 10 mm od skla/plastu."
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1466,
+        334
+      ]
+    },
+    {
+      "id": "mn__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Montážní návod",
+      "h2": null,
+      "krok": "2.  Instalace kostky pro uchycení botiček",
+      "varianta": "A",
+      "nadpis": "2.  Instalace kostky pro uchycení botiček",
+      "popisky": [
+        "Kostka uchycena přímo do koncového profilu",
+        "(pokud je do čeho montovat)",
+        "(4× pro každé pole)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "4x"
+      ],
+      "obrazek": "mn__s03.png",
+      "px": [
+        753,
+        505
+      ]
+    },
+    {
+      "id": "mn__s04",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": "Montážní návod",
+      "h2": null,
+      "krok": "2.  Instalace kostky pro uchycení botiček",
+      "varianta": "B",
+      "nadpis": "2.  Instalace kostky pro uchycení botiček",
+      "popisky": [
+        "Vynášecí set s kostkou",
+        "(4× pro každé pole)",
+        "POZOR na výšku látky 20 / 26 mm",
+        "10 / 13 mm",
+        "– nutno správně usadit vynášecí set",
+        "ve vzdálenosti 10 / 13 mm."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "4x"
+      ],
+      "obrazek": "mn__s04.png",
+      "px": [
+        718,
+        578
+      ]
+    },
+    {
+      "id": "mn__s05",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Montážní návod",
+      "h2": null,
+      "krok": "3.  Roztažení šňůrek a navlečení botiček na kostky",
+      "varianta": null,
+      "nadpis": "3.  Roztažení šňůrek a navlečení botiček na kostky",
+      "popisky": [],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s05.png",
+      "px": [
+        525,
+        48
+      ]
+    },
+    {
+      "id": "mn__s06",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": "Pouze mezi krovy zimní zahrady pomocí vynášecího setu a profilu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Pouze mezi krovy zimní zahrady pomocí vynášecího setu a profilu",
+      "popisky": [
+        "horní hrana",
+        "L profilu minimálně",
+        "Sklo/plast",
+        "10 mm od skla/plastu",
+        "Pouze mezi krovy zimní zahrady",
+        "pomocí vynášecího setu a profilu"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "23",
+        "17,5"
+      ],
+      "obrazek": "mn__s06.png",
+      "px": [
+        1549,
+        142
+      ]
+    },
+    {
+      "id": "mn__s07",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": "L 30/20",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "L 30/20",
+      "popisky": [],
+      "poznamky": [],
+      "kotace": [
+        "21"
+      ],
+      "obrazek": "mn__s07.png",
+      "px": [
+        1458,
+        172
+      ]
+    }
+  ]
+}

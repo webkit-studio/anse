@@ -1,0 +1,31 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "zasiti-pasky.pdf",
+  "nazev": "Zašití pásky (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/zasiti-pasky.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "zasiti-pasky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Zašití pásky",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zašití pásky",
+      "popisky": [
+        "p",
+        "y",
+        "délka hotové pásky"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zasiti-pasky__s01.png",
+      "px": [
+        671,
+        252
+      ]
+    }
+  ]
+}

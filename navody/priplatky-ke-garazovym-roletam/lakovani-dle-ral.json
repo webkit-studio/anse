@@ -1,0 +1,37 @@
+{
+  "slug": "priplatky-ke-garazovym-roletam",
+  "dokument": "lakovani-dle-ral.pdf",
+  "nazev": "Lakování dle RAL (pdf)",
+  "url": "/data/products/priplatky-ke-garazovym-roletam/downloads/lakovani-dle-ral.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "lakovani-dle-ral__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lakování dle RAL",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lakování dle RAL",
+      "popisky": [
+        "Box",
+        "Bočnice",
+        "Vodící lišta",
+        "Koncová lamela"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "11",
+        "12",
+        "13",
+        "14"
+      ],
+      "obrazek": "lakovani-dle-ral__s01.png",
+      "px": [
+        1581,
+        222
+      ]
+    }
+  ]
+}

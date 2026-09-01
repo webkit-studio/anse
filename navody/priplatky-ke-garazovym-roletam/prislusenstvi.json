@@ -1,0 +1,37 @@
+{
+  "slug": "priplatky-ke-garazovym-roletam",
+  "dokument": "prislusenstvi.pdf",
+  "nazev": "Příslušenství (pdf)",
+  "url": "/data/products/priplatky-ke-garazovym-roletam/downloads/prislusenstvi.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "prislusenstvi__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příslušenství",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příslušenství",
+      "popisky": [
+        "Bezpečnostní závěs (2 ks PW + WB)",
+        "Guma vyšší pro LDG52/OPT",
+        "Guma do koncové lamely pro OPTO závoru PA77",
+        "Pružinový závěs (WD190)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "obrazek": "prislusenstvi__s01.png",
+      "px": [
+        1581,
+        217
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "slug": "spring-screen-hak",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/spring-screen-hak-ssh/downloads/mn.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací a montážní návody",
+      "h2": "vyměření do překladu, na rám i na podomítkovou montážní desku",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "vyměření do překladu, na rám i na podomítkovou montážní desku",
+      "popisky": [
+        "pozice háku",
+        "A, B, C",
+        "na rámu z venkovní",
+        "strany okna",
+        "výrobní výška",
+        "30 mm",
+        "výrobní šířka"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1400,
+        845
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Pomocí",
+        "Pomocí klipu",
+        "Pomocí klipu",
+        "podomítkové montážní",
+        "do překladu",
+        "na rám okna",
+        "desky"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1617,
+        288
+      ]
+    },
+    {
+      "id": "mn__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Podomítková montážní deska",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Podomítková montážní deska",
+      "popisky": [],
+      "poznamky": [],
+      "kotace": [
+        "20",
+        "15",
+        "69",
+        "33",
+        "80",
+        "42",
+        "80",
+        "80"
+      ],
+      "obrazek": "mn__s03.png",
+      "px": [
+        1670,
+        489
+      ]
+    }
+  ]
+}

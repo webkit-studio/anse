@@ -1,0 +1,88 @@
+{
+  "slug": "skt-pa39",
+  "dokument": "lamela-pa-39-max-vyska-sirka.pdf",
+  "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+  "url": "/data/products/skt-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "lamela-pa-39-max-vyska-sirka__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA39 – maximální šířka rolety (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA39 – maximální šířka rolety (mm)",
+      "popisky": [
+        "Třídění odolnosti a zatížení větrem",
+        "PPD 60/12, PDP-P 60/12, PPDM 60/12, PPDM-P 60/12, PPDA 60/12",
+        "< 3300",
+        "< 3000",
+        "< 2600",
+        "< 2200"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "obrazek": "lamela-pa-39-max-vyska-sirka__s01.png",
+      "px": [
+        1581,
+        250
+      ]
+    },
+    {
+      "id": "lamela-pa-39-max-vyska-sirka__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA39 – maximální výška rolety včetně boxu (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA39 – maximální výška rolety včetně boxu (mm)",
+      "popisky": [
+        "sW 40*",
+        "sw 40 + Pz/45",
+        "SW50*",
+        "SW50 + PZ/56",
+        "sW 60*",
+        "sW 60 + PZ/68",
+        "SKT 230/170",
+        "SKT 230/210",
+        "SKT 255/240"
+      ],
+      "poznamky": [
+        "* hřídel bez rozšiřovacích kroužků nebo při použití bezpečnostních závěsů SIMU – EASYLINK"
+      ],
+      "kotace": [
+        "1890",
+        "1690",
+        "1730",
+        "1770",
+        "1730",
+        "1570",
+        "3230",
+        "3310",
+        "3190",
+        "3160",
+        "3270",
+        "3040",
+        "4460",
+        "4770",
+        "4300",
+        "4300",
+        "4460",
+        "4420"
+      ],
+      "obrazek": "lamela-pa-39-max-vyska-sirka__s02.png",
+      "px": [
+        1581,
+        281
+      ]
+    }
+  ]
+}

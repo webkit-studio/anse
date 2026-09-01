@@ -1,0 +1,34 @@
+{
+  "slug": "vertikalni-zaluzie",
+  "dokument": "typ-ovladani.pdf",
+  "nazev": "Typy ovládání (pdf)",
+  "url": "/data/products/vertikalni-zaluzie-vz/downloads/typ-ovladani.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "typ-ovladani__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Typ ovládání",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Typ ovládání",
+      "popisky": [
+        "typ 1",
+        "typ 2",
+        "typ 3",
+        "typ 4",
+        "typ 6",
+        "typ 7"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "typ-ovladani__s01.png",
+      "px": [
+        1584,
+        295
+      ]
+    }
+  ]
+}

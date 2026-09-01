@@ -1,0 +1,32 @@
+{
+  "slug": "sp-1-posuvna-ve-vodicich-profilech-s-jednim-kridlem",
+  "dokument": "vodici-kolejnice.pdf",
+  "nazev": "Kombinace vodících kolejnic (pdf)",
+  "url": "/data/products/sp-1-posuvna/downloads/vodici-kolejnice.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "vodici-kolejnice__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Kombinace vodících kolejnic",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Kombinace vodících kolejnic",
+      "popisky": [
+        "P10–P10",
+        "P10–U",
+        "P15–P15",
+        "P15–U"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "vodici-kolejnice__s01.png",
+      "px": [
+        1197,
+        297
+      ]
+    }
+  ]
+}

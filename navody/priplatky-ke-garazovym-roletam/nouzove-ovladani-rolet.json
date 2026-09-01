@@ -1,0 +1,41 @@
+{
+  "slug": "priplatky-ke-garazovym-roletam",
+  "dokument": "nouzove-ovladani-rolet.pdf",
+  "nazev": "Nouzové ovládání rolet (pdf)",
+  "url": "/data/products/priplatky-ke-garazovym-roletam/downloads/nouzove-ovladani-rolet.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nouzove-ovladani-rolet__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "NHK – nouzové ovládání rolet",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "NHK – nouzové ovládání rolet",
+      "popisky": [
+        "ZMANR – NHK zámek",
+        "KRH – klika s hákem 120, 150, 180",
+        "OS – oko na kliku",
+        "PKUC 90 – kardan s hákem 90°",
+        "Prodloužení kardanu (EXT/XXX + ZLANR)",
+        "KR – klika skládací"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "nouzove-ovladani-rolet__s01.png",
+      "px": [
+        1581,
+        289
+      ]
+    }
+  ]
+}

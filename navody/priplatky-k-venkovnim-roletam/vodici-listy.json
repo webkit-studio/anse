@@ -1,0 +1,55 @@
+{
+  "slug": "priplatky-k-venkovnim-roletam",
+  "dokument": "vodici-listy.pdf",
+  "nazev": "Vodící lišty (pdf)",
+  "url": "/data/products/priplatky-k-venkovnim-roletam/downloads/vodici-listy.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "vodici-listy__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Vodící lišty",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vodící lišty",
+      "popisky": [
+        "PP45 zúžená",
+        "PP53/ODS odsazená 12,4 mm",
+        "PP53/ODS/20 odsazená",
+        "PK53 úhlová",
+        "PK53/120 úhlová",
+        "PPMO53 odsazená",
+        "PP68 rozšířená",
+        "PPD79/ODS dvojitá odsazená 12,4 mm",
+        "PPD79/ODS/20 dvojitá odsazená",
+        "PPDMO79 odsazená pro rámovou síť dvojitou",
+        "DPP podkladový profil – 20 mm",
+        "PPDO53 kombi-integrovaná síť",
+        "PPDA 60/12 mini"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31"
+      ],
+      "obrazek": "vodici-listy__s01.png",
+      "px": [
+        1581,
+        522
+      ]
+    }
+  ]
+}

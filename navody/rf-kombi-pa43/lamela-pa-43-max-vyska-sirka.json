@@ -1,0 +1,95 @@
+{
+  "slug": "rf-kombi-pa43",
+  "dokument": "lamela-pa-43-max-vyska-sirka.pdf",
+  "nazev": "Lamela PA43 - max. šířka a výška (pdf)",
+  "url": "/data/products/rf-kombi-pa43/downloads/lamela-pa-43-max-vyska-sirka.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "lamela-pa-43-max-vyska-sirka__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA43 – maximální šířka rolety (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA43 – maximální šířka rolety (mm)",
+      "popisky": [
+        "Třídění odolnosti a zatížení větrem",
+        "PPDO53, PPDO79",
+        "< 3300",
+        "< 3000",
+        "< 2600",
+        "< 2200",
+        "< 1900",
+        "< 1600"
+      ],
+      "poznamky": [
+        "Poznámka – Maximální šíře rolety RK KOMBI PA43 je 2000 mm."
+      ],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "lamela-pa-43-max-vyska-sirka__s01.png",
+      "px": [
+        1581,
+        393
+      ]
+    },
+    {
+      "id": "lamela-pa-43-max-vyska-sirka__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA43 – maximální výška rolety včetně boxu (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA43 – maximální výška rolety včetně boxu (mm)",
+      "popisky": [
+        "SW40",
+        "SW40 + PZ/45",
+        "SW50",
+        "SW50 + PZ/56",
+        "SW60",
+        "SW60 + PZ68",
+        "SK/SKP/150",
+        "SK/SKP/165",
+        "SK/SKP/180",
+        "SK/SKP/205"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1030",
+        "1030",
+        "1070",
+        "810",
+        "640",
+        "1600",
+        "1460",
+        "1460",
+        "1510",
+        "1330",
+        "2460",
+        "2160",
+        "2240",
+        "1900",
+        "2120",
+        "2500",
+        "2500",
+        "2500",
+        "2500",
+        "2500"
+      ],
+      "obrazek": "lamela-pa-43-max-vyska-sirka__s02.png",
+      "px": [
+        1581,
+        250
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "slug": "do-prekladu-heluz",
+  "dokument": "komponenty.pdf",
+  "nazev": "Komponenty (pdf)",
+  "url": "/data/products/do-prekladu-heluz/downloads/komponenty.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "komponenty__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Komponenty",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Komponenty",
+      "popisky": [
+        "Lamela PA 39 – aretovaný pancíř, koncová lamela",
+        "Revizní klapka vnitřní 55 mm, bílá, včetně kartáčku",
+        "Revizní klapka vnitřní 110 mm, bílá, včetně kartáčku",
+        "Revizní klapka vnější, bílá, včetně kartáčku",
+        "Pouzdro vodící lišty",
+        "Vodící lišta do pouzdra včetně kartáčku",
+        "Držáky do překladů HELUZ včetně nýtovacích matic a spojovacích materiálů",
+        "Hřídel 40 mm",
+        "Hřídel 60 mm",
+        "Plastová koncovka s trnem včetně ložiska",
+        "Pružinový závěs (SIRAL k lamele PA39)",
+        "Pružinový závěs (Manuální ovládání WM130 k lamele PA39)",
+        "Pružinový závěs (WMA170 k lamele PA52)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13"
+      ],
+      "obrazek": "komponenty__s01.png",
+      "px": [
+        1583,
+        521
+      ]
+    }
+  ]
+}

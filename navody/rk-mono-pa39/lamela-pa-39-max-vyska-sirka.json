@@ -1,0 +1,121 @@
+{
+  "slug": "rk-mono-pa39",
+  "dokument": "lamela-pa-39-max-vyska-sirka.pdf",
+  "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+  "url": "/data/products/rk-mono-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "lamela-pa-39-max-vyska-sirka__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA39 – maximální šířka rolety (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA39 – maximální šířka rolety (mm)",
+      "popisky": [
+        "PP53, PP53/ODS, PPD79, PK53 PPMO53, PP53/ODS/20, D/PP, PK53/120,",
+        "Třídění odolnosti a zatížení větrem",
+        "PP45",
+        "PP68",
+        "PPD79/ODS, PPD79/ODS/20, PPDMO79",
+        "< 2700",
+        "< 3200",
+        "< 3900",
+        "< 2500",
+        "< 2900",
+        "< 3400",
+        "< 2300",
+        "< 2500",
+        "< 2900",
+        "< 1900",
+        "< 2100",
+        "< 2300",
+        "< 1600",
+        "< 1800",
+        "< 2000",
+        "< 1500",
+        "< 1600",
+        "< 1900"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "lamela-pa-39-max-vyska-sirka__s01.png",
+      "px": [
+        1587,
+        344
+      ]
+    },
+    {
+      "id": "lamela-pa-39-max-vyska-sirka__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA39 – maximální výška rolety včetně boxu (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA39 – maximální výška rolety včetně boxu (mm)",
+      "popisky": [
+        "sW 40*",
+        "sw 40 + Pz/45",
+        "SW50*",
+        "SW50 + PZ/56",
+        "sW 60*",
+        "sW 60 + PZ/68",
+        "SK/SKP/137",
+        "SK/SKP/150",
+        "SK/SKP/165",
+        "SK/SKP/180",
+        "SK/SKP/205"
+      ],
+      "poznamky": [
+        "* hřídel bez rozšiřovacích kroužků nebo při použití bezpečnostních závěsů SIMU – EASYLINK"
+      ],
+      "kotace": [
+        "1560",
+        "1600",
+        "1170",
+        "1480",
+        "1440",
+        "1210",
+        "1960",
+        "1990",
+        "1490",
+        "1840",
+        "1800",
+        "1640",
+        "2390",
+        "2470",
+        "2200",
+        "2320",
+        "2280",
+        "2120",
+        "2950",
+        "3020",
+        "3060",
+        "2790",
+        "2790",
+        "2630",
+        "4320",
+        "4210",
+        "3740",
+        "3780",
+        "4050",
+        "3780"
+      ],
+      "obrazek": "lamela-pa-39-max-vyska-sirka__s02.png",
+      "px": [
+        1589,
+        347
+      ]
+    }
+  ]
+}

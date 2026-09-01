@@ -1,0 +1,2810 @@
+{
+  "zdroj": "https://www.jackwest.cz",
+  "produktu": 59,
+  "dokumentu": 326,
+  "sekci": 639,
+  "produkty": [
+    {
+      "slug": "dverni-site-sde-k-m",
+      "nazev": "Dveřní sítě",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/dverni-site-sde-k-m",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/dverni-site-sde-k-m/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/dverni-site-sde-k-m/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/dverni-site-sde-k-m/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "sde-k-m-r-s-ramem",
+      "nazev": "Dveřní síť s rámem",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/sde-k-m-r-s-ramem",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/sde-k-m-r-s-ramem/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sde-k-m-r-s-ramem/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sde-k-m-r-s-ramem/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "sp-1-posuvna-ve-vodicich-profilech-s-jednim-kridlem",
+      "nazev": "Síť posuvná ve vodících profilech",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/sp-1-posuvna-ve-vodicich-profilech-s-jednim-kridlem",
+      "dokumenty": [
+        {
+          "soubor": "vodici-kolejnice.pdf",
+          "nazev": "Kombinace vodících kolejnic (pdf)",
+          "manifest": "vodici-kolejnice.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sp-1-posuvna/downloads/vodici-kolejnice.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/sp-1-posuvna/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sp-1-posuvna/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "sph21-plissovana-harmony",
+      "nazev": "Síť plissovaná Harmony",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/sph21-plissovana-harmony",
+      "dokumenty": [
+        {
+          "soubor": "mn-new.pdf",
+          "nazev": "Montážní návod (pdf)",
+          "manifest": "mn-new.json",
+          "sekci": 12,
+          "zdroj_pdf": "/data/products/sph21-plissovana-harmony/downloads/mn-new.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sph21-plissovana-harmony/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sph21-plissovana-harmony/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "spho21-plissovana-harmony-opona",
+      "nazev": "Síť plissovaná Harmony Opona",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/spho21-plissovana-harmony-opona",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/spho21-plissovana-harmony-opona/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/spho21-plissovana-harmony-opona/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "spr1-posuvna-v-ramu-s-jednim-kridlem",
+      "nazev": "Síť posuvná ve vodících profilech",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/spr1-posuvna-v-ramu-s-jednim-kridlem",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/spr1-posuvna-v-ramu-s-jednim-kridlem/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/spr1-posuvna-v-ramu-s-jednim-kridlem/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "spr2-posuvna-v-ramu-s-dvemi-kridly",
+      "nazev": "Síť posuvná v celoobvodovém rámu",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/spr2-posuvna-v-ramu-s-dvemi-kridly",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/spr2-posuvna-v-ramu-s-dvemi-kridly/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/spr2-posuvna-v-ramu-s-dvemi-kridly/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "sr-al-dv-rolovaci-hlinikova-dverni",
+      "nazev": "Dveřní síť rolovací hliníková",
+      "kategorie": "Dveřní sítě",
+      "url": "https://www.jackwest.cz/produkt/sr-al-dv-rolovaci-hlinikova-dverni",
+      "dokumenty": [
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sr-al-dv-rolovaci-hlinikova-dverni/downloads/mn.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/sr-al-dv-rolovaci-hlinikova-dverni/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "komponenty-k-vyrobe-garazovych-rolet-pa52",
+      "nazev": "Komponenty k výrobě garážových rolet PA52",
+      "kategorie": "Garážové rolety",
+      "url": "https://www.jackwest.cz/produkt/komponenty-k-vyrobe-garazovych-rolet-pa52",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-garazove-rolety.pdf",
+          "nazev": "Reklamační podmínky - garážové rolety (pdf)",
+          "manifest": "reklamace-garazove-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/reklamace-garazove-rolety.pdf"
+        },
+        {
+          "soubor": "lamela-pa-52-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA52 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-52-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/lamela-pa-52-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA52, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zamereni.pdf",
+          "nazev": "Označení vývodů a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zamereni.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/oznaceni-vyvodu-zamereni.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxů (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/barevne-varianty-boxu.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "komponenty-k-vyrobe-garazovych-rolet-pa77",
+      "nazev": "Komponenty k výrobě garážových rolet PA77",
+      "kategorie": "Garážové rolety",
+      "url": "https://www.jackwest.cz/produkt/komponenty-k-vyrobe-garazovych-rolet-pa77",
+      "dokumenty": [
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxů (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/komponenty-pa77/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "reklamace-garazove-rolety.pdf",
+          "nazev": "Reklamační podmínky - garážové rolety (pdf)",
+          "manifest": "reklamace-garazove-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/komponenty-pa52/downloads/reklamace-garazove-rolety.pdf",
+          "prevzato_z": "komponenty-k-vyrobe-garazovych-rolet-pa52"
+        },
+        {
+          "soubor": "lamela-pa-77-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA77 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-77-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/komponenty-pa77/downloads/lamela-pa-77-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/komponenty-pa77/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA77, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/komponenty-pa77/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zamereni.pdf",
+          "nazev": "Označení vývodů a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zamereni.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/komponenty-pa77/downloads/oznaceni-vyvodu-zamereni.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "motory-a-ovladace-ke-garazovym-roletam",
+      "nazev": "Motory a ovladače ke garážovým roletám",
+      "kategorie": "Garážové rolety",
+      "url": "https://www.jackwest.cz/produkt/motory-a-ovladace-ke-garazovym-roletam",
+      "dokumenty": [
+        {
+          "soubor": "spinace.pdf",
+          "nazev": "Spínače (pdf)",
+          "manifest": "spinace.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/spinace.pdf"
+        },
+        {
+          "soubor": "mechanicke-sroubovaci-koncove-dorazy.pdf",
+          "nazev": "Mechanické šroubovací koncové dorazy (pdf)",
+          "manifest": "mechanicke-sroubovaci-koncove-dorazy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/mechanicke-sroubovaci-koncove-dorazy.pdf"
+        },
+        {
+          "soubor": "dalkove-ovladace.pdf",
+          "nazev": "Dálkové ovladače (pdf)",
+          "manifest": "dalkove-ovladace.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/dalkove-ovladace.pdf"
+        },
+        {
+          "soubor": "bezpecnostni-prvky.pdf",
+          "nazev": "Bezpečnostní prvky (pdf)",
+          "manifest": "bezpecnostni-prvky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/bezpecnostni-prvky.pdf"
+        },
+        {
+          "soubor": "ridici-jednotky.pdf",
+          "nazev": "Řídící jednotky (možnost připojení řídících prvků) (pdf)",
+          "manifest": "ridici-jednotky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/ridici-jednotky.pdf"
+        },
+        {
+          "soubor": "mechanicke-sroubovaci-koncove-dorazy-dalkove.pdf",
+          "nazev": "Mechanické šroubovací koncové dorazy (pdf)",
+          "manifest": "mechanicke-sroubovaci-koncove-dorazy-dalkove.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/mechanicke-sroubovaci-koncove-dorazy-dalkove.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "priplatky-ke-garazovym-roletam",
+      "nazev": "Příplatky ke garážovým roletám",
+      "kategorie": "Garážové rolety",
+      "url": "https://www.jackwest.cz/produkt/priplatky-ke-garazovym-roletam",
+      "dokumenty": [
+        {
+          "soubor": "bez-naroku-na-slevy.pdf",
+          "nazev": "Bez nároku na slevy (pdf)",
+          "manifest": "bez-naroku-na-slevy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/bez-naroku-na-slevy.pdf"
+        },
+        {
+          "soubor": "ostatni.pdf",
+          "nazev": "Ostatní (pdf)",
+          "manifest": "ostatni.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/ostatni.pdf"
+        },
+        {
+          "soubor": "lakovani-dle-ral.pdf",
+          "nazev": "Lakování dle RAL (pdf)",
+          "manifest": "lakovani-dle-ral.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/lakovani-dle-ral.pdf"
+        },
+        {
+          "soubor": "nestandardni-lamela.pdf",
+          "nazev": "Nestandardní lamela (pdf)",
+          "manifest": "nestandardni-lamela.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/nestandardni-lamela.pdf"
+        },
+        {
+          "soubor": "prislusenstvi.pdf",
+          "nazev": "Příslušenství (pdf)",
+          "manifest": "prislusenstvi.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/prislusenstvi.pdf"
+        },
+        {
+          "soubor": "imitace-dreva.pdf",
+          "nazev": "Imitace dřeva (pdf)",
+          "manifest": "imitace-dreva.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/imitace-dreva.pdf"
+        },
+        {
+          "soubor": "nouzove-ovladani-rolet.pdf",
+          "nazev": "Nouzové ovládání rolet (pdf)",
+          "manifest": "nouzove-ovladani-rolet.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-ke-garazovym-roletam/downloads/nouzove-ovladani-rolet.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-coda",
+      "nazev": "Látková roletka Coda",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-coda",
+      "dokumenty": [
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-lrco/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-lrco/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-lrco/downloads/nd.pdf"
+        },
+        {
+          "soubor": "box.pdf",
+          "nazev": "Společný box (pdf)",
+          "manifest": "box.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-lrco/downloads/box.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-lrco/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-lrco/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-coda-dn",
+      "nazev": "Látková roletka Coda D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-coda-dn",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-dn-lrco-dn/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-dn-lrco-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-dn-lrco-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "box.pdf",
+          "nazev": "Společný box (pdf)",
+          "manifest": "box.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-dn-lrco-dn/downloads/box.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-dn-lrco-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-dn-lrco-dn/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-coda-xl",
+      "nazev": "Látková roletka Coda XL",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-coda-xl",
+      "dokumenty": [
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/mn.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "box.pdf",
+          "nazev": "Společný box (pdf)",
+          "manifest": "box.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/box.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-coda-xl-dn",
+      "nazev": "Látková roletka Coda XL D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-coda-xl-dn",
+      "dokumenty": [
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-dn-lrcoxl-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-dn-lrcoxl-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/reklamace-latkove-roletky.pdf",
+          "prevzato_z": "latkova-roletka-magna-mini-dn"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-dn-lrcoxl-dn/downloads/mn.pdf"
+        },
+        {
+          "soubor": "box.pdf",
+          "nazev": "Společný box (pdf)",
+          "manifest": "box.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-dn-lrcoxl-dn/downloads/box.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-coda-xl-dn-lrcoxl-dn/downloads/priplatky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-designrollo",
+      "nazev": "Látková roletka Designrollo",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-designrollo",
+      "dokumenty": [
+        {
+          "soubor": "bocni-vedeni.pdf",
+          "nazev": "Boční vedení (pdf)",
+          "manifest": "bocni-vedeni.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/bocni-vedeni.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/nd.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/reklamace-latkove-roletky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-designrollo-dn",
+      "nazev": "Látková roletka designrollo D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-designrollo-dn",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-dn-lrdr-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-dn-lrdr-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-dn-lrdr-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-lrdr/downloads/reklamace-latkove-roletky.pdf",
+          "prevzato_z": "latkova-roletka-designrollo"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-designrollo-dn-lrdr-dn/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-lolla",
+      "nazev": "Látková roletka Lolla",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-lolla",
+      "dokumenty": [
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-lrl/downloads/mn.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-lrl/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-lrl/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-lrl/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-lrl/downloads/priplatky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-lolla-dn",
+      "nazev": "Látková roletka Lolla D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-lolla-dn",
+      "dokumenty": [
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-dn-lrl-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-dn-lrl-dn/downloads/mn.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-dn-lrl-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-dn-lrl-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-dn-lrl-dn/downloads/reklamace-latkove-roletky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-lolla-plus",
+      "nazev": "Látková roletka Lolla Plus",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-lolla-plus",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/nd.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/mn.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-lrlp/downloads/cenove-kategorie.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-lolla-plus-dn",
+      "nazev": "Látková roletka Lolla Plus D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-lolla-plus-dn",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-dn-lrlp-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-dn-lrlp-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-dn-lrlp-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-dn-lrlp-dn/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-lolla-plus-dn-lrlp-dn/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-magna",
+      "nazev": "Látková roletka Magna",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-magna",
+      "dokumenty": [
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-lrma/downloads/nd.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-lrma/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-lrma/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-lrma/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "bocni-vedeni.pdf",
+          "nazev": "Boční vedení (pdf)",
+          "manifest": "bocni-vedeni.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-lrma/downloads/bocni-vedeni.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-lrma/downloads/cenove-kategorie.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-magna-dn",
+      "nazev": "Látková roletka Magna D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-magna-dn",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-dn-lrma-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-dn-lrma-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-dn-lrma-dn/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-dn-lrma-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-dn-lrma-dn/downloads/reklamace-latkove-roletky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-magna-mini",
+      "nazev": "Látková roletka Magna Mini",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-magna-mini",
+      "dokumenty": [
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-lrmm/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-lrmm/downloads/nd.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-lrmm/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-lrmm/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-lrmm/downloads/priplatky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-magna-mini-dn",
+      "nazev": "Látková roletka Magna Mini D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-magna-mini-dn",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/mn.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/nd.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-smartrollo",
+      "nazev": "Látková roletka Smartrollo",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-smartrollo",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-lrs/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-lrs/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-lrs/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-lrs/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-lrs/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-smartrollo-dn",
+      "nazev": "Látková roletka Smartrollo D/N",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-smartrollo-dn",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-dn-lrs-dn/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-dn-lrs-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-dn-lrs-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-dn-lrs-dn/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-smartrollo-dn-lrs-dn/downloads/nd.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "latkova-roletka-stresni-okno",
+      "nazev": "Látková roletka střešní okno",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/latkova-roletka-stresni-okno",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-latkove-roletky.pdf",
+          "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+          "manifest": "reklamace-latkove-roletky.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/reklamace-latkove-roletky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/nd.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/mn.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/priplatky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "spring-screen-hak",
+      "nazev": "Spring screen hák",
+      "kategorie": "Látkové roletky",
+      "url": "https://www.jackwest.cz/produkt/spring-screen-hak",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/spring-screen-hak-ssh/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/spring-screen-hak-ssh/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/spring-screen-hak-ssh/downloads/nd.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-seho",
+      "nazev": "Okenní sítě SEHO",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-seho",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "nabidka-folii.pdf",
+          "nazev": "Základní nabídka fólií (pdf)",
+          "manifest": "nabidka-folii.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-15/downloads/nabidka-folii.pdf",
+          "prevzato_z": "okenni-site-sel-15"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-seho/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/nd.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-sel-13",
+      "nazev": "Okenní sítě SEL-13",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-sel-13",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-sel-15",
+      "nazev": "Okenní sítě SEL-15",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-sel-15",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-15/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nabidka-folii.pdf",
+          "nazev": "Základní nabídka fólií (pdf)",
+          "manifest": "nabidka-folii.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-15/downloads/nabidka-folii.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/nd.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-sel-lux",
+      "nazev": "Okenní sítě SEL-LUX",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-sel-lux",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "nabidka-folii.pdf",
+          "nazev": "Základní nabídka fólií (pdf)",
+          "manifest": "nabidka-folii.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-15/downloads/nabidka-folii.pdf",
+          "prevzato_z": "okenni-site-sel-15"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-lux/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/nd.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-seo-24",
+      "nazev": "Okenní sítě SEO-24",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-seo-24",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "nabidka-folii.pdf",
+          "nazev": "Základní nabídka fólií (pdf)",
+          "manifest": "nabidka-folii.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-15/downloads/nabidka-folii.pdf",
+          "prevzato_z": "okenni-site-sel-15"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/nd.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-seo-24/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-sr-al",
+      "nazev": "Okenní sítě SR-AL",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-sr-al",
+      "dokumenty": [
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sr-al/downloads/mn.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sr-al/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "okenni-site-svs",
+      "nazev": "Okenní sítě SVS",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/okenni-site-svs",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-svs/downloads/mn.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/nd.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "sphok21-plissovana-harmony-okenni",
+      "nazev": "Síť plissovaná harmony okenní",
+      "kategorie": "Okenní sítě",
+      "url": "https://www.jackwest.cz/produkt/sphok21-plissovana-harmony-okenni",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/sit-plissovana-harmony-okenni-sphok21/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/sit-plissovana-harmony-okenni-sphok21/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-site.pdf",
+          "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+          "manifest": "reklamace-site.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+          "prevzato_z": "okenni-site-sel-13"
+        }
+      ]
+    },
+    {
+      "slug": "plisse-klasik",
+      "nazev": "Plissé Klasik D/N",
+      "kategorie": "Plissé",
+      "url": "https://www.jackwest.cz/produkt/plisse-klasik",
+      "dokumenty": [
+        {
+          "soubor": "doporuceni-pro-bo-latky.pdf",
+          "nazev": "Doporučení pro BO látky (pdf)",
+          "manifest": "doporuceni-pro-bo-latky.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/doporuceni-pro-bo-latky.pdf"
+        },
+        {
+          "soubor": "JackWest_Plisse_Navod_cisteni.pdf",
+          "nazev": "Návod na číštění plissé látek (pdf)",
+          "manifest": "JackWest_Plisse_Navod_cisteni.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/JackWest_Plisse_Navod_cisteni.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie.pdf",
+          "nazev": "Cenové kategorie plissé látek (pdf)",
+          "manifest": "cenove-kategorie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/cenove-kategorie.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Montážní návod a způsoby montáže (pdf)",
+          "manifest": "mn.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/mn.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/priplatky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "plisse-stresni-okno-pso-dn",
+      "nazev": "Plissé Střešní okno D/N",
+      "kategorie": "Plissé",
+      "url": "https://www.jackwest.cz/produkt/plisse-stresni-okno-pso-dn",
+      "dokumenty": [
+        {
+          "soubor": "doporuceni-pro-bo-latky.pdf",
+          "nazev": "Doporučení pro BO látky (pdf)",
+          "manifest": "doporuceni-pro-bo-latky.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/doporuceni-pro-bo-latky.pdf",
+          "prevzato_z": "plisse-klasik"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-dn/downloads/nd.pdf"
+        },
+        {
+          "soubor": "JackWest_Plisse_Navod_cisteni.pdf",
+          "nazev": "Návod na číštění plissé látek (pdf)",
+          "manifest": "JackWest_Plisse_Navod_cisteni.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/JackWest_Plisse_Navod_cisteni.pdf",
+          "prevzato_z": "plisse-klasik"
+        },
+        {
+          "soubor": "cenove-kategorie-plisse-latek.pdf",
+          "nazev": "Cenové kategorie plissé látek (pdf)",
+          "manifest": "cenove-kategorie-plisse-latek.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-dn/downloads/cenove-kategorie-plisse-latek.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-dn/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-dn/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "plisse-stresni-okno-pso-lux",
+      "nazev": "Plissé Střešní okno LUX",
+      "kategorie": "Plissé",
+      "url": "https://www.jackwest.cz/produkt/plisse-stresni-okno-pso-lux",
+      "dokumenty": [
+        {
+          "soubor": "doporuceni-pro-bo-latky.pdf",
+          "nazev": "Doporučení pro BO látky (pdf)",
+          "manifest": "doporuceni-pro-bo-latky.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/doporuceni-pro-bo-latky.pdf",
+          "prevzato_z": "plisse-klasik"
+        },
+        {
+          "soubor": "JackWest_Plisse_Navod_cisteni.pdf",
+          "nazev": "Návod na číštění plissé látek (pdf)",
+          "manifest": "JackWest_Plisse_Navod_cisteni.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/JackWest_Plisse_Navod_cisteni.pdf",
+          "prevzato_z": "plisse-klasik"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-lux/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "nahradni-dily.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nahradni-dily.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-lux/downloads/nahradni-dily.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie-plisse-latek.pdf",
+          "nazev": "Cenové kategorie plissé látek (pdf)",
+          "manifest": "cenove-kategorie-plisse-latek.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-lux/downloads/cenove-kategorie-plisse-latek.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Montážní návod a způsoby montáže (pdf)",
+          "manifest": "mn.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-stresni-okno-pso-lux/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "plisse-zimni-zahrada",
+      "nazev": "Plissé Zimní zahrada",
+      "kategorie": "Plissé",
+      "url": "https://www.jackwest.cz/produkt/plisse-zimni-zahrada",
+      "dokumenty": [
+        {
+          "soubor": "doporuceni-pro-bo-latky.pdf",
+          "nazev": "Doporučení pro BO látky (pdf)",
+          "manifest": "doporuceni-pro-bo-latky.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/doporuceni-pro-bo-latky.pdf",
+          "prevzato_z": "plisse-klasik"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-zimni-zahrada-pzz/downloads/nd.pdf"
+        },
+        {
+          "soubor": "JackWest_Plisse_Navod_cisteni.pdf",
+          "nazev": "Návod na číštění plissé látek (pdf)",
+          "manifest": "JackWest_Plisse_Navod_cisteni.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-klasik-pk-dn/downloads/JackWest_Plisse_Navod_cisteni.pdf",
+          "prevzato_z": "plisse-klasik"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/plisse-zimni-zahrada-pzz/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "cenove-kategorie-plisse-latek.pdf",
+          "nazev": "Cenové kategorie plissé látek (pdf)",
+          "manifest": "cenove-kategorie-plisse-latek.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/plisse-zimni-zahrada-pzz/downloads/cenove-kategorie-plisse-latek.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Montážní návod a způsoby montáže (pdf)",
+          "manifest": "mn.json",
+          "sekci": 7,
+          "zdroj_pdf": "/data/products/plisse-zimni-zahrada-pzz/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "do-prekladu-heluz",
+      "nazev": "Roleta do překladu HELUZ",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/do-prekladu-heluz",
+      "dokumenty": [
+        {
+          "soubor": "komponenty.pdf",
+          "nazev": "Komponenty (pdf)",
+          "manifest": "komponenty.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/do-prekladu-heluz/downloads/komponenty.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návody (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/do-prekladu-heluz/downloads/mn.pdf"
+        },
+        {
+          "soubor": "lakovani-dle-ral.pdf",
+          "nazev": "Lakování dle RAL (pdf)",
+          "manifest": "lakovani-dle-ral.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/do-prekladu-heluz/downloads/lakovani-dle-ral.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "motory-a-ovladace",
+      "nazev": "Motory a ovladače",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/motory-a-ovladace",
+      "dokumenty": [
+        {
+          "soubor": "koncove-dorazy-nastavitelne-dalkovym-ovladacem-rts.pdf",
+          "nazev": "Koncové dorazy nastavitelné dálkovým ovladačem RTS (pdf)",
+          "manifest": "koncove-dorazy-nastavitelne-dalkovym-ovladacem-rts.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/koncove-dorazy-nastavitelne-dalkovym-ovladacem-rts.pdf"
+        },
+        {
+          "soubor": "spinace-dratove-ovladani.pdf",
+          "nazev": "Spínače - drátové ovládání (pdf)",
+          "manifest": "spinace-dratove-ovladani.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/spinace-dratove-ovladani.pdf"
+        },
+        {
+          "soubor": "solarni-motory.pdf",
+          "nazev": "Solární motory (pdf)",
+          "manifest": "solarni-motory.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/solarni-motory.pdf"
+        },
+        {
+          "soubor": "koncove-dorazy-nastavitelne-dalkovym-ovladacem-io.pdf",
+          "nazev": "Koncové dorazy nastavitelné dálkovým ovladačem io (pdf)",
+          "manifest": "koncove-dorazy-nastavitelne-dalkovym-ovladacem-io.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/koncove-dorazy-nastavitelne-dalkovym-ovladacem-io.pdf"
+        },
+        {
+          "soubor": "dalkove-ovladace.pdf",
+          "nazev": "Dálkové ovladače (pdf)",
+          "manifest": "dalkove-ovladace.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/dalkove-ovladace.pdf"
+        },
+        {
+          "soubor": "automaticke-koncove-dorazy.pdf",
+          "nazev": "Automatické koncové dorazy (pdf)",
+          "manifest": "automaticke-koncove-dorazy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/automaticke-koncove-dorazy.pdf"
+        },
+        {
+          "soubor": "mechanicke-sroubovaci-koncove-dorazy.pdf",
+          "nazev": "Mechanické šroubovací koncové dorazy (pdf)",
+          "manifest": "mechanicke-sroubovaci-koncove-dorazy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/mechanicke-sroubovaci-koncove-dorazy.pdf"
+        },
+        {
+          "soubor": "pouziti.pdf",
+          "nazev": "Použití motorů v závislosti na šířce, výšce a kroutícím momentu (pdf)",
+          "manifest": "pouziti.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/pouziti.pdf"
+        },
+        {
+          "soubor": "prislusenstvi.pdf",
+          "nazev": "Příslušenství (pdf)",
+          "manifest": "prislusenstvi.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/prislusenstvi.pdf"
+        },
+        {
+          "soubor": "mechanicke-sroubovaci-koncove-dorazy-dalkove.pdf",
+          "nazev": "Mechanické šroubovací koncové dorazy (pdf)",
+          "manifest": "mechanicke-sroubovaci-koncove-dorazy-dalkove.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/mechanicke-sroubovaci-koncove-dorazy-dalkove.pdf"
+        },
+        {
+          "soubor": "ovladani-motoru-pomoci-telefonu-nebo-tabletu.pdf",
+          "nazev": "Ovládání motoru pomocí telefonu nebo tabletu (pdf)",
+          "manifest": "ovladani-motoru-pomoci-telefonu-nebo-tabletu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/motory-a-ovladace/downloads/ovladani-motoru-pomoci-telefonu-nebo-tabletu.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "priplatky-k-venkovnim-roletam",
+      "nazev": "Příplatky k venkovním roletám",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/priplatky-k-venkovnim-roletam",
+      "dokumenty": [
+        {
+          "soubor": "zamykani.pdf",
+          "nazev": "Zamykání (pdf)",
+          "manifest": "zamykani.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/zamykani.pdf"
+        },
+        {
+          "soubor": "vodici-listy.pdf",
+          "nazev": "Vodící lišty (pdf)",
+          "manifest": "vodici-listy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/vodici-listy.pdf"
+        },
+        {
+          "soubor": "ostatni.pdf",
+          "nazev": "Ostatní (pdf)",
+          "manifest": "ostatni.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/ostatni.pdf"
+        },
+        {
+          "soubor": "lakovani-dle-ral.pdf",
+          "nazev": "Lakování dle RAL (pdf)",
+          "manifest": "lakovani-dle-ral.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/lakovani-dle-ral.pdf"
+        },
+        {
+          "soubor": "renolit.pdf",
+          "nazev": "Renolit (pdf)",
+          "manifest": "renolit.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/renolit.pdf"
+        },
+        {
+          "soubor": "mechanicke-ovladani.pdf",
+          "nazev": "Mechanické ovládání (pdf)",
+          "manifest": "mechanicke-ovladani.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/mechanicke-ovladani.pdf"
+        },
+        {
+          "soubor": "imitace-dreva.pdf",
+          "nazev": "Imitace dřeva (pdf)",
+          "manifest": "imitace-dreva.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/imitace-dreva.pdf"
+        },
+        {
+          "soubor": "bez-naroku-na-slevy.pdf",
+          "nazev": "Bez nároku na slevy (pdf)",
+          "manifest": "bez-naroku-na-slevy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/priplatky-k-venkovnim-roletam/downloads/bez-naroku-na-slevy.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rf-kombi-pa39",
+      "nazev": "Venkovní roleta RF KOMBI PA39",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rf-kombi-pa39",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rf-kombi-pa39/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-revizni-klapky.pdf",
+          "nazev": "Barevné varianty revizní klapky boxu (pdf)",
+          "manifest": "barevne-varianty-revizni-klapky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-kombi-pa39/downloads/barevne-varianty-revizni-klapky.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-kombi-pa39/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "lamela-pa-39-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-39-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rf-kombi-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA39, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/rf-kombi-pa39/downloads/barevne-varianty.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rf-kombi-pa43",
+      "nazev": "Venkovní roleta RF KOMBI PA43",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rf-kombi-pa43",
+      "dokumenty": [
+        {
+          "soubor": "barevne-varianty-revizni-klapky.pdf",
+          "nazev": "Barevné varianty revizní klapky boxu (pdf)",
+          "manifest": "barevne-varianty-revizni-klapky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-kombi-pa43/downloads/barevne-varianty-revizni-klapky.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rf-kombi-pa43/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA43, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/rf-kombi-pa43/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "lamela-pa-43-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA43 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-43-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rf-kombi-pa43/downloads/lamela-pa-43-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-kombi-pa43/downloads/zpusoby-montaze.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rf-mono-pa39",
+      "nazev": "Venkovní roleta RF MONO PA39",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rf-mono-pa39",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA39, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/rf-mono-pa39/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-mono-pa39/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "lamela-pa-39-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-39-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rf-mono-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení, revizní klapka a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rf-mono-pa39/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-revizni-klapky.pdf",
+          "nazev": "Barevné varianty revizní klapky boxu (pdf)",
+          "manifest": "barevne-varianty-revizni-klapky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-mono-pa39/downloads/barevne-varianty-revizni-klapky.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rf-mono-pa43",
+      "nazev": "Venkovní roleta RF MONO PA43",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rf-mono-pa43",
+      "dokumenty": [
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-mono-pa43/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA43, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/rf-mono-pa43/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-revizni-klapky.pdf",
+          "nazev": "Barevné varianty revizní klapky boxu (pdf)",
+          "manifest": "barevne-varianty-revizni-klapky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/rf-mono-pa43/downloads/barevne-varianty-revizni-klapky.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rf-mono-pa43/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "lamela-pa-43-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA43 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-43-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rf-mono-pa43/downloads/lamela-pa-43-max-vyska-sirka.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rk-kombi-pa39",
+      "nazev": "Venkovní roleta RK KOMBI PA39",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rk-kombi-pa39",
+      "dokumenty": [
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-kombi-pa39/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "lamela-pa-39-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-39-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-kombi-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxu (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-kombi-pa39/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "moznosti-montaze.pdf",
+          "nazev": "Možnosti montáže (pdf)",
+          "manifest": "moznosti-montaze.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-kombi-pa39/downloads/moznosti-montaze.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA39, sítě, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-kombi-pa39/downloads/barevne-varianty.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rk-kombi-pa43",
+      "nazev": "Venkovní roleta RK KOMBI PA43",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rk-kombi-pa43",
+      "dokumenty": [
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-kombi-pa43/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxu (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-kombi-pa43/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "lamela-pa-43-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA43 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-43-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-kombi-pa43/downloads/lamela-pa-43-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA43, sítě, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-kombi-pa43/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-kombi-pa43/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rk-mono-pa39",
+      "nazev": "Venkovní roleta RK MONO PA39",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rk-mono-pa39",
+      "dokumenty": [
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxu (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA39, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "lamela-pa-39-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-39-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rk-mono-pa43",
+      "nazev": "Venkovní roleta RK MONO PA43",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rk-mono-pa43",
+      "dokumenty": [
+        {
+          "soubor": "lamela-pa-43-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA43 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-43-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa43/downloads/lamela-pa-43-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA43, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-mono-pa43/downloads/barevne-varianty.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa43/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxu (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa43/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-mono-pa43/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "rk-mono-pa52",
+      "nazev": "Venkovní roleta RK MONO PA52",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/rk-mono-pa52",
+      "dokumenty": [
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxu (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa52/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/rk-mono-pa52/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa52/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "lamela-pa-52-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA52 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-52-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa52/downloads/lamela-pa-52-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA52, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/rk-mono-pa52/downloads/barevne-varianty.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "skt-pa39",
+      "nazev": "Venkovní roleta SKT PA39",
+      "kategorie": "Venkovní rolety",
+      "url": "https://www.jackwest.cz/produkt/skt-pa39",
+      "dokumenty": [
+        {
+          "soubor": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+          "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+          "manifest": "oznaceni-vyvodu-zabezpeceni-zamereni.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/skt-pa39/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf"
+        },
+        {
+          "soubor": "reklamace-venkovni-rolety.pdf",
+          "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+          "manifest": "reklamace-venkovni-rolety.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+          "prevzato_z": "rk-mono-pa39"
+        },
+        {
+          "soubor": "lamela-pa-39-max-vyska-sirka.pdf",
+          "nazev": "Lamela PA39 - max. šířka a výška (pdf)",
+          "manifest": "lamela-pa-39-max-vyska-sirka.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/skt-pa39/downloads/lamela-pa-39-max-vyska-sirka.pdf"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/skt-pa39/downloads/zpusoby-montaze.pdf"
+        },
+        {
+          "soubor": "barevne-varianty-boxu.pdf",
+          "nazev": "Barevné varianty boxu (pdf)",
+          "manifest": "barevne-varianty-boxu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/skt-pa39/downloads/barevne-varianty-boxu.pdf"
+        },
+        {
+          "soubor": "barevne-varianty.pdf",
+          "nazev": "Barevné varianty lamel PA39, vodících lišt a koncových lamel (pdf)",
+          "manifest": "barevne-varianty.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/skt-pa39/downloads/barevne-varianty.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "domykava-horizontalni-zaluzie",
+      "nazev": "Žaluzie interiérová domykavá horizontální",
+      "kategorie": "Žaluzie",
+      "url": "https://www.jackwest.cz/produkt/domykava-horizontalni-zaluzie",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/zaluzie-interierova-domykava-horizontalni-esd/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/zaluzie-interierova-domykava-horizontalni-esd/downloads/nd.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/zaluzie-interierova-domykava-horizontalni-esd/downloads/mn.pdf"
+        },
+        {
+          "soubor": "reklamace-zaluzie.pdf",
+          "nazev": "Reklamační podmínky - interiérové žaluzie (pdf)",
+          "manifest": "reklamace-zaluzie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/zaluzie-interierova-domykava-horizontalni-esd/downloads/reklamace-zaluzie.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "domykava-horizontalni-zaluzie-s-kryci-listou",
+      "nazev": "Žaluzie interiérová – domykavá horizontální s krycí lištou",
+      "kategorie": "Žaluzie",
+      "url": "https://www.jackwest.cz/produkt/domykava-horizontalni-zaluzie-s-kryci-listou",
+      "dokumenty": [
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/zaluzie-pd/downloads/priplatky.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/zaluzie-pd/downloads/nd.pdf"
+        },
+        {
+          "soubor": "reklamace-zaluzie.pdf",
+          "nazev": "Reklamační podmínky - interiérové žaluzie (pdf)",
+          "manifest": "reklamace-zaluzie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/zaluzie-interierova-domykava-horizontalni-esd/downloads/reklamace-zaluzie.pdf",
+          "prevzato_z": "domykava-horizontalni-zaluzie"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/zaluzie-pd/downloads/mn.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "venkovni-zaluzie-z-90",
+      "nazev": "Venkovní žaluzie Z 90",
+      "kategorie": "Žaluzie",
+      "url": "https://www.jackwest.cz/produkt/venkovni-zaluzie-z-90",
+      "dokumenty": [
+        {
+          "soubor": "uprava-vodicich-list.pdf",
+          "nazev": "Úprava vodících lišt (pdf)",
+          "manifest": "uprava-vodicich-list.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/uprava-vodicich-list.pdf?=v1"
+        },
+        {
+          "soubor": "vymerovaci-navod-jina.pdf",
+          "nazev": "Vyměřovací návod - jiná (pdf)",
+          "manifest": "vymerovaci-navod-jina.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-jina.pdf?=v1"
+        },
+        {
+          "soubor": "otvor-pro-kabel.pdf",
+          "nazev": "Otvor pro kabel (pdf)",
+          "manifest": "otvor-pro-kabel.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/otvor-pro-kabel.pdf?=v1"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/nd.pdf?=v2"
+        },
+        {
+          "soubor": "umisteni-prevodovky.pdf",
+          "nazev": "Umístění převodovky (pdf)",
+          "manifest": "umisteni-prevodovky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/umisteni-prevodovky.pdf?=v2"
+        },
+        {
+          "soubor": "vymerovaci-navod-fasadni-montaz-zaluzie.pdf",
+          "nazev": "Vyměřovací návod - fasádní montáž žaluzie (pdf)",
+          "manifest": "vymerovaci-navod-fasadni-montaz-zaluzie.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-fasadni-montaz-zaluzie.pdf?=v1"
+        },
+        {
+          "soubor": "drzaky-kryciho-plechu.pdf",
+          "nazev": "Držáky krycího plechu (pdf)",
+          "manifest": "drzaky-kryciho-plechu.json",
+          "sekci": 4,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/drzaky-kryciho-plechu.pdf?=v2"
+        },
+        {
+          "soubor": "rovne-spojky-krycich-plechu.pdf",
+          "nazev": "Rovné spojky krycích plechů (pdf)",
+          "manifest": "rovne-spojky-krycich-plechu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/rovne-spojky-krycich-plechu.pdf?=v1"
+        },
+        {
+          "soubor": "zpusoby-montaze.pdf",
+          "nazev": "Způsoby montáže (pdf)",
+          "manifest": "zpusoby-montaze.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/zpusoby-montaze.pdf?=v1"
+        },
+        {
+          "soubor": "zadani-zaluzii-se-stredovou-vodici-listou.pdf",
+          "nazev": "Zadání žaluzií se středovou vodící lištou (pdf)",
+          "manifest": "zadani-zaluzii-se-stredovou-vodici-listou.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/zadani-zaluzii-se-stredovou-vodici-listou.pdf?=v1"
+        },
+        {
+          "soubor": "bocnice.pdf",
+          "nazev": "Bočnice (pdf)",
+          "manifest": "bocnice.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/bocnice.pdf?=v1"
+        },
+        {
+          "soubor": "zasiti-pasky.pdf",
+          "nazev": "Zašití pásky (pdf)",
+          "manifest": "zasiti-pasky.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/zasiti-pasky.pdf?=v1"
+        },
+        {
+          "soubor": "vodici-listy-konzoly.pdf",
+          "nazev": "Vodící lišty a konzoly (pdf)",
+          "manifest": "vodici-listy-konzoly.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vodici-listy-konzoly.pdf?=v2"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 5,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/priplatky.pdf?=v1"
+        },
+        {
+          "soubor": "pruchodky-a-klika.pdf",
+          "nazev": "Průchodky a klika (pdf)",
+          "manifest": "pruchodky-a-klika.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/pruchodky-a-klika.pdf?=v2"
+        },
+        {
+          "soubor": "kryci-plechy.pdf",
+          "nazev": "Krycí plechy (pdf)",
+          "manifest": "kryci-plechy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/kryci-plechy.pdf?=v2"
+        },
+        {
+          "soubor": "motory.pdf",
+          "nazev": "ND Motory (pdf)",
+          "manifest": "motory.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/motory.pdf?=v1"
+        },
+        {
+          "soubor": "vyska-paketu.pdf",
+          "nazev": "Výška paketu (pdf)",
+          "manifest": "vyska-paketu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vyska-paketu.pdf?=v1"
+        },
+        {
+          "soubor": "montazni-drzaky-horniho-profilu.pdf",
+          "nazev": "Montážní držáky horního profilu (pdf)",
+          "manifest": "montazni-drzaky-horniho-profilu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/montazni-drzaky-horniho-profilu.pdf?=v1"
+        },
+        {
+          "soubor": "vymerovaci-navod-fasadni-montaz-priprava.pdf",
+          "nazev": "Vyměřovací návod - fasádní montáž celá, příprava (pdf)",
+          "manifest": "vymerovaci-navod-fasadni-montaz-priprava.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-fasadni-montaz-priprava.pdf?=v1"
+        },
+        {
+          "soubor": "rozmisteni-navijecu.pdf",
+          "nazev": "Rozmístění navíječů (pdf)",
+          "manifest": "rozmisteni-navijecu.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/rozmisteni-navijecu.pdf?=v1"
+        },
+        {
+          "soubor": "priplatky-bez-naroku-na-slevy.pdf",
+          "nazev": "Příplatky bez nároku na slevy (pdf)",
+          "manifest": "priplatky-bez-naroku-na-slevy.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/priplatky-bez-naroku-na-slevy.pdf?=v1"
+        },
+        {
+          "soubor": "vymerovaci-navod-kombinace.pdf",
+          "nazev": "Vyměřovací návod - kombinace, celá (pdf)",
+          "manifest": "vymerovaci-navod-kombinace.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-kombinace.pdf?=v1"
+        },
+        {
+          "soubor": "vymerovaci-navod-dodatecna-montaz.pdf",
+          "nazev": "Vyměřovací návod - dodatečná montáž celá (pdf)",
+          "manifest": "vymerovaci-navod-dodatecna-montaz.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-dodatecna-montaz.pdf?=v1"
+        },
+        {
+          "soubor": "motory-a-spinace.pdf",
+          "nazev": "Příplatky motory a spínače (pdf)",
+          "manifest": "motory-a-spinace.json",
+          "sekci": 6,
+          "zdroj_pdf": "/data/products/venkovni-zaluzie-z-90/downloads/motory-a-spinace.pdf?=v1"
+        }
+      ]
+    },
+    {
+      "slug": "vertikalni-zaluzie",
+      "nazev": "Vertikální žaluzie",
+      "kategorie": "Žaluzie",
+      "url": "https://www.jackwest.cz/produkt/vertikalni-zaluzie",
+      "dokumenty": [
+        {
+          "soubor": "typ-ovladani.pdf",
+          "nazev": "Typy ovládání (pdf)",
+          "manifest": "typ-ovladani.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/vertikalni-zaluzie-vz/downloads/typ-ovladani.pdf"
+        },
+        {
+          "soubor": "sirka-svazku.pdf",
+          "nazev": "Šířka svazku (pdf)",
+          "manifest": "sirka-svazku.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/vertikalni-zaluzie-vz/downloads/sirka-svazku.pdf"
+        },
+        {
+          "soubor": "nd.pdf",
+          "nazev": "Náhradní díly (pdf)",
+          "manifest": "nd.json",
+          "sekci": 1,
+          "zdroj_pdf": "/data/products/vertikalni-zaluzie-vz/downloads/nd.pdf"
+        },
+        {
+          "soubor": "mn.pdf",
+          "nazev": "Vyměřovací a montážní návod (pdf)",
+          "manifest": "mn.json",
+          "sekci": 3,
+          "zdroj_pdf": "/data/products/vertikalni-zaluzie-vz/downloads/mn.pdf"
+        },
+        {
+          "soubor": "priplatky.pdf",
+          "nazev": "Příplatky (pdf)",
+          "manifest": "priplatky.json",
+          "sekci": 2,
+          "zdroj_pdf": "/data/products/vertikalni-zaluzie-vz/downloads/priplatky.pdf"
+        }
+      ]
+    }
+  ]
+}

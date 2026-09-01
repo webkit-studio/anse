@@ -1,0 +1,37 @@
+{
+  "slug": "okenni-site-sr-al",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/okenni-site-sr-al/downloads/mn.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": null,
+      "popisky": [
+        "vyměřovací šířka A (mm)",
+        "Sklo",
+        "Křídlo okna",
+        "Rám okna",
+        "Ostění",
+        "vyměřovací výška B (mm)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "15"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1531,
+        2231
+      ]
+    }
+  ]
+}

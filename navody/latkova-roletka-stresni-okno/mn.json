@@ -1,0 +1,115 @@
+{
+  "slug": "latkova-roletka-stresni-okno",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/mn.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací návody",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací návody",
+      "popisky": [
+        "TYPIZOVANÁ STŘEŠNÍ OKNA",
+        "Pro typizovaná střešní okna uveďte výrobce a typ okna",
+        "NETYPIZOVANÁ STŘEŠNÍ OKNA",
+        "Uveďte: šířku v hraně \"A\", výšku v hraně \"B\"",
+        "šířku skla \"C\"",
+        "zasklení \"D\"",
+        "Pro určení instalačního setu 0°, 6°, 12° uveďte:",
+        "a hloubku",
+        "dle tohoto nákresu",
+        "hloubka",
+        "zasklení",
+        "minimálně",
+        "D (mm)",
+        "60 mm",
+        "šířka skla C (mm)",
+        "vyměřovací šířka v hraně A (mm)",
+        "Sklo",
+        "Křídlo okna",
+        "Rám okna",
+        "vyměřovací výška v hraně B (mm)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1552,
+        1674
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": "Montážní návod",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Montážní návod",
+      "popisky": [
+        "Všechny typy",
+        "Montáž s připraveným",
+        "střešních oken",
+        "držákem střešního",
+        "okna Velux",
+        "Při montáži",
+        "začít 2. bodem",
+        "Aretování roletky",
+        "Odjištění",
+        "Zasunutí",
+        "v jakékoli pozici",
+        "roletky",
+        "roletky"
+      ],
+      "poznamky": [
+        "(pokud je držák střešního okna Velux,",
+        "nepoužívat montážní držák JACK WEST)"
+      ],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1567,
+        2336
+      ]
+    },
+    {
+      "id": "mn__s03",
+      "strana": 3,
+      "pokracovani": false,
+      "h1": "Způsoby montáže",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Pro všechny typy",
+        "Montáž s připraveným držákem střešního okna Velux (pokud je držák",
+        "střešních oken",
+        "střešního okna Velux, nepoužívat montážní držák JACK WEST)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "mn__s03.png",
+      "px": [
+        1541,
+        269
+      ]
+    }
+  ]
+}

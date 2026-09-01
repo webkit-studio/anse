@@ -1,0 +1,83 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "umisteni-prevodovky.pdf",
+  "nazev": "Umístění převodovky (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/umisteni-prevodovky.pdf?=v2",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "umisteni-prevodovky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Umístění převodovky",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Umístění převodovky",
+      "popisky": [
+        "Standardní umístění převodovky",
+        "Umístění převodovky na střed",
+        "A – šířka žaluzie",
+        "A – šířka žaluzie",
+        "A/2",
+        "15 mm",
+        "0 mm",
+        "Příklad kladného posunutí",
+        "Příklad kladného posunutí",
+        "prodloužené převodovky",
+        "převodovky +4 cm",
+        "A – šířka žaluzie",
+        "A – šířka žaluzie",
+        "0 mm",
+        "15 mm",
+        "15 mm",
+        "A – šířka žaluzie",
+        "+9 mm",
+        "Příklad záporného posunutí",
+        "15 mm",
+        "převodovky -4 cm",
+        "A – šířka žaluzie",
+        "A – šířka žaluzie",
+        "+10 mm",
+        "15 mm",
+        "15 mm",
+        "A – šířka žaluzie",
+        "+17 mm",
+        "15 mm"
+      ],
+      "poznamky": [
+        "Upozornění",
+        "– při standardním umístění převodovky je vývod pro čtyřhran 15 mm od kraje žaluzie.",
+        "0,1–9 cm",
+        "9,1–16 cm",
+        "16,1–30 cm",
+        "Upozornění",
+        "– do plochy 6 m",
+        "převodovka s převodovým poměrem 2:1, nad 6 m",
+        "převodový poměr 3:1.",
+        "2",
+        "2"
+      ],
+      "kotace": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "40",
+        "90",
+        "0",
+        "30",
+        "40",
+        "100",
+        "0",
+        "40",
+        "170"
+      ],
+      "obrazek": "umisteni-prevodovky__s01.png",
+      "px": [
+        1510,
+        2230
+      ]
+    }
+  ]
+}

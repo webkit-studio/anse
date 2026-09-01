@@ -1,0 +1,33 @@
+{
+  "slug": "priplatky-ke-garazovym-roletam",
+  "dokument": "ostatni.pdf",
+  "nazev": "Ostatní (pdf)",
+  "url": "/data/products/priplatky-ke-garazovym-roletam/downloads/ostatni.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "ostatni__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Ostatní příplatky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Ostatní příplatky",
+      "popisky": [
+        "Lamela PA77 - aretovaný pancíř, lamela koncová",
+        "Vodící lišta PP110 rozšířená"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "25",
+        "26"
+      ],
+      "obrazek": "ostatni__s01.png",
+      "px": [
+        1581,
+        158
+      ]
+    }
+  ]
+}

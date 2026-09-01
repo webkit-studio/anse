@@ -1,0 +1,53 @@
+{
+  "slug": "rk-kombi-pa39",
+  "dokument": "moznosti-montaze.pdf",
+  "nazev": "Možnosti montáže (pdf)",
+  "url": "/data/products/rk-kombi-pa39/downloads/moznosti-montaze.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "moznosti-montaze__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Možnosti montáže",
+      "krok": null,
+      "varianta": "A",
+      "nadpis": "Možnosti montáže",
+      "popisky": [
+        "Roleta namontovaná na stěně",
+        "budovy. Roleta navíjená",
+        "směrem ven (levotočivá)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "moznosti-montaze__s01.png",
+      "px": [
+        457,
+        500
+      ]
+    },
+    {
+      "id": "moznosti-montaze__s02",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Možnosti montáže",
+      "krok": null,
+      "varianta": "B",
+      "nadpis": "Možnosti montáže",
+      "popisky": [
+        "Roleta namontovaná v okenním",
+        "otvoru. Roleta navíjená směrem",
+        "ven (levotočivá)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "moznosti-montaze__s02.png",
+      "px": [
+        450,
+        428
+      ]
+    }
+  ]
+}

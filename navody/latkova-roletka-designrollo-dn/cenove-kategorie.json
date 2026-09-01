@@ -1,0 +1,45 @@
+{
+  "slug": "latkova-roletka-designrollo-dn",
+  "dokument": "cenove-kategorie.pdf",
+  "nazev": "Cenové kategorie (pdf)",
+  "url": "/data/products/latkova-roletka-designrollo-dn-lrdr-dn/downloads/cenove-kategorie.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "cenove-kategorie__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Cenové kategorie a maximální rozměry látek",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Cenové kategorie a maximální rozměry látek",
+      "popisky": [
+        "Tao",
+        "Bahama BO, Black Gold",
+        "Kypr, Poem BO",
+        "Calypso",
+        "Hydra",
+        "Maximální rozměry u daných kategorií látek (šířka × výška)",
+        "2200 × 2800 mm",
+        "2200 × 2000 mm",
+        "2200 × 1800 mm",
+        "2200 × 2800 mm",
+        "2200 × 2800 mm"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "obrazek": "cenove-kategorie__s01.png",
+      "px": [
+        1581,
+        244
+      ]
+    }
+  ]
+}

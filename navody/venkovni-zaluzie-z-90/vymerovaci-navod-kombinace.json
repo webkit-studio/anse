@@ -1,0 +1,53 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "vymerovaci-navod-kombinace.pdf",
+  "nazev": "Vyměřovací návod - kombinace, celá (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-kombinace.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "vymerovaci-navod-kombinace__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací návod – Kombinace – Z 90 celá",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací návod – Kombinace – Z 90 celá",
+      "popisky": [
+        "Způsob vyměření je z pohledu z interiéru zleva doprava.",
+        "Dodatečná montáž",
+        "Fasádní montáž",
+        "vodící profily",
+        "(pohled z interiéru)",
+        "výška krycího plechu",
+        "výška stažené žaluzie",
+        "výška krycího plechu",
+        "výška stažené žaluzie",
+        "celková výška včetně krycího plechu (mm)",
+        "vyměřovací výška  (mm)",
+        "šířka žaluzie",
+        "vyměřovací výška  (mm)",
+        "typ VL2",
+        "typ VL3",
+        "typ VL7 + pouzdro ZP",
+        "min 20 mm",
+        "min 20 mm",
+        "vyměřovací šířka kombinace (mm)",
+        "vzdálenost",
+        "vodicí lišty",
+        "vzdálenost vodicí lišty"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "140",
+        "140"
+      ],
+      "obrazek": "vymerovaci-navod-kombinace__s01.png",
+      "px": [
+        1649,
+        2227
+      ]
+    }
+  ]
+}

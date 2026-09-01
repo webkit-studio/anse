@@ -1,0 +1,41 @@
+{
+  "slug": "priplatky-k-venkovnim-roletam",
+  "dokument": "lakovani-dle-ral.pdf",
+  "nazev": "Lakování dle RAL (pdf)",
+  "url": "/data/products/priplatky-k-venkovnim-roletam/downloads/lakovani-dle-ral.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "lakovani-dle-ral__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lakování dle RAL",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lakování dle RAL",
+      "popisky": [
+        "Box (RK)",
+        "Bočnice RK, RF (bočnice RF nejsou standardně dodávány v barvě RAL)",
+        "Revizní klapka (RF)",
+        "Omítková lišta (RF)",
+        "Vodící lišta",
+        "Koncová lamela, koncová lamela sítě"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "lakovani-dle-ral__s01.png",
+      "px": [
+        1581,
+        289
+      ]
+    }
+  ]
+}

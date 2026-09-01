@@ -1,0 +1,37 @@
+{
+  "slug": "priplatky-ke-garazovym-roletam",
+  "dokument": "imitace-dreva.pdf",
+  "nazev": "Imitace dřeva (pdf)",
+  "url": "/data/products/priplatky-ke-garazovym-roletam/downloads/imitace-dreva.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "imitace-dreva__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Imitace dřeva",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Imitace dřeva",
+      "popisky": [
+        "Box – 28, 30",
+        "Bočnice – 28, 30",
+        "Vodící lišty – 28, 30",
+        "Koncová lamela – 28, 30"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "15",
+        "16",
+        "17",
+        "18"
+      ],
+      "obrazek": "imitace-dreva__s01.png",
+      "px": [
+        1581,
+        217
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "slug": "priplatky-k-venkovnim-roletam",
+  "dokument": "imitace-dreva.pdf",
+  "nazev": "Imitace dřeva (pdf)",
+  "url": "/data/products/priplatky-k-venkovnim-roletam/downloads/imitace-dreva.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "imitace-dreva__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Imitace dřeva",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Imitace dřeva",
+      "popisky": [
+        "Box (RK) 26, 28, 30",
+        "Bočnice (RK) 28, 30",
+        "Vodící lišty – 28, 30, 52",
+        "Koncová lamela, koncová lamela sítě – 28, 30, 52"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "15",
+        "16",
+        "17",
+        "18"
+      ],
+      "obrazek": "imitace-dreva__s01.png",
+      "px": [
+        1581,
+        217
+      ]
+    }
+  ]
+}

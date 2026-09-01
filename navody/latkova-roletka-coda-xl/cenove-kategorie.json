@@ -1,0 +1,79 @@
+{
+  "slug": "latkova-roletka-coda-xl",
+  "dokument": "cenove-kategorie.pdf",
+  "nazev": "Cenové kategorie (pdf)",
+  "url": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/cenove-kategorie.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "cenove-kategorie__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Cenové kategorie a maximální rozměry látek",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Cenové kategorie a maximální rozměry látek",
+      "popisky": [
+        "München",
+        "Madagaskar BO",
+        "Madagaskar silver BO",
+        "Capri, Jamajka, Borneo",
+        "Screen 3%",
+        "Soltis 92 4%",
+        "Maximální rozměry u daných kategorií látek (šířka × výška)",
+        "1940 × 2800 mm",
+        "2800 × 1850 mm",
+        "1940 × 2800 mm",
+        "2800 × 1850 mm",
+        "1940 × 2800 mm",
+        "2800 × 1850 mm",
+        "2610 × 2800 mm",
+        "2440 × 2800 mm",
+        "2800 × 2800 mm",
+        "2800 × 2520 mm",
+        "2800 × 2350 mm",
+        "2740 × 2800 mm",
+        "2800 × 2650 mm",
+        "2440 × 2800 mm",
+        "2800 × 2350 mm",
+        "2800 × 2800 mm",
+        "2440 x 2800 mm"
+      ],
+      "poznamky": [
+        "0800, 1001, 1600, 1900, 2200,",
+        "2300, 2604, 2803, 3000, 3100,",
+        "059",
+        "3400, 4300",
+        "pro Capri",
+        "201, 202, 203, 205, 206, 210,",
+        "92-2044, 92-2045,",
+        "051, 053, 054, 056, 059, 061,",
+        "211",
+        "92-2046, 92-2167,",
+        "063, 064",
+        "92-2074",
+        "0600",
+        "051, 053, 054, 056, 061, 063,",
+        "064",
+        "0100, 0200, 0401, 1000, 4301",
+        "pro Jamajka, Borneo",
+        "Poznámka",
+        "– Maximální výška látky 2800 mm je limitovaná šířkou roletky dle daných kategorií látek, viz CENÍK."
+      ],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "cenove-kategorie__s01.png",
+      "px": [
+        1581,
+        821
+      ]
+    }
+  ]
+}

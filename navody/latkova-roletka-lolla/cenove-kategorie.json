@@ -1,0 +1,44 @@
+{
+  "slug": "latkova-roletka-lolla",
+  "dokument": "cenove-kategorie.pdf",
+  "nazev": "Cenové kategorie (pdf)",
+  "url": "/data/products/latkova-roletka-lolla-lrl/downloads/cenove-kategorie.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "cenove-kategorie__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Cenové kategorie a maximální rozměry látek",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Cenové kategorie a maximální rozměry látek",
+      "popisky": [
+        "München",
+        "Madagaskar BO",
+        "Madagaskar silver BO",
+        "Jamajka, Capri, Borneo",
+        "Maximální rozměry u daných kategorií látek (šířka × výška)",
+        "1400 × 1700 mm",
+        "1400 × 1700 mm",
+        "1400 × 2200 mm",
+        "1400 × 2200 mm"
+      ],
+      "poznamky": [
+        "Poznámka – Maximální výška látky je limitovaná šířkou roletky dle daných kategorií látek, viz CENÍK."
+      ],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "obrazek": "cenove-kategorie__s01.png",
+      "px": [
+        1582,
+        295
+      ]
+    }
+  ]
+}

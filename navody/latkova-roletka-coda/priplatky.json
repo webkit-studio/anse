@@ -1,0 +1,93 @@
+{
+  "slug": "latkova-roletka-coda",
+  "dokument": "priplatky.pdf",
+  "nazev": "Příplatky (pdf)",
+  "url": "/data/products/latkova-roletka-coda-lrco/downloads/priplatky.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "priplatky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Příplatky",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky",
+      "popisky": [
+        "Motor Coulisse CM-02 s integrovanou baterií, 0,65 Nm, spouštění zastavování řetízkem, nabíjení přes USB-C kabel – příplatek č. 7",
+        "Motor Coulisse CM-03 s integrovanou baterií, 1,1 Nm, spouštění a zastavování řetízkem nebo dálkovým ovladačem, nabíjení přes USB-C kabel – příplatek č. 7",
+        "Motor Coulisse CM-03-E s integrovanou baterií, 1,1 Nm, spouštění a zastavování dálkový ovladačem nebo aplikací, nabíjení přes USB-C kabel - příplatek č. 7",
+        "Dálkový ovladač Coulisse CM-11 – 1 kanál (černý)",
+        "Dálkový ovladač Coulisse CM-12 – 5 kanál (černý)",
+        "Dálkový ovladač Coulisse CM-13 – 15 kanál, display (černý)",
+        "USB-C kabel, 3 m",
+        "Pružinové ovládání 30 (madlo, šňůrka, PVC závaží)",
+        "Pružinové ovládání 30 (madlo, kovový řetízek, kovové závaží)",
+        "Provedení stříbrný elox",
+        "Lakování dle RAL (PVC bočnice nelze lakovat, standartně",
+        "u RAL budou černé) minimální účtované množství 6 m",
+        "Společný box (rozměry str. 92)",
+        "Kovový řetízek 4,5×6,2 mm",
+        "Dětská pojistka"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14"
+      ],
+      "obrazek": "priplatky__s01.png",
+      "px": [
+        1498,
+        459
+      ]
+    },
+    {
+      "id": "priplatky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Příplatky bez nároku na slevy",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky bez nároku na slevy",
+      "popisky": [
+        "Práce firmy (minimální účtovaný čas je 0,5 hod)",
+        "Manipulační poplatek (nakládka, rozvoz, vykládka výrobku),",
+        "pokud bude výrobek odeslán přepravní službou, platí ceny viz bod 3, 4, 5, 6, 7",
+        "PPL doprava – maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "Toptrans"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "obrazek": "priplatky__s02.png",
+      "px": [
+        1495,
+        335
+      ]
+    }
+  ]
+}

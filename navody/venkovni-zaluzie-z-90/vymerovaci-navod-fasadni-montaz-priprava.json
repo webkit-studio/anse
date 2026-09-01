@@ -1,0 +1,45 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "vymerovaci-navod-fasadni-montaz-priprava.pdf",
+  "nazev": "Vyměřovací návod - fasádní montáž celá, příprava (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/vymerovaci-navod-fasadni-montaz-priprava.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "vymerovaci-navod-fasadni-montaz-priprava__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Vyměřovací návod – Fasádní montáž – Z 90 celá, Příprava",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací návod – Fasádní montáž – Z 90 celá, Příprava",
+      "popisky": [
+        "Způsob vyměření je z pohledu z interiéru zleva doprava.",
+        "výška stažené žaluzie",
+        "výška krycího plechu",
+        "výška žaluzie B (mm)",
+        "celková výška včetně krycího plechu (mm)",
+        "vyměřovací výška  (mm)",
+        "šířka žaluzie A (mm)",
+        "min 20 mm",
+        "vyměřovací šířka (mm)",
+        "vzdálenost vodicí lišty"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "15",
+        "10",
+        "10",
+        "140",
+        "26",
+        "26"
+      ],
+      "obrazek": "vymerovaci-navod-fasadni-montaz-priprava__s01.png",
+      "px": [
+        1584,
+        2226
+      ]
+    }
+  ]
+}

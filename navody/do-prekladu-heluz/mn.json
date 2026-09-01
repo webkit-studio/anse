@@ -1,0 +1,35 @@
+{
+  "slug": "do-prekladu-heluz",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návody (pdf)",
+  "url": "/data/products/do-prekladu-heluz/downloads/mn.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Vyměřovací a montážní návody",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Vyměřovací a montážní návody",
+      "popisky": [
+        "Roletový překlad HELUZ",
+        "rozměr od parapetu po překlad HELUZ",
+        "B – výška",
+        "A – šířka",
+        "rozměr mezi pouzdry vodící lišty"
+      ],
+      "poznamky": [
+        "Poznámka – Nosný překlad Heluz není součástí objednávky."
+      ],
+      "kotace": [],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1194,
+        884
+      ]
+    }
+  ]
+}

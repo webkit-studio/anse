@@ -1,0 +1,41 @@
+{
+  "slug": "priplatky-ke-garazovym-roletam",
+  "dokument": "nestandardni-lamela.pdf",
+  "nazev": "Nestandardní lamela (pdf)",
+  "url": "/data/products/priplatky-ke-garazovym-roletam/downloads/nestandardni-lamela.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nestandardni-lamela__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Nestandardní lamela",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Nestandardní lamela",
+      "popisky": [
+        "Koncová lamela provětrávací PEW77",
+        "Lamela provětrávací PER77 s polykarbonovými UV okénky",
+        "Lamela PA77 příplatková (viz Barevné varianty lamel PA77)",
+        "Lamela PA77 příplatková EX (viz Barevné varianty lamel PA77)",
+        "Lamela PA52 příplatková (viz Barevné varianty lamel PA52)",
+        "Lamela PEK52 (pro rolovací mříž)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24"
+      ],
+      "obrazek": "nestandardni-lamela__s01.png",
+      "px": [
+        1581,
+        299
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "slug": "latkova-roletka-coda-xl",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Náhradní díly",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Převodovka",
+        "včetně nekonečného řetízku",
+        "PVC krytka bočnice",
+        "PVC ucpávka spodního závaží",
+        "Montážní klip"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        1531,
+        245
+      ]
+    }
+  ]
+}

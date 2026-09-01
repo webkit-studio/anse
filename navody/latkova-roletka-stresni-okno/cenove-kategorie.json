@@ -1,0 +1,37 @@
+{
+  "slug": "latkova-roletka-stresni-okno",
+  "dokument": "cenove-kategorie.pdf",
+  "nazev": "Cenové kategorie (pdf)",
+  "url": "/data/products/latkova-roletka-stresni-okno-lrso/downloads/cenove-kategorie.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "cenove-kategorie__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Cenové kategorie látek",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Cenové kategorie látek",
+      "popisky": [
+        "München",
+        "Madagaskar BO",
+        "Madagaskar silver BO",
+        "Capri, Jamajka, Borneo"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "obrazek": "cenove-kategorie__s01.png",
+      "px": [
+        1582,
+        163
+      ]
+    }
+  ]
+}

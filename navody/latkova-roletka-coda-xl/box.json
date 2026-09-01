@@ -1,0 +1,37 @@
+{
+  "slug": "latkova-roletka-coda-xl",
+  "dokument": "box.pdf",
+  "nazev": "Společný box (pdf)",
+  "url": "/data/products/latkova-roletka-coda-xl-lrcoxl/downloads/box.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "box__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Sestava látkové roletky CODA XL – společný box",
+      "h2": "viz. PŘÍPLATEK č. 29 u CODA XL (str. 98)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "viz. PŘÍPLATEK č. 29 u CODA XL (str. 98)",
+      "popisky": [
+        "celková výrobní šířka (mm)",
+        "levá šířka (mm)",
+        "pravá šířka (mm)",
+        "pravá výrobní výška (mm)",
+        "levá výrobní výška (mm)"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "20",
+        "20",
+        "20"
+      ],
+      "obrazek": "box__s01.png",
+      "px": [
+        1498,
+        1082
+      ]
+    }
+  ]
+}

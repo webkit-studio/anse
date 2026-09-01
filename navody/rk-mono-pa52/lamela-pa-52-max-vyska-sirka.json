@@ -1,0 +1,82 @@
+{
+  "slug": "rk-mono-pa52",
+  "dokument": "lamela-pa-52-max-vyska-sirka.pdf",
+  "nazev": "Lamela PA52 - max. šířka a výška (pdf)",
+  "url": "/data/products/rk-mono-pa52/downloads/lamela-pa-52-max-vyska-sirka.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "lamela-pa-52-max-vyska-sirka__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA52 – maximální šířka rolety (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA52 – maximální šířka rolety (mm)",
+      "popisky": [
+        "Třídění odolnosti a zatížení větrem",
+        "PP66",
+        "< 4600",
+        "< 3800",
+        "< 3200",
+        "< 2700",
+        "< 2300",
+        "< 2000"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "obrazek": "lamela-pa-52-max-vyska-sirka__s01.png",
+      "px": [
+        693,
+        317
+      ]
+    },
+    {
+      "id": "lamela-pa-52-max-vyska-sirka__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Lamela PA52 – maximální výška rolety včetně boxu (mm)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Lamela PA52 – maximální výška rolety včetně boxu (mm)",
+      "popisky": [
+        "SW60*",
+        "SW60 + PZ68",
+        "SK/SKP/137",
+        "SK/SKP/150",
+        "SK/SKP/165",
+        "SK/SKP/180",
+        "SK/SKP/205"
+      ],
+      "poznamky": [
+        "* hřídel bez rozšiřovacích kroužků nebo při použití bezpečnostních závěsů SIMU – EASYLINK"
+      ],
+      "kotace": [
+        "900",
+        "580",
+        "1210",
+        "1010",
+        "1590",
+        "1380",
+        "2060",
+        "1800",
+        "2700",
+        "2330"
+      ],
+      "obrazek": "lamela-pa-52-max-vyska-sirka__s02.png",
+      "px": [
+        743,
+        354
+      ]
+    }
+  ]
+}

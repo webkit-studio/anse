@@ -1,0 +1,53 @@
+{
+  "slug": "domykava-horizontalni-zaluzie",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/zaluzie-interierova-domykava-horizontalni-esd/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Náhradní díly",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Boční krytka",
+        "PVC řetízek 3,2 × 4 mm",
+        "Spojka řetízku",
+        "Držák řetízku",
+        "Silon Ø 0,8 mm",
+        "Fixační kolík excentrický",
+        "Texband",
+        "Kotvící vinklík na silon",
+        "Zajišťovací váleček",
+        "Distanční podložka",
+        "Brzda",
+        "Převodovka"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        1581,
+        494
+      ]
+    }
+  ]
+}

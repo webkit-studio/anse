@@ -1,0 +1,95 @@
+{
+  "slug": "komponenty-k-vyrobe-garazovych-rolet-pa52",
+  "dokument": "oznaceni-vyvodu-zamereni.pdf",
+  "nazev": "Označení vývodů a zaměření (pdf)",
+  "url": "/data/products/komponenty-pa52/downloads/oznaceni-vyvodu-zamereni.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "oznaceni-vyvodu-zamereni__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Zaměření",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zaměření",
+      "popisky": [
+        "šířka (včetně vodících lišt)",
+        "výška (včetně boxu)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zamereni__s01.png",
+      "px": [
+        729,
+        862
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zamereni__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Umístění vývodů NHK",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Umístění vývodů NHK",
+      "popisky": [
+        "C",
+        "B",
+        "A",
+        "A – OS + KRH, standardní vývod",
+        "B – PKUC90 + KRH, KR + zámek",
+        "C – PKUC90 + KRH, KR, možnost prodloužení",
+        "šestihranu přes zeď"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zamereni__s02.png",
+      "px": [
+        556,
+        769
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zamereni__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Označení vývodů – motor",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Označení vývodů – motor",
+      "popisky": [
+        "ZLH – zadní levá horní",
+        "LH – levá horní",
+        "PH – pravá horní",
+        "PH",
+        "LH",
+        "BPH",
+        "BLH",
+        "ZPH",
+        "ZLH",
+        "ZLD – zadní levá dolní",
+        "BLH – boční levá horní",
+        "BPH – boční pravá horní",
+        "ZPH – zadní pravá horní",
+        "BLD – boční levá dolní",
+        "BPD – boční pravá dolní",
+        "BLD",
+        "BPD",
+        "ZPD – zadní pravá dolní",
+        "ZPD",
+        "ZLD"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zamereni__s03.png",
+      "px": [
+        1541,
+        354
+      ]
+    }
+  ]
+}

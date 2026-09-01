@@ -1,0 +1,64 @@
+{
+  "slug": "skt-pa39",
+  "dokument": "barevne-varianty-boxu.pdf",
+  "nazev": "Barevné varianty boxu (pdf)",
+  "url": "/data/products/skt-pa39/downloads/barevne-varianty-boxu.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "barevne-varianty-boxu__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Barevné varianty boxu 90°",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Barevné varianty boxu 90°",
+      "popisky": [
+        "Základní",
+        "Renolit – příplatek",
+        "Kód",
+        "Barva",
+        "RAL",
+        "Kód",
+        "Barva",
+        "bílá",
+        "23R",
+        "Antracitově šedá",
+        "R",
+        "tmavě hnědá",
+        "26R",
+        "mahagon",
+        "R",
+        "28R",
+        "ořech",
+        "R",
+        "30R",
+        "zlatý dub",
+        "R",
+        "52R",
+        "winchester",
+        "R",
+        "53R",
+        "tmavý dub",
+        "R",
+        "57R",
+        "šedá",
+        "R"
+      ],
+      "poznamky": [
+        "Poznámka – Zkratky u barev: ID – imitace dřeva, R – renolit, S – speciální barva."
+      ],
+      "kotace": [
+        "02",
+        "08",
+        "8019"
+      ],
+      "obrazek": "barevne-varianty-boxu__s01.png",
+      "px": [
+        1043,
+        480
+      ]
+    }
+  ]
+}

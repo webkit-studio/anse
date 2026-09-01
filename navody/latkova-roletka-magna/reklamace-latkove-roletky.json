@@ -1,0 +1,101 @@
+{
+  "slug": "latkova-roletka-magna",
+  "dokument": "reklamace-latkove-roletky.pdf",
+  "nazev": "Reklamační podmínky - látkové roletky (pdf)",
+  "url": "/data/products/latkova-roletka-magna-lrma/downloads/reklamace-latkove-roletky.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "reklamace-latkove-roletky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Neoprávněné reklamace",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Neoprávněné reklamace",
+      "popisky": [
+        "Závady zboží způsobené jiným používáním výrobku, než ke kterému je výrobek určen.",
+        "Závady způsobené mechanických poškozením ze strany uživatele.",
+        "Závady způsobené špatnou montáží, popřípadě montáží do nevhodného prostředí",
+        "(nadměrná vlhkost, prašnost).",
+        "Závady, na které byl kupující předem upozorněn (závada vzniklá z důvodu překročení rozměru,",
+        "viz tabulka CENÍK nebo atypického provedení).",
+        "Rozdíly způsobené chybným zadáním objednávky.",
+        "Rozdílné odstíny látek, profilů a jiných komponentů u zakázek, které jsou vyráběny na dvě",
+        "nebo více částí (např. s různými termíny dodání).",
+        "Rozdíl v odstínu látek při větších odběrech v dané barvě.",
+        "Látkové roletky nejsou určeny k úplnému zatemnění."
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "reklamace-latkove-roletky__s01.png",
+      "px": [
+        1269,
+        769
+      ]
+    },
+    {
+      "id": "reklamace-latkove-roletky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Tolerance látek DEN/NOC",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Tolerance látek DEN/NOC",
+      "popisky": [
+        "Prohnutý vzor",
+        "Šikmý vzor",
+        "Šířka pruhů",
+        "± 3 mm",
+        "0 – 1 % z šířky látky",
+        "± 3,5 mm",
+        "Šikmý chod",
+        "Zakroucení do vrtule",
+        "Příčný pohyb",
+        "tolerance v tabulce",
+        "4 mm na 1 m",
+        "9 mm + 0,5 % z šířky látky"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "reklamace-latkove-roletky__s02.png",
+      "px": [
+        1525,
+        852
+      ]
+    },
+    {
+      "id": "reklamace-latkove-roletky__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Ladění pruhů",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Ladění pruhů",
+      "popisky": [
+        "Ladění pruhů je možné u látkových roletek D/N se stejnou výškou.",
+        "šířka/výška",
+        "odchylka x",
+        "Ladíme maximálně 2 látkové roletky.",
+        "do 1 m",
+        "– 5 mm",
+        "od 1 do 2,5 m",
+        "– 5 mm na 1 m",
+        "Ladění pruhů je možné pouze u výrobků látkových roletek, u kterých",
+        "nad 2,5 m",
+        "– 15 mm",
+        "to nabízí náš informační systém."
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "reklamace-latkove-roletky__s03.png",
+      "px": [
+        1528,
+        456
+      ]
+    }
+  ]
+}

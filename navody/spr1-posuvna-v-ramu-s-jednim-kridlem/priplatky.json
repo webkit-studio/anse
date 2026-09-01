@@ -1,0 +1,91 @@
+{
+  "slug": "spr1-posuvna-v-ramu-s-jednim-kridlem",
+  "dokument": "priplatky.pdf",
+  "nazev": "Příplatky (pdf)",
+  "url": "/data/products/spr1-posuvna-v-ramu-s-jednim-kridlem/downloads/priplatky.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "priplatky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky",
+      "popisky": [
+        "Renolit R1 jednostranný – pouze posuvné křídlo (celoobvodový rám nelze renolitovat)",
+        "Renolit R2 oboustranný – pouze posuvné křídlo (celoobvodový rám nelze renolitovat)",
+        "Lakování dle RAL pouze celoobvodového rámu P10, P15",
+        "Imitace dřeva – Zlatý dub, Ořech",
+        "Lakování dle RAL (celkový rozměr včetně rámu) – minimální účtovaný rozměr RAL je 2 m",
+        "(platí pro každý typ výrobku zvlášť)",
+        "Středová příčka – Bílá RAL 9003, Stříbrná, Hnědá RAL 8019, Antracit RAL 7016",
+        "Středová příčka – Imitace dřeva Zlatý dub, Ořech",
+        "Profil (středová příčka) v renolitové fólii R1 – seřízení stroje",
+        "Profil (středová příčka) v renolitové fólii R2 – seřízení stroje",
+        "Středová příčka – R1 jednostranný polep (+ příplatek za seřízení stroje bod č. 8)",
+        "Středová příčka – R2 oboustranný polep (+ příplatek za seřízení stroje bod č. 9)",
+        "Středová příčka – RAL"
+      ],
+      "poznamky": [
+        "2"
+      ],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+      ],
+      "obrazek": "priplatky__s01.png",
+      "px": [
+        1581,
+        525
+      ]
+    },
+    {
+      "id": "priplatky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky bez nároku na slevy",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky bez nároku na slevy",
+      "popisky": [
+        "Práce firmy (minimální účtovaný čas je 0,5 hod)",
+        "Manipulační poplatek (nakládka, rozvoz, vykládka výrobku),",
+        "pokud bude výrobek odeslán přepravní službou, platí ceny viz. bod 3, 4, 5, 6, 7",
+        "PPL doprava – maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "Toptrans"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "obrazek": "priplatky__s02.png",
+      "px": [
+        1581,
+        328
+      ]
+    }
+  ]
+}

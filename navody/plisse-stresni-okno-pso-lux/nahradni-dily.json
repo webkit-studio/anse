@@ -1,0 +1,35 @@
+{
+  "slug": "plisse-stresni-okno-pso-lux",
+  "dokument": "nahradni-dily.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/plisse-stresni-okno-pso-lux/downloads/nahradni-dily.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nahradni-dily__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Náhradní díly",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "PVC komponenty střešní okno",
+        "Montážní set dle nabídky 0°, 6°, 12°",
+        "Ovládací tyč včetně adaptéru JW"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3"
+      ],
+      "obrazek": "nahradni-dily__s01.png",
+      "px": [
+        1583,
+        176
+      ]
+    }
+  ]
+}

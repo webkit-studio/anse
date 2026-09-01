@@ -1,0 +1,89 @@
+{
+  "slug": "komponenty-k-vyrobe-garazovych-rolet-pa77",
+  "dokument": "zpusoby-montaze.pdf",
+  "nazev": "Způsoby montáže (pdf)",
+  "url": "/data/products/komponenty-pa77/downloads/zpusoby-montaze.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "zpusoby-montaze__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "A",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "C",
+        "L",
+        "Vrata montovaná na stěnu uvnitř",
+        "objektu. Vrata s navíjením zevnitř",
+        "(pravotočivá)"
+      ],
+      "poznamky": [
+        "Šířka vrat = šířka otvoru + 2x šířka vodící lišty",
+        "Výška vrat = výška otvoru + 100 mm + výška boxu"
+      ],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s01.png",
+      "px": [
+        459,
+        726
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s02",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "B",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "C",
+        "L",
+        "Vrata montovaná na stěnu",
+        "vně objektu. Vrata s navíjením",
+        "z vnějšku (levotočivá)"
+      ],
+      "poznamky": [
+        "Šířka vrat = šířka otvoru + 2x šířka vodící lišty",
+        "Výška vrat = výška otvoru + 100 mm + výška boxu"
+      ],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s02.png",
+      "px": [
+        426,
+        673
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s03",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "C",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "L",
+        "Vrata montovaná ve výklenku. Vrata",
+        "navíjená z vnějšku (levo- točivá) nebo",
+        "zevnitř (pravotočivá)"
+      ],
+      "poznamky": [
+        "Šířka vrat = šířka otvoru",
+        "Výška vrat = výška otvoru"
+      ],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s03.png",
+      "px": [
+        507,
+        679
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "rf-kombi-pa43",
+  "dokument": "zpusoby-montaze.pdf",
+  "nazev": "Způsoby montáže (pdf)",
+  "url": "/data/products/rf-kombi-pa43/downloads/zpusoby-montaze.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "zpusoby-montaze__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Roleta namontovaná na",
+        "stěně budovy. Roleta navíjená",
+        "směrem ven (levotočivá)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s01.png",
+      "px": [
+        1025,
+        458
+      ]
+    }
+  ]
+}

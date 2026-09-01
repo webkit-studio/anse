@@ -1,0 +1,85 @@
+{
+  "slug": "skt-pa39",
+  "dokument": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+  "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+  "url": "/data/products/skt-pa39/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Označení vývodů – šňůra, páska",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Označení vývodů – šňůra, páska",
+      "popisky": [
+        "INT",
+        "EXT",
+        "L",
+        "P",
+        "INT – interiér",
+        "L – levá strana",
+        "EXT – exteriér",
+        "P – pravá strana"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s01.png",
+      "px": [
+        602,
+        564
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Zabezpečení",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zabezpečení",
+      "popisky": [
+        "RY – mechanická zarážka",
+        "RA-ABZ – automatická bezpečnostní zarážka",
+        "ZMS – zámek koncové lamely"
+      ],
+      "poznamky": [
+        "Poznámka – Nutno určit pohledovou stranu zámku!"
+      ],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s02.png",
+      "px": [
+        998,
+        1298
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s03",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Zaměření",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zaměření",
+      "popisky": [
+        "A – šířka",
+        "šířka rolety = šířka okna",
+        "šířka rolety = šířka okna",
+        "výška rolety = výška okna + výška boxu",
+        "výška rolety = výška okna + výška boxu",
+        "B – výška"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s03.png",
+      "px": [
+        1040,
+        684
+      ]
+    }
+  ]
+}

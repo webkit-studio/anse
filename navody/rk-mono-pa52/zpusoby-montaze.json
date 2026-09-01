@@ -1,0 +1,76 @@
+{
+  "slug": "rk-mono-pa52",
+  "dokument": "zpusoby-montaze.pdf",
+  "nazev": "Způsoby montáže (pdf)",
+  "url": "/data/products/rk-mono-pa52/downloads/zpusoby-montaze.pdf",
+  "sekci": 3,
+  "sekce": [
+    {
+      "id": "zpusoby-montaze__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "A",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Roleta namontovaná na stěně",
+        "budovy. Roleta navíjená",
+        "směrem ven (levotočivá)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s01.png",
+      "px": [
+        459,
+        550
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s02",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "B",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Roleta namontovaná",
+        "v okenním otvoru. Roleta",
+        "navíjená směrem ven",
+        "(levotočivá)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s02.png",
+      "px": [
+        384,
+        468
+      ]
+    },
+    {
+      "id": "zpusoby-montaze__s03",
+      "strana": 1,
+      "pokracovani": true,
+      "h1": null,
+      "h2": "Způsoby montáže",
+      "krok": null,
+      "varianta": "C",
+      "nadpis": "Způsoby montáže",
+      "popisky": [
+        "Roleta namontovaná v okenním",
+        "otvoru. Roleta navíjená směrem",
+        "dovnitř (pravotočivá)"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "zpusoby-montaze__s03.png",
+      "px": [
+        455,
+        440
+      ]
+    }
+  ]
+}

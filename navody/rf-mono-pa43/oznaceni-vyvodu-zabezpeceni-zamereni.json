@@ -1,0 +1,122 @@
+{
+  "slug": "rf-mono-pa43",
+  "dokument": "oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+  "nazev": "Označení vývodů, zabezpečení a zaměření (pdf)",
+  "url": "/data/products/rf-mono-pa43/downloads/oznaceni-vyvodu-zabezpeceni-zamereni.pdf",
+  "sekci": 4,
+  "sekce": [
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Označení vývodů – šňůra, páska",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Označení vývodů – šňůra, páska",
+      "popisky": [
+        "ZLH",
+        "ZPH",
+        "ZLD",
+        "ZPD",
+        "ZLH – zadní levá horní",
+        "ZPH – zadní pravá horní",
+        "ZLD – zadní levá dolní",
+        "ZPD – zadní pravá dolní"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s01.png",
+      "px": [
+        696,
+        570
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Označení vývodů – motor",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Označení vývodů – motor",
+      "popisky": [
+        "PH",
+        "LH",
+        "BPH",
+        "BLH",
+        "ZPH",
+        "ZLH",
+        "BLD",
+        "BPD",
+        "ZPD",
+        "ZLD",
+        "LH – levá horní",
+        "PH – pravá horní",
+        "BLH – boční levá horní",
+        "BPH – boční pravá horní",
+        "BLD – boční levá dolní",
+        "BPD – boční pravá dolní"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s02.png",
+      "px": [
+        708,
+        613
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s03",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Zabezpečení",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zabezpečení",
+      "popisky": [
+        "RY – mechanická zarážka",
+        "RA-ABZ – automatická bezpečnostní zarážka",
+        "ZMS – zámek koncové lamely"
+      ],
+      "poznamky": [
+        "Poznámka – Nutno určit pohledovou stranu zámku!"
+      ],
+      "kotace": [],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s03.png",
+      "px": [
+        999,
+        1298
+      ]
+    },
+    {
+      "id": "oznaceni-vyvodu-zabezpeceni-zamereni__s04",
+      "strana": 2,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Zaměření",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Zaměření",
+      "popisky": [
+        "šířka (včetně vodících lišt)",
+        "výška (včetně boxu)",
+        "tři otvory jsou navrtány",
+        "u rolet vyšších než 1,7 m",
+        "1,7 m"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "200",
+        "200"
+      ],
+      "obrazek": "oznaceni-vyvodu-zabezpeceni-zamereni__s04.png",
+      "px": [
+        898,
+        834
+      ]
+    }
+  ]
+}

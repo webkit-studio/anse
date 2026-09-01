@@ -1,0 +1,43 @@
+{
+  "slug": "venkovni-zaluzie-z-90",
+  "dokument": "otvor-pro-kabel.pdf",
+  "nazev": "Otvor pro kabel (pdf)",
+  "url": "/data/products/venkovni-zaluzie-z-90/downloads/otvor-pro-kabel.pdf?=v1",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "otvor-pro-kabel__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Otvor pro kabel",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Otvor pro kabel",
+      "popisky": [
+        "otvor",
+        "LB",
+        "LH",
+        "LZ",
+        "PH",
+        "∅14",
+        "PZ",
+        "PB"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "30",
+        "30",
+        "30",
+        "30",
+        "30",
+        "30"
+      ],
+      "obrazek": "otvor-pro-kabel__s01.png",
+      "px": [
+        1293,
+        589
+      ]
+    }
+  ]
+}

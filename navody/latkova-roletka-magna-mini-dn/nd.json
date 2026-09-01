@@ -1,0 +1,39 @@
+{
+  "slug": "latkova-roletka-magna-mini-dn",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/latkova-roletka-magna-mini-dn-lrmm-dn/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Náhradní díly",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Převodovka včetně nekonečného řetízku",
+        "PVC krytka bočnice",
+        "PVC ucpávka spodního závaží",
+        "Montážní klip",
+        "Závaží na řetízek MINI – bílá, šedá"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        909,
+        252
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "slug": "domykava-horizontalni-zaluzie-s-kryci-listou",
+  "dokument": "priplatky.pdf",
+  "nazev": "Příplatky (pdf)",
+  "url": "/data/products/zaluzie-pd/downloads/priplatky.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "priplatky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky",
+      "popisky": [
+        "Lamela pastelová 2021, 49, 56, 61, 103, 8202, 8300",
+        "Lamela stříbrné dřevo (950) a lamela s diagonálou (783+, 780+)",
+        "Lamela v imitaci dřeva (6796, 6797, 6798, 9940, 9941, 9943, 9944, 9946, 9947, 9948, 9949)",
+        "Lamela síly 0,21 mm",
+        "Horní profil v imitaci dřeva (dle nabídky imitací dřeva viz tabulka)",
+        "Spodní profil v imitaci dřeva (dle nabídky imitací dřeva viz tabulka)",
+        "Profil v renolitové fólii – seřízení stroje – 1 druh profilu",
+        "Polep fólií – krycí profil (min. účtované množství 6 m) + příplatek za seřízení stroje bod č. 7",
+        "Polep fólií – horní profil (min. účtované množství 6 m) + příplatek za seřízení stroje bod č. 7",
+        "Polep fólií – spodní profil (min. účtované množství 6 m) + příplatek za seřízení stroje bod č. 7",
+        "Lakování profilu dle RAL – 1 druh profilu (minimální účtované množství 5 m od 1 druhu profilu)",
+        "Převodovka (od 2 m2 zdarma)",
+        "Brzda do maximálního rozměru žaluzie 1,5 m2",
+        "Oprava horizontálních žaluzií",
+        "Dětská pojistka",
+        "Silonová fixace (elko 2 ks a fixační váleček 2 ks)",
+        "Boční vedení nerezovým lankem 0,5 mm"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17"
+      ],
+      "obrazek": "priplatky__s01.png",
+      "px": [
+        1581,
+        797
+      ]
+    },
+    {
+      "id": "priplatky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky bez nároku na slevy",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky bez nároku na slevy",
+      "popisky": [
+        "Šikmina PD (dle výběru řetízek nebo tyčka)",
+        "Práce firmy (minimální účtovaný čas je 0,5 hod)",
+        "Manipulační poplatek (nakládka, rozvoz, vykládka výrobku),",
+        "pokud bude výrobek odeslán přepravní službou, platí ceny viz. bod 4, 5, 6, 7, 8",
+        "PPL doprava – maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "Toptrans"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "obrazek": "priplatky__s02.png",
+      "px": [
+        1581,
+        371
+      ]
+    }
+  ]
+}

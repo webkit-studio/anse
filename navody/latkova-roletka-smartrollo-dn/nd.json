@@ -1,0 +1,35 @@
+{
+  "slug": "latkova-roletka-smartrollo-dn",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/latkova-roletka-smartrollo-dn-lrs-dn/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Náhradní díly",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Ovládací set levý/pravý (bočnice včetně převodovek)",
+        "PVC ucpávka spodního závaží včetně očka silonu",
+        "Závaží na řetízek MINI – bílá"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        909,
+        170
+      ]
+    }
+  ]
+}

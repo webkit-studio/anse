@@ -1,0 +1,89 @@
+{
+  "slug": "rk-mono-pa52",
+  "dokument": "reklamace-venkovni-rolety.pdf",
+  "nazev": "Reklamační podmínky - venkovní rolety (pdf)",
+  "url": "/data/products/rk-mono-pa39/downloads/reklamace-venkovni-rolety.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "reklamace-venkovni-rolety__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Oprávněné reklamace",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Oprávněné reklamace",
+      "popisky": [
+        "jack west",
+        "Poškozené (poškrábané, odřené) zboží.",
+        "Rozměry rolet mimo toleranci oproti zadanému výrobnímu rozměru."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "257"
+      ],
+      "obrazek": "reklamace-venkovni-rolety__s01.png",
+      "px": [
+        1584,
+        453
+      ]
+    },
+    {
+      "id": "reklamace-venkovni-rolety__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Neoprávněné reklamace",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Neoprávněné reklamace",
+      "popisky": [
+        "Závady zboží způsobené jiným používáním výrobku, než ke kterému je výrobek určen.",
+        "Závady způsobené mechanickým poškozením ze strany uživatele (včetně poškození vzniklých",
+        "umístěním  překážky pod lamely, poškození vlivem námrazy na lamelách apod.).",
+        "Závady způsobené chybnou montáží nebo obsluhou, popř. montáží do nevhodného prostředí.",
+        "Závady způsobené překročením mezních rozměrů jednotlivých výrobků dle ČSN EN 13659+A1",
+        "(mezní rozměry  jednotlivých typů výrobků - max. šířka, výška, plocha, hmotnost).",
+        "Závady, na které byl kupující předem upozorněn (zvláště pak závady vzniklé z důvodu atypického",
+        "provedení).",
+        "Odchylky v typu a množství zboží způsobené chybnou objednávkou.",
+        "Odlišné odstíny lamel, profilů a jiných komponentů u zakázek (obj. zboží), které jsou vyráběny",
+        "na dvě nebo více částí (nebo ve dvou či více termínech).",
+        "Vizuální vady se posuzují kolmo k povrchu ze vzdálenosti 1 m, za běžného světla.",
+        "Špatné dovírání lamel vlivem nečistot v zámcích lamel.",
+        "Špatně zvolený motor nebo příslušenství, které není určeno pro daný druh výrobku.",
+        "Otisky závěsů pancíře nepředstavují vadu výrobku.",
+        "Odlišné odstíny kresby a barevnosti u imitací dřeva.",
+        "Při venkovních teplotách pod 0 °C je důležité nevytahovat roletu až nahoru, ale nechat ji z boxu",
+        "částečně vysunutou a to cca 10 cm, jinak může dojít k zajetí koncové lamely do boxu a poškození",
+        "rolety.",
+        "Chybné funkce vlivem teplotních výkyvů, způsobené fyzikálními jevy, které výrobce nemůže ovlivnit.",
+        "Kondenzace vlhkosti na pásce, šňůře nebo klice za chladného počasí.",
+        "venkovní rolety",
+        "V případě reklamace motoru je nutné vrátit motor s přívodním kabelem v délce min. 10 cm.",
+        "Rolety neslouží k úplnému zatemnění, tato skutečnost není předmětem reklamace (vodícími",
+        "lištami, v prosvětlovacích otvorech u lamel a v oblasti schránky může prostupovat světlo).",
+        "Integrovaná síť proti hmyzu není 100% ochranou proti vniknutí hmyzu.",
+        "Prohnutí plastové koncovky VL vlivem váhy pancíře, pokud není koncovka podepřená v celé své šířce.",
+        "Lamely v horní části pancíře na sebe nemusí zcela dosedat, tato skutečnost není považována za",
+        "závadu výrobku.",
+        "Odstín barvy hliníkových komponentů se může mírně lišit podle technologie výroby komponentu",
+        "(válcovaný, extrudovaný, odlitek).",
+        "Uvedené číslo RAL vyjadřuje nejbližší odstín barvy, nejedná se přímo o barevné tóny dle RAL",
+        "(neplatí pro rolety objednané v barvě RAL).",
+        "Poškození rolety vzniklé silou větru a to i v případě použití větrného čidla."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "2.3"
+      ],
+      "obrazek": "reklamace-venkovni-rolety__s02.png",
+      "px": [
+        1726,
+        1691
+      ]
+    }
+  ],
+  "prevzato_z": "rk-mono-pa39"
+}
