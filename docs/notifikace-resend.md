@@ -5,12 +5,13 @@ předvoleb uživatelů (Nastavení → Notifikace, technik přes ⚙ ve zvonku).
 konfigurace appka funguje dál — e-maily se jen tiše přeskakují, in-app zprávy
 chodí vždy.
 
-Stav k 28. 8. 2026: Resend účet založen, doména `anse.cz` přidaná v regionu
-**eu-west-1 (Irsko)**, čeká na DNS u správce Světa hostingu (viz
-[`dns-zaznamy-pro-spravce.txt`](./dns-zaznamy-pro-spravce.txt)). Protože správce
-nespěchá, existuje **rychlá cesta přes subdoménu `webkit.studio`** — plně
-funkční a se stejným doručováním, jen s „divnější" adresou. Jméno odesílatele
-je v obou případech **Anse Aplikace**.
+**Stav k 2. 9. 2026: ZPROVOZNĚNO.** Doména `anse.webkit.studio` je v Resendu
+ověřená (eu-west-1, SPF + DKIM + DMARC přes CNAME záznamy — novější styl,
+u `numulo` je starší MX+TXT, obojí je správně). V Netlify je platný
+`RESEND_API_KEY` (klíč „Netlify") a `RESEND_FROM = Anse Aplikace
+<zpravy@anse.webkit.studio>`. Doména `anse.cz` dál čeká na DNS u správce
+Světa hostingu (viz [`dns-zaznamy-pro-spravce.txt`](./dns-zaznamy-pro-spravce.txt));
+až bude ověřená, stačí přepnout `RESEND_FROM` a udělat Trigger deploy.
 
 ---
 
