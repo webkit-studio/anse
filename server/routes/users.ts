@@ -60,10 +60,10 @@ export const userRoutes: Route[] = [
       const body = await parseBody(req, userUpdateBody);
 
       if (body.active === false && params.id === ctx.user.id) {
-        throw new ApiError(400, "Nemůžete deaktivovat sami sebe.");
+        throw new ApiError(400, "Nemůžeš deaktivovat sám sebe.");
       }
       if (body.role === "technik" && params.id === ctx.user.id) {
-        throw new ApiError(400, "Nemůžete si sami odebrat roli kanceláře.");
+        throw new ApiError(400, "Nemůžeš si sám odebrat roli kanceláře.");
       }
 
       const patch: Record<string, string | boolean> = {};
@@ -74,7 +74,7 @@ export const userRoutes: Route[] = [
       if (body.active !== undefined) patch.active = body.active;
       if (body.code !== undefined) {
         if (isTrivialCode(body.code)) {
-          throw new ApiError(400, "Tento kód je příliš snadno uhodnutelný — zvolte jiný.");
+          throw new ApiError(400, "Tento kód je příliš snadno uhodnutelný — zvol jiný.");
         }
         patch.code = body.code;
       }
@@ -88,7 +88,7 @@ export const userRoutes: Route[] = [
         `;
       } catch (err) {
         if ((err as { code?: string }).code === "23505") {
-          throw new ApiError(409, "Tento kód už používá jiný uživatel — zvolte jiný.");
+          throw new ApiError(409, "Tento kód už používá jiný uživatel — zvol jiný.");
         }
         throw err;
       }

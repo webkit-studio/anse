@@ -27,7 +27,7 @@ export default function KontaktNovyPage() {
   async function save() {
     if (busy) return;
     if (!canSave) {
-      setError("Vyplňte jméno nebo telefon.");
+      setError("Vyplň jméno nebo telefon.");
       return;
     }
     setBusy(true);

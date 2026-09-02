@@ -205,7 +205,7 @@
       "type": "requireNote",
       "if": { "field": "orez_lemu", "op": "eq", "value": "Ano" },
       "level": "error",
-      "message": "Uveďte do poznámky, která strana sítě se ořezává."
+      "message": "Uveď do poznámky, která strana sítě se ořezává."
     }
   ],
   "printMap": {

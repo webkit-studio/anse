@@ -25,7 +25,7 @@ export function errorResponse(err: unknown): Response {
     return json({ error: err.message, ...err.extra }, { status: err.status });
   }
   console.error(err);
-  return json({ error: "Neočekávaná chyba serveru. Zkuste to prosím znovu." }, { status: 500 });
+  return json({ error: "Neočekávaná chyba serveru. Zkus to prosím znovu." }, { status: 500 });
 }
 
 /** Vrátí response s přidanou set-cookie hlavičkou (Response headers jsou immutable). */

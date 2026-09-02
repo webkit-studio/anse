@@ -305,7 +305,7 @@ export default function ZakazkaDetailOfficePage() {
                     aria-expanded={calOpen}
                     onClick={() => setCalOpen((v) => !v)}
                   >
-                    <span>{order.term_dodani ? czDate(order.term_dodani) : "Vyberte datum"}</span>
+                    <span>{order.term_dodani ? czDate(order.term_dodani) : "Vyber datum"}</span>
                     <span aria-hidden="true">▾</span>
                   </button>
                   {calOpen && (

@@ -53,7 +53,7 @@ export const settingsRoutes: Route[] = [
       }
 
       const MESSAGES: Record<typeof result.reason, string> = {
-        no_recipients: "Nejdřív vyplňte a uložte adresu pro notifikace.",
+        no_recipients: "Nejdřív vyplň a ulož adresu pro notifikace.",
         no_key: "Odesílání zatím není nakonfigurované (chybí klíč k e-mailové službě) — doplní se v nastavení Netlify.",
         rejected: `E-mailová služba zprávu odmítla: ${result.detail ?? "neznámý důvod"}`,
         error: `E-mail se nepodařilo odeslat: ${result.detail ?? "neznámá chyba"}`,

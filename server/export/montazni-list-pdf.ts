@@ -25,6 +25,8 @@ const LINE = rgb(0.72, 0.75, 0.78);
 const HEAD_BG = rgb(0.93, 0.95, 0.96);
 
 // Texty z papírového vzoru (sharedStrings šablony) — drží se 1:1.
+// Technik je jediná proměnná část hlavičky: doplňuje se přidělený technik
+// zakázky (verdikt U4), firma a příjem objednávek zůstávají pevné.
 const TITLE = "SMLOUVA O DÍLO / MONTÁŽNÍ LIST / REKLAMAČNÍ PROTOKOL / OBJEDNÁVKOVÝ FORMULÁŘ";
 const SUPPLIER_LINES = [
   "FWDS Europe, a.s.",
@@ -33,10 +35,14 @@ const SUPPLIER_LINES = [
   "B.ú. 2701646081/2010",
   "Příjem objednávek: Darina Konderlová",
   "tel.: 776 195 720, e-mail: konderlova@fwds.cz",
-  "Technik: Marek Konderla",
-  "mobil: 775 995 720, konderla@fwds.cz",
-  "www.anse.cz · Instagram: anse_stinici_technika",
 ];
+const SUPPLIER_TAIL = "www.anse.cz · Instagram: anse_stinici_technika";
+
+function technikLines(o: PdfOrder): string[] {
+  const name = o.assignee_name ?? o.created_by_name;
+  const kontakt = [o.assignee_phone, o.assignee_email].filter(Boolean).join(", ");
+  return [`Technik: ${name}`, ...(kontakt ? [`mobil: ${kontakt}`] : [])];
+}
 const CONTRACT_TEXT =
   "Objednavatel se zavazuje vytvořit zhotoviteli řádné podmínky pro vykonání díla dohodnutého v této smlouvě. " +
   "Objednatel zaplatí v den uzavření této smlouvy zhotoviteli zálohu ve výši 70 % z celkové dohodnuté ceny. " +
@@ -100,6 +106,8 @@ interface PdfOrder {
   dic: string;
   contact_name: string;
   assignee_name: string | null;
+  assignee_phone: string | null;
+  assignee_email: string | null;
   created_by_name: string;
 }
 
@@ -321,6 +329,8 @@ export async function buildMontazniListPdf(
            to_char(s.signed_at at time zone 'Europe/Prague', 'YYYY-MM-DD') as signed_date,
            c.name as contact_name,
            a.name as assignee_name,
+           a.phone as assignee_phone,
+           a.email as assignee_email,
            u.name as created_by_name
     from orders o
     join contacts c on c.id = o.contact_id
@@ -423,7 +433,7 @@ export async function buildMontazniListPdf(
 
   drawText(ctx, "Dodavatel:", colLeftX, 8.5, { color: GRAY });
   ctx.y -= 12;
-  for (const [i, line] of SUPPLIER_LINES.entries()) {
+  for (const [i, line] of [...SUPPLIER_LINES, ...technikLines(order), SUPPLIER_TAIL].entries()) {
     drawText(ctx, line, colLeftX, 8.5, { bold: i === 0 });
     ctx.y -= 11.5;
   }
@@ -534,7 +544,7 @@ export async function buildMontazniListPdf(
   // místo generické 500 pro historicky/jinak poškozený uložený podpis.
   const pngB64 = order.signature_png!.replace(/^data:image\/png;base64,/, "");
   const png = await doc.embedPng(Buffer.from(pngB64, "base64")).catch(() => {
-    throw new ApiError(400, "Uložený podpis je poškozený — nechte zakázku podepsat znovu.");
+    throw new ApiError(400, "Uložený podpis je poškozený — nech zakázku podepsat znovu.");
   });
   const maxW = CONTENT_W - 300;
   const maxH = 52;

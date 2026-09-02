@@ -377,7 +377,7 @@ export const orderRoutes: Route[] = [
     if (!updated) {
       const [exists] = await db`select 1 from orders where id = ${params.id!}`;
       if (!exists) throw new ApiError(404, "Zakázka nenalezena.");
-      throw new ApiError(409, "Zakázku mezitím upravil někdo jiný. Načtěte ji prosím znovu.");
+      throw new ApiError(409, "Zakázku mezitím upravil někdo jiný. Načti ji prosím znovu.");
     }
     return json({ order: updated });
   }),
@@ -443,7 +443,7 @@ export const orderRoutes: Route[] = [
       );
     }
     if (to === "zruseno" && !body.reason.trim()) {
-      throw new ApiError(400, "Napište důvod zrušení.");
+      throw new ApiError(400, "Napiš důvod zrušení.");
     }
 
     const [items] = await db`select count(*)::int as n from items where order_id = ${order.id}`;

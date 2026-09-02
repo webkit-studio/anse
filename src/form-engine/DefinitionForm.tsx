@@ -77,6 +77,15 @@ export function DefinitionForm({
     [definition, params, note],
   );
 
+  // Stálé číslo pole pro zpětnou vazbu při testování („skryj 12, 31") —
+  // přes všechna pole definice, aby číslo drželo i při schovaných polích.
+  const fieldNum = useMemo(() => {
+    const m = new Map<string, number>();
+    let i = 0;
+    for (const g of definition.groups) for (const f of g.fields) m.set(f.key, ++i);
+    return m;
+  }, [definition]);
+
   const activeServerIssues = dirtySinceServer ? [] : serverIssues;
   const allIssues = [...validation.issues, ...activeServerIssues];
 
@@ -146,7 +155,7 @@ export function DefinitionForm({
 
     if (f.tbd) {
       return (
-        <Field key={f.key} label={f.label} htmlFor={id} help="Možnosti se teprve doplní.">
+        <Field key={f.key} label={f.label} num={fieldNum.get(f.key)} htmlFor={id} help="Možnosti se teprve doplní.">
           <TextInput id={id} value="" placeholder="Doplní se" disabled />
         </Field>
       );
@@ -183,7 +192,7 @@ export function DefinitionForm({
           id={id}
           value={value}
           options={f.options ?? []}
-          placeholder="Vyberte…"
+          placeholder="Vyber…"
           onChange={(v) => {
             setValue(f.key, v);
             markTouched(f.key);
@@ -218,6 +227,7 @@ export function DefinitionForm({
       <div key={f.key} className={revealed ? "field-revealed" : undefined}>
         <Field
           label={f.unit && f.type !== "number" ? `${f.label} (${f.unit})` : f.label}
+          num={fieldNum.get(f.key)}
           htmlFor={id}
           required={requiredNow}
           help={f.help}

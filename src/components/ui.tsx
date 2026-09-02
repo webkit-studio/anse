@@ -35,6 +35,7 @@ export interface FieldMessage {
 
 export function Field({
   label,
+  num,
   htmlFor,
   required,
   help,
@@ -42,6 +43,10 @@ export function Field({
   children,
 }: {
   label: string;
+  /** Stálé číslo pole v rámci produktu — pro zpětnou vazbu při testování
+   *  („skryj 12, 31"). Čísluje se přes VŠECHNA pole definice, takže číslo
+   *  drží, i když se část polí zrovna schová. */
+  num?: number;
   htmlFor: string;
   required?: boolean;
   help?: string;
@@ -51,6 +56,7 @@ export function Field({
   return (
     <div className={`field ${messages.some((m) => m.level === "error") ? "field-invalid" : ""}`}>
       <label className="field-label" htmlFor={htmlFor}>
+        {num !== undefined && <span className="field-num">{num}</span>}
         {label}
         {required && <span className="field-required"> *</span>}
       </label>
@@ -143,7 +149,7 @@ export function SelectSheet({
   id,
   value,
   options,
-  placeholder = "Vyberte…",
+  placeholder = "Vyber…",
   disabled,
   onChange,
 }: {
@@ -496,6 +502,7 @@ export function ConfirmButton({
   onConfirm,
   className = "",
   ariaLabel,
+  title,
 }: {
   label: ReactNode;
   confirmLabel?: string;
@@ -503,6 +510,8 @@ export function ConfirmButton({
   className?: string;
   /** Přístupný název, když je label jen ikona (🗑). */
   ariaLabel?: string;
+  /** Tooltip při najetí myší (ikonová tlačítka). */
+  title?: string;
 }) {
   const [arming, setArming] = useState(false);
 
@@ -517,6 +526,7 @@ export function ConfirmButton({
       type="button"
       className={`btn ${arming ? "btn-danger" : "btn-ghost"} ${className}`}
       aria-label={arming ? undefined : ariaLabel}
+      title={arming ? undefined : title}
       onClick={() => {
         if (arming) {
           setArming(false);

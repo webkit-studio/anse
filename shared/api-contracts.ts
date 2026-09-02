@@ -37,7 +37,7 @@ export const contactCreateBody = z
     place: optionalText,
   })
   .refine((c) => c.name !== "" || c.phone !== "", {
-    message: "Vyplňte jméno nebo telefon.",
+    message: "Vyplň jméno nebo telefon.",
     path: ["name"],
   });
 
@@ -50,11 +50,11 @@ export const contactUpdateBody = z.object({
 });
 
 export const contactNoteBody = z.object({
-  text: trimmed.pipe(z.string().min(1, "Napište poznámku.")),
+  text: trimmed.pipe(z.string().min(1, "Napiš poznámku.")),
 });
 
 export const contactCancelBody = z.object({
-  reason: trimmed.pipe(z.string().min(1, "Napište důvod zrušení.")),
+  reason: trimmed.pipe(z.string().min(1, "Napiš důvod zrušení.")),
 });
 
 // === zakázky ===============================================================
@@ -108,7 +108,7 @@ const paramsSchema = z.record(z.string(), z.union([z.string(), z.number()]));
 
 const roomRef = z.union([
   z.object({ id: z.string().uuid() }),
-  z.object({ name: trimmed.pipe(z.string().min(1, "Vyplňte název místnosti.")) }),
+  z.object({ name: trimmed.pipe(z.string().min(1, "Vyplň název místnosti.")) }),
 ]);
 
 export const itemCreateBody = z.discriminatedUnion("kind", [
@@ -127,7 +127,7 @@ export const itemCreateBody = z.discriminatedUnion("kind", [
     room: roomRef,
     product_type_id: z.string().uuid(),
     /** U opravy je popis závady povinný (foto se posílá zvlášť). */
-    defect_note: trimmed.pipe(z.string().min(1, "Popište závadu.")),
+    defect_note: trimmed.pipe(z.string().min(1, "Popiš závadu.")),
     note: optionalText,
   }),
 ]);
@@ -141,11 +141,11 @@ export const itemUpdateBody = z.object({
 });
 
 export const roomCreateBody = z.object({
-  name: trimmed.pipe(z.string().min(1, "Vyplňte název místnosti.")),
+  name: trimmed.pipe(z.string().min(1, "Vyplň název místnosti.")),
 });
 
 export const roomUpdateBody = z.object({
-  name: trimmed.pipe(z.string().min(1, "Vyplňte název místnosti.")),
+  name: trimmed.pipe(z.string().min(1, "Vyplň název místnosti.")),
 });
 
 // === fotky a podpis ========================================================
@@ -165,7 +165,7 @@ export const photoCreateBody = z.object({
 export const signatureBody = z.object({
   data: z
     .string()
-    .max(700_000, "Podpis je příliš velký. Zkuste ho nakreslit znovu.")
+    .max(700_000, "Podpis je příliš velký. Zkus ho nakreslit znovu.")
     .regex(/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/, "Neplatný formát podpisu."),
   signer_name: optionalText,
 });
@@ -173,7 +173,7 @@ export const signatureBody = z.object({
 // === uživatelé a nastavení =================================================
 
 export const userCreateBody = z.object({
-  name: trimmed.pipe(z.string().min(1, "Vyplňte jméno.")),
+  name: trimmed.pipe(z.string().min(1, "Vyplň jméno.")),
   role: z.enum(["technik", "kancelar"]),
   phone: optionalText,
   email: optionalText,

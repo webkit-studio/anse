@@ -21,8 +21,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const show = useCallback((text: string, action?: { label: string; onClick: () => void }) => {
     const id = nextId.current++;
-    setToasts((t) => [...t, { id, text, actionLabel: action?.label, onAction: action?.onClick }]);
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 4000);
+    // max 2 najednou — při rychlém sledu akcí se potvrzení nesmí vrstvit přes obsah
+    setToasts((t) => [...t.slice(-1), { id, text, actionLabel: action?.label, onAction: action?.onClick }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3000);
   }, []);
 
   return (

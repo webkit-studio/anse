@@ -24,7 +24,7 @@ export async function pinnedDefinition(definitionId: string): Promise<FormDefini
 function validateOr422(def: FormDefinition, rawParams: Params, note: string) {
   const { params, issues } = validateItem(def, rawParams, note);
   if (hasBlocking(issues)) {
-    throw new ApiError(422, "Formulář obsahuje chyby — zkontrolujte zvýrazněná pole.", { issues });
+    throw new ApiError(422, "Formulář obsahuje chyby — zkontroluj zvýrazněná pole.", { issues });
   }
   return params;
 }
@@ -48,7 +48,7 @@ function validateKonfigOr422(product: KonfigProduct, rawParams: Params): Params 
       fieldKey: i.fieldCode,
       message: i.message,
     }));
-    throw new ApiError(422, "Formulář obsahuje chyby — zkontrolujte zvýrazněná pole.", {
+    throw new ApiError(422, "Formulář obsahuje chyby — zkontroluj zvýrazněná pole.", {
       issues: mapped,
     });
   }
@@ -215,7 +215,7 @@ export const itemRoutes: Route[] = [
       normalized = validateOr422(def, body.params ?? {}, body.note);
     }
     if (existing.kind === "oprava" && body.defect_note !== undefined && !body.defect_note.trim()) {
-      throw new ApiError(400, "Popište závadu.");
+      throw new ApiError(400, "Popiš závadu.");
     }
 
     // Jeden dotaz: optimistický zámek + případný přesun místnosti (s novou
@@ -246,7 +246,7 @@ export const itemRoutes: Route[] = [
         `,
       );
       if (!updated) {
-        throw new ApiError(409, "Položku mezitím upravil někdo jiný. Načtěte ji prosím znovu.");
+        throw new ApiError(409, "Položku mezitím upravil někdo jiný. Načti ji prosím znovu.");
       }
       return json({ item: withNames(updated) });
     } catch (err) {

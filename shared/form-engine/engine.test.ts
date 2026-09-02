@@ -170,7 +170,7 @@ describe("čísla", () => {
   it("nečíslo je blokující chyba", () => {
     const { issues } = validateItem(sel15, sel15Base({ sirka: "abc" }), "");
     expect(issuesForField(issues, "sirka")).toEqual([
-      { level: "error", fieldKey: "sirka", message: "Zadejte číslo." },
+      { level: "error", fieldKey: "sirka", message: "Zadej číslo." },
     ]);
   });
 
@@ -202,7 +202,7 @@ describe("čísla", () => {
       {
         level: "warning",
         fieldKey: "sirka",
-        message: "Neobvykle nízká hodnota (pod 300 mm) — zkontrolujte.",
+        message: "Neobvykle nízká hodnota (pod 300 mm) — zkontroluj.",
       },
     ]);
     expect(hasBlocking(low.issues)).toBe(false);
@@ -216,7 +216,7 @@ describe("selecty", () => {
   it("hodnota mimo options je blokující chyba", () => {
     const { issues } = validateItem(esd, esdBase({ barva_lamely: "999" }), "");
     expect(issuesForField(issues, "barva_lamely")).toEqual([
-      { level: "error", fieldKey: "barva_lamely", message: "Neplatná hodnota — vyberte ze seznamu." },
+      { level: "error", fieldKey: "barva_lamely", message: "Neplatná hodnota — vyber ze seznamu." },
     ]);
   });
 
@@ -257,7 +257,7 @@ describe("pravidla — requireNote (blokující)", () => {
   it("ořez lemu Ano bez poznámky blokuje uložení", () => {
     const { issues } = validateItem(sel15, sel15Base({ orez_lemu: "Ano" }), "");
     expect(issuesForField(issues, "note")).toEqual([
-      { level: "error", fieldKey: "note", message: "Uveďte do poznámky, která strana sítě se ořezává." },
+      { level: "error", fieldKey: "note", message: "Uveď do poznámky, která strana sítě se ořezává." },
     ]);
     expect(hasBlocking(issues)).toBe(true);
   });

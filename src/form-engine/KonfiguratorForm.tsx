@@ -89,6 +89,12 @@ export function KonfiguratorForm({
   const formRef = useRef<HTMLFormElement>(null);
 
   const evaluated = useMemo(() => evaluateKonfig(product, state), [product, state]);
+  // Stálé číslo pole pro zpětnou vazbu při testování — přes všechna pole
+  // produktu, aby číslo drželo, i když se část polí zrovna schová.
+  const fieldNum = useMemo(
+    () => new Map(product.fields.map((f, i) => [f.code, i + 1])),
+    [product],
+  );
   const issues = useMemo(() => {
     const { issues: base } = validateKonfig(product, state);
     const dims = product.dodavatel === "suys" ? validateSuysDimensions(product, state) : [];
@@ -212,7 +218,7 @@ export function KonfiguratorForm({
             label: o.label,
             swatch: o.color,
           }))}
-          placeholder="Vyberte…"
+          placeholder="Vyber…"
           onChange={(v) => {
             setValue(f.code, v);
             markTouched(f.code);
@@ -256,6 +262,7 @@ export function KonfiguratorForm({
       <div key={f.code} className={revealed ? "field-revealed" : undefined}>
         <Field
           label={f.label}
+          num={fieldNum.get(f.code)}
           htmlFor={id}
           required={fe.required}
           help={help}

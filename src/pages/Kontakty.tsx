@@ -271,7 +271,7 @@ export default function KontaktyPage() {
                 <th>Jméno</th>
                 <th>Telefon</th>
                 <th>Místo</th>
-                <th>Ozvat se má</th>
+                <th>Ozve se</th>
                 <th>Stav</th>
                 <th className="col-secondary">Zakázky</th>
                 <th className="col-secondary">Přidán</th>
@@ -308,7 +308,7 @@ export default function KontaktyPage() {
                     <NativeSelect
                       value={c.assigned_to ?? ""}
                       placeholder="— nikdo —"
-                      aria-label={`Ozvat se má — ${c.name || c.phone}`}
+                      aria-label={`Ozve se — ${c.name || c.phone}`}
                       onChange={(e) => void patch(c.id, { assigned_to: e.target.value || null })}
                     >
                       <option value="">— nikdo —</option>

@@ -133,10 +133,10 @@ export async function login(req: Request, code: string): Promise<{ user: Session
     where success = false and attempted_at > now() - make_interval(mins => ${IP_WINDOW_MIN})
   `;
   if (Number(limits!.global_failures) >= GLOBAL_MAX_FAILURES) {
-    throw new ApiError(429, "Přihlašování je dočasně uzamčeno. Zkuste to za 15 minut.");
+    throw new ApiError(429, "Přihlašování je dočasně uzamčené. Zkus to za 15 minut.");
   }
   if (Number(limits!.ip_failures) >= IP_MAX_FAILURES) {
-    throw new ApiError(429, "Příliš mnoho pokusů. Zkuste to za chvíli.");
+    throw new ApiError(429, "Příliš mnoho pokusů. Zkus to za chvíli.");
   }
 
   const [user] = await db`

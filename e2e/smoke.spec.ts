@@ -104,7 +104,7 @@ test.describe("kancelář (desktop)", () => {
     await expect(page.getByRole("button", { name: "Objednáno" })).toBeDisabled();
     await page.locator("#p-cena").fill("18400");
     await page.locator("#p-cena").blur();
-    await page.getByRole("button", { name: /Vyberte datum/ }).click();
+    await page.getByRole("button", { name: /Vyber datum/ }).click();
     await page.locator(".calendar-day:not(:disabled)").last().click();
     await page.getByRole("button", { name: "Objednáno" }).click();
     await expect(page.getByText("K montáži").first()).toBeVisible();

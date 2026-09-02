@@ -12,6 +12,20 @@ import type {
 // Loader: surové podklady → jeden vnitřní tvar. Čistý modul bez IO — soubory
 // čte volající (server je importuje jako JSON, skripty přes fs).
 
+/**
+ * „REFERENCE POZICE" → „Reference pozice" (verdikt U5 — jednotné psaní).
+ * Kódy a zkratky nechává být: mění se jen celo-velká slova se 4+ písmeny,
+ * takže SOL00A, RAL 9003, PVC ani SE6-001001 se nedotknou.
+ */
+export function decap(s: string): string {
+  if (s !== s.toUpperCase() || !/[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]{4}/.test(s)) return s;
+  const out = s
+    .split(" ")
+    .map((w) => (/[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]{4}/.test(w) ? w.toLowerCase() : w))
+    .join(" ");
+  return out.charAt(0).toUpperCase() + out.slice(1);
+}
+
 /** „1 300" / „1300" → 1300; nesmysl → null (v datech jsou hranice řetězce). */
 export function parseNum(raw: string | null | undefined): number | null {
   if (raw === null || raw === undefined) return null;
@@ -31,8 +45,8 @@ function jwField(f: JwProduct["fields"][number]): KonfigField {
     f.inputType === "text" && (min !== null || max !== null || /šíř|výš/i.test(f.label));
   return {
     code: f.code,
-    label: f.label,
-    section: f.section,
+    label: decap(f.label),
+    section: decap(f.section),
     input: numeric ? "number" : f.inputType,
     required: f.required,
     defaultValue: f.defaultValue ?? "",
@@ -41,7 +55,7 @@ function jwField(f: JwProduct["fields"][number]): KonfigField {
     min,
     max,
     maxLength: parseNum(f.maxLength),
-    options: f.options.map((o) => ({ value: o.value, label: o.label })),
+    options: f.options.map((o) => ({ value: o.value, label: decap(o.label) })),
     hasSampleBook: f.hasSampleBook,
     hasStockCard: f.hasStockCard,
   };
@@ -92,7 +106,7 @@ export function normalizeJwProduct(p: JwProduct): KonfigProduct {
     kod: p.zkratka,
     nazev: p.name,
     skupina: p.skupina,
-    sections: p.sections,
+    sections: p.sections.map(decap),
     fields: p.fields.map(jwField),
     rules,
     latentTargets: [...latent].sort(),
@@ -110,8 +124,8 @@ function suysInput(f: SuysProduct["fields"][number]): KonfigField["input"] {
 function suysField(f: SuysProduct["fields"][number]): KonfigField {
   return {
     code: f.code,
-    label: f.label,
-    section: f.page,
+    label: decap(f.label),
+    section: decap(f.page),
     input: suysInput(f),
     // SUYS neoznačuje povinnost vůbec (mandatory je všude false) — screen bez
     // rozměrů ale objednat nejde, takže šířku a výšku vynucujeme sami.
@@ -125,7 +139,7 @@ function suysField(f: SuysProduct["fields"][number]): KonfigField {
     maxLength: f.maxLength,
     options: f.options.map((o) => ({
       value: o.value,
-      label: o.label,
+      label: decap(o.label),
       ...(o.color ? { color: o.color } : {}),
       ...(o.image ? { image: o.image } : {}),
       ...(o.group ? { group: o.group } : {}),
@@ -177,7 +191,7 @@ export function normalizeSuysProduct(p: SuysProduct): KonfigProduct {
     kod,
     nazev: p.name,
     skupina: "SC",
-    sections: p.pages.map((pg) => pg.name),
+    sections: p.pages.map((pg) => decap(pg.name)),
     fields: p.fields.map(suysField),
     rules,
     derivedLimits: p.derivedLimits,

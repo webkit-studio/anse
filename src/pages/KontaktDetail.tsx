@@ -190,7 +190,7 @@ export default function KontaktDetailPage() {
           <section className="card card-pad">
             <div className="field" style={{ marginBottom: 4 }}>
               <label className="field-label" htmlFor="c-assignee">
-                Ozvat se má
+                Ozve se
               </label>
               <SelectSheet
                 id="c-assignee"

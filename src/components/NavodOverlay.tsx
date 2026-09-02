@@ -210,6 +210,12 @@ export function NavodOverlay({
           </div>
         )}
 
+        {slugs.length === 0 && !fallbackText && (
+          <p className="muted t-body-s">
+            Návod k tomuto produktu se teprve doplní — zatím se řiď podklady výrobce.
+          </p>
+        )}
+
         {slugs.length > 0 && (
           <>
             <input
@@ -248,7 +254,7 @@ export function NavodOverlay({
                   <p className="muted t-body-s">Katalog návodů se nepodařilo načíst.</p>
                 )}
                 {!index.isPending && !index.isError && products.length === 0 && (
-                  <p className="muted t-body-s">Návod k tomuto produktu zatím není nahraný.</p>
+                  <p className="muted t-body-s">Návod k tomuto produktu se teprve doplní.</p>
                 )}
 
                 {products.length > 1 && (

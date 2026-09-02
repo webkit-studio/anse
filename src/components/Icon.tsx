@@ -28,12 +28,37 @@ export type IconName =
   | "foto"
   | "hvezda"
   | "hvezda-plna"
+  | "oko"
+  | "oko-skrt"
+  | "obnovit"
   | "kos";
 
 const STAR_PATH =
   "M12 3.6l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z";
 
 const PATHS: Record<IconName, JSX.Element> = {
+  // oko — zobrazit kód
+  oko: (
+    <>
+      <path d="M3 12s3.2-5.2 9-5.2S21 12 21 12s-3.2 5.2-9 5.2S3 12 3 12z" />
+      <circle cx="12" cy="12" r="2.4" />
+    </>
+  ),
+  // přeškrtnuté oko — kód je vidět, tap ho skryje
+  "oko-skrt": (
+    <>
+      <path d="M3 12s3.2-5.2 9-5.2S21 12 21 12s-3.2 5.2-9 5.2S3 12 3 12z" />
+      <circle cx="12" cy="12" r="2.4" />
+      <path d="M4.5 19.5l15-15" />
+    </>
+  ),
+  // kruhová šipka — vydat nový kód
+  obnovit: (
+    <>
+      <path d="M19 12a7 7 0 1 1-2.05-4.95" />
+      <path d="M17.5 3.5v4h-4" />
+    </>
+  ),
   // dnes — kalendářní list s odškrtnutím
   dnes: (
     <>

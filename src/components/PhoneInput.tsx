@@ -58,7 +58,7 @@ export function phoneIssue(value: string): string | null {
 export function emailIssue(value: string): string | null {
   const trimmed = value.trim();
   if (!trimmed) return null;
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed) ? null : "Zkontrolujte formát e-mailu.";
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed) ? null : "Zkontroluj formát e-mailu.";
 }
 
 export function PhoneInput({

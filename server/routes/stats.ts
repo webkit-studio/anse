@@ -17,7 +17,7 @@ export const statsRoutes: Route[] = [
       const url = new URL(req.url);
       const month = url.searchParams.get("month");
       if (!month || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
-        throw new ApiError(400, "Zadejte ?month=YYYY-MM.");
+        throw new ApiError(400, "Zadej ?month=YYYY-MM.");
       }
       const start = `${month}-01`;
 

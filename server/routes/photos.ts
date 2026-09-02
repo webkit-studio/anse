@@ -61,7 +61,7 @@ export const photoRoutes: Route[] = [
     // jinak by poškozený „podpis" později shazoval PDF montážního listu.
     const bytes = Buffer.from(body.data.slice(PNG_DATA_URL_PREFIX.length), "base64");
     if (bytes.length < PNG_MAGIC.length || PNG_MAGIC.some((b, i) => bytes[i] !== b)) {
-      throw new ApiError(422, "Neplatný podpis. Zkuste ho nakreslit znovu.");
+      throw new ApiError(422, "Neplatný podpis. Zkus ho nakreslit znovu.");
     }
 
     const [signature] = await db`

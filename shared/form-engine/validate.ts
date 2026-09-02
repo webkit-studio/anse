@@ -61,7 +61,7 @@ export function validateItem(def: FormDefinition, rawParams: Params, note: strin
     if (f.type === "number") {
       const n = toNumber(value);
       if (n === null) {
-        issues.push({ level: "error", fieldKey: f.key, message: "Zadejte číslo." });
+        issues.push({ level: "error", fieldKey: f.key, message: "Zadej číslo." });
         continue;
       }
       params[f.key] = n; // normalizace: do DB jde number
@@ -72,7 +72,7 @@ export function validateItem(def: FormDefinition, rawParams: Params, note: strin
         issues.push({
           level: "warning",
           fieldKey: f.key,
-          message: `Neobvykle nízká hodnota (pod ${f.warnMin}${unitSuffix(f)}) — zkontrolujte.`,
+          message: `Neobvykle nízká hodnota (pod ${f.warnMin}${unitSuffix(f)}) — zkontroluj.`,
         });
       }
       if (f.max != null && n > f.max) {
@@ -81,7 +81,7 @@ export function validateItem(def: FormDefinition, rawParams: Params, note: strin
         issues.push({
           level: "warning",
           fieldKey: f.key,
-          message: `Neobvykle vysoká hodnota (nad ${f.warnMax}${unitSuffix(f)}) — zkontrolujte.`,
+          message: `Neobvykle vysoká hodnota (nad ${f.warnMax}${unitSuffix(f)}) — zkontroluj.`,
         });
       }
     }
@@ -89,7 +89,7 @@ export function validateItem(def: FormDefinition, rawParams: Params, note: strin
     if (f.type === "select") {
       const valid = f.options?.some((o) => o.value === String(value)) ?? false;
       if (!valid) {
-        issues.push({ level: "error", fieldKey: f.key, message: "Neplatná hodnota — vyberte ze seznamu." });
+        issues.push({ level: "error", fieldKey: f.key, message: "Neplatná hodnota — vyber ze seznamu." });
       }
     }
   }

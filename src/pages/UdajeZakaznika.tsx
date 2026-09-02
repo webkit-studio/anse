@@ -55,19 +55,19 @@ export default function UdajeZakaznikaPage() {
   }
 
   const errors: Partial<Record<keyof typeof form, string>> = {};
-  if (!form.customer_name.trim()) errors.customer_name = "Vyplňte jméno.";
-  if (!form.customer_phone.trim()) errors.customer_phone = "Vyplňte telefon.";
+  if (!form.customer_name.trim()) errors.customer_name = "Vyplň jméno.";
+  if (!form.customer_phone.trim()) errors.customer_phone = "Vyplň telefon.";
   else {
     const issue = phoneIssue(form.customer_phone);
     if (issue) errors.customer_phone = issue;
   }
-  if (!form.customer_email.trim()) errors.customer_email = "Vyplňte e-mail.";
+  if (!form.customer_email.trim()) errors.customer_email = "Vyplň e-mail.";
   else {
     const issue = emailIssue(form.customer_email);
     if (issue) errors.customer_email = issue;
   }
-  if (!form.addr_montaz.trim()) errors.addr_montaz = "Vyplňte adresu montáže.";
-  if (!sameAddr && !form.addr_fakt.trim()) errors.addr_fakt = "Vyplňte fakturační adresu.";
+  if (!form.addr_montaz.trim()) errors.addr_montaz = "Vyplň adresu montáže.";
+  if (!sameAddr && !form.addr_fakt.trim()) errors.addr_fakt = "Vyplň fakturační adresu.";
 
   function msg(key: keyof typeof form) {
     return attempted && errors[key] ? [{ level: "error" as const, message: errors[key]! }] : [];

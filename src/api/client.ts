@@ -36,7 +36,7 @@ export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
     });
   } catch {
     // typicky výpadek signálu v terénu
-    throw new ApiFetchError(0, "Bez připojení — zkontrolujte signál a zkuste to znovu.");
+    throw new ApiFetchError(0, "Bez připojení — zkontroluj signál a zkus to znovu.");
   }
 
   let data: unknown = null;

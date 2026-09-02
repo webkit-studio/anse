@@ -442,11 +442,10 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
               <Icon name="kopie" size={19} />
             </Button>
           )}
-          {(navodySlugy.length > 0 || product?.note_for_tech) && (
-            <Button variant="ghost" onClick={() => setNavod(true)}>
-              <Icon name="navod" size={19} /> Návod
-            </Button>
-          )}
+          {/* Tlačítko je vždy — když návod ještě není, overlay to řekne (U8). */}
+          <Button variant="ghost" onClick={() => setNavod(true)}>
+            <Icon name="navod" size={19} /> Návod
+          </Button>
         </div>
       </div>
 

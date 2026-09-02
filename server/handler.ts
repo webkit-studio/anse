@@ -62,7 +62,7 @@ export async function handle(req: Request): Promise<Response> {
       const token = readSessionCookie(req);
       const session = token ? await verifySessionToken(token) : null;
       if (!session) {
-        return json({ error: "Přihlaste se prosím." }, { status: 401 });
+        return json({ error: "Přihlas se prosím." }, { status: 401 });
       }
       // Role a jméno se berou z DB (cache 60 s) — deaktivace/změna role platí
       // do minuty i s dřív vydaným tokenem.

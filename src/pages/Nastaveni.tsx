@@ -4,6 +4,8 @@ import { NOTIF_EVENTS, ROLE_LABELS, displayName, type Role } from "@shared/types
 import { ago } from "@shared/format";
 import { api } from "../api/client";
 import { useMe, useProductTypes, useSettings, useUsers } from "../api/hooks";
+import { Icon } from "../components/Icon";
+import { navodySlugsFor } from "../components/NavodOverlay";
 import { NotifPrefsPanel, OfficeShell } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
@@ -104,6 +106,19 @@ function Produkty() {
                 <span className="settings-orig">
                   {s.name} · {s.field_count ?? 0} polí
                   {s.konfig_key ? " · z podkladů dodavatele" : ""}
+                  {navodySlugsFor(s).length > 0 && (
+                    <>
+                      {" · "}
+                      <a
+                        href={`https://www.jackwest.cz/produkt/${navodySlugsFor(s)[0]}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: "inherit" }}
+                      >
+                        stránka výrobce ↗
+                      </a>
+                    </>
+                  )}
                 </span>
               </div>
               <div style={{ flex: 1 }}>
@@ -341,7 +356,8 @@ function Ucty() {
                   {shown.has(u.id) ? u.code : "••••••"}{" "}
                   <button
                     type="button"
-                    className="link-btn"
+                    className="icon-btn"
+                    title={shown.has(u.id) ? "Skrýt" : "Zobrazit"}
                     aria-label={shown.has(u.id) ? `Skrýt kód ${u.name}` : `Zobrazit kód ${u.name}`}
                     onClick={() =>
                       setShown((s) => {
@@ -352,11 +368,13 @@ function Ucty() {
                       })
                     }
                   >
-                    {shown.has(u.id) ? "skrýt" : "zobrazit"}
-                  </button>{" "}
+                    <Icon name={shown.has(u.id) ? "oko-skrt" : "oko"} size={18} />
+                  </button>
                   <ConfirmButton
-                    label="nový"
-                    confirmLabel="Opravdu?"
+                    label={<Icon name="obnovit" size={17} />}
+                    confirmLabel="Opravdu nový kód?"
+                    className="btn-narrow"
+                    title="Restartovat kód"
                     ariaLabel={`Vygenerovat nový kód pro ${u.name}`}
                     onConfirm={() => void newCode(u.id)}
                   />

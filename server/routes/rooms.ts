@@ -58,7 +58,7 @@ export const roomRoutes: Route[] = [
     `;
     if (!room) throw new ApiError(404, "Místnost nenalezena.");
     if (room.item_count > 0) {
-      throw new ApiError(409, "Místnost není prázdná — nejdřív odeberte položky.");
+      throw new ApiError(409, "Místnost není prázdná — nejdřív odeber položky.");
     }
     await db`delete from rooms where id = ${params.id!}`;
     return json({ ok: true });
