@@ -1,0 +1,29 @@
+{
+  "slug": "motory-a-ovladace",
+  "dokument": "pouziti.pdf",
+  "nazev": "Použití motorů v závislosti na šířce, výšce a kroutícím momentu (pdf)",
+  "url": "/data/products/motory-a-ovladace/downloads/pouziti.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "pouziti__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": null,
+      "popisky": [
+        "Použití motorů v závislosti na šířce, výšce a kroutícím momentu"
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "pouziti__s01.png",
+      "px": [
+        1423,
+        2232
+      ]
+    }
+  ]
+}

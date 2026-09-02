@@ -1,0 +1,43 @@
+{
+  "slug": "motory-a-ovladace-ke-garazovym-roletam",
+  "dokument": "bezpecnostni-prvky.pdf",
+  "nazev": "Bezpečnostní prvky (pdf)",
+  "url": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/bezpecnostni-prvky.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "bezpecnostni-prvky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Bezpečnostní prvky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Bezpečnostní prvky",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Simu",
+        "Pádová brzda",
+        "Aluprof",
+        "Propojovací sada pro dotykovou lištu",
+        "Somfy",
+        "Infrazávora BUS"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "28",
+        "2007928",
+        "29",
+        "30",
+        "1841233"
+      ],
+      "obrazek": "bezpecnostni-prvky__s01.png",
+      "px": [
+        1581,
+        225
+      ]
+    }
+  ]
+}

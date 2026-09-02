@@ -1,0 +1,52 @@
+{
+  "slug": "motory-a-ovladace-ke-garazovym-roletam",
+  "dokument": "ridici-jednotky.pdf",
+  "nazev": "Řídící jednotky (možnost připojení řídících prvků) (pdf)",
+  "url": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/ridici-jednotky.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "ridici-jednotky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Řídící jednotky (možnost připojení řídících prvků)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Řídící jednotky (možnost připojení řídících prvků)",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Simu",
+        "SIMUDRIVE SD 100 Hz",
+        "Somfy",
+        "ROLLIXO io + 2x KEY GO io",
+        "Somfy",
+        "ROLLIXO Optimo RTS",
+        "Somfy",
+        "ROLLIXO RTS + 2x KEY GO RTS",
+        "Somfy",
+        "ROLLIXO Smart io"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "23",
+        "2009612",
+        "24",
+        "1841165",
+        "25",
+        "1870305",
+        "26",
+        "1841163",
+        "27",
+        "1870306"
+      ],
+      "obrazek": "ridici-jednotky__s01.png",
+      "px": [
+        1581,
+        305
+      ]
+    }
+  ]
+}

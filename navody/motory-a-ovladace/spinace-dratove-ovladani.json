@@ -1,0 +1,54 @@
+{
+  "slug": "motory-a-ovladace",
+  "dokument": "spinace-dratove-ovladani.pdf",
+  "nazev": "Spínače - drátové ovládání (pdf)",
+  "url": "/data/products/motory-a-ovladace/downloads/spinace-dratove-ovladani.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "spinace-dratove-ovladani__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Spínače (drátové ovládání)",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Spínače (drátové ovládání)",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Aluprof",
+        "PKL nt",
+        "Aluprof",
+        "PKL pt",
+        "Somfy",
+        "INIS MOUNTED BOX FP",
+        "Somfy",
+        "SMOOVE UNO WT FP",
+        "Somfy",
+        "SMOOVE DUO WT FP",
+        "Somfy",
+        "CHRONIS SMOOVE UNO"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "73",
+        "74",
+        "75",
+        "1800511",
+        "76",
+        "1800508",
+        "77",
+        "1800506",
+        "78",
+        "1805268"
+      ],
+      "obrazek": "spinace-dratove-ovladani__s01.png",
+      "px": [
+        1581,
+        322
+      ]
+    }
+  ]
+}

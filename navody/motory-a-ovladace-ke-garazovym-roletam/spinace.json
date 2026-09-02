@@ -1,0 +1,39 @@
+{
+  "slug": "motory-a-ovladace-ke-garazovym-roletam",
+  "dokument": "spinace.pdf",
+  "nazev": "Spínače (pdf)",
+  "url": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/spinace.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "spinace__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Spínače",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Spínače",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Aluprof",
+        "PKL nt – klíčový spínač na omítku (s aretací nebo bez aretace) IP 54",
+        "Somfy",
+        "SMOOVE UNO WT MP"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "17",
+        "18",
+        "1800509"
+      ],
+      "obrazek": "spinace__s01.png",
+      "px": [
+        1581,
+        191
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "slug": "okenni-site-sel-lux",
+  "dokument": "nd.pdf",
+  "nazev": "Náhradní díly (pdf)",
+  "url": "/data/products/okenni-site-sel-13/downloads/nd.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nd__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Náhradní díly",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Náhradní díly",
+      "popisky": [
+        "Síťovina – Šedá / Černá v šíři 0,8 m; 1 m; 1,2 m; 1,4 m; 1,6 m; 1,8 m",
+        "Síťovina petscreen – Šedá, šíře 1,8 m, Černá, šíře 1,6 m",
+        "Síťovina protipylová – Černá, šíře 1,6 m",
+        "Síťovina transparentní – Černá, šíře 1 m, 1,8 m",
+        "Síťovina nanovlákenná Respilon RWN 6.0 – černá, šíře 1,5 m",
+        "Plastový rožek – vnitřní/vnější",
+        "Kovový rožek – vnitřní  (SEO-24)",
+        "Guma – Ø 4 mm,  Ø 4,5 mm,  Ø 5 mm,  Ø 6 mm",
+        "Otočné háčky včetně nýtů – 0, 4, 6, 7, 9, 11, 12, 13, 15, 17, 19, 21, 23 mm",
+        "v barvě Bílá, Tm. hnědá, Sv. hnědá 8003, Antracit, Šedá",
+        "Pružinové háčky včetně nýtů",
+        "Obrtlík – 1mm (SEO-24), 10mm (SVS)",
+        "Madélko – Šedé, Tm. hnědé",
+        "Kartáček samolepící 8 mm",
+        "Kartáček samolepící 12 mm",
+        "Kartáček samolepící 18 mm",
+        "Těsnící kartáček šedý 10 mm, 12 mm (SEL-LUX)",
+        "\"Z\" háčky – 5, 10, 12, 14, 16, 18, 20, 22 mm",
+        "Pomocné otočné háčky na SEHO (6 mm)",
+        "Trhací nýt 4×8 mm v barvě Bílá, Tm. hnědá, Sv. hnědá RAL 8003, Šedá RAL 7038, Antracit RAL 7016",
+        "Trhací nýt 3,2×6 mm surový"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+      ],
+      "obrazek": "nd__s01.png",
+      "px": [
+        1581,
+        937
+      ]
+    }
+  ],
+  "prevzato_z": "okenni-site-sel-13"
+}

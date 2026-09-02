@@ -1,0 +1,58 @@
+{
+  "slug": "motory-a-ovladace",
+  "dokument": "prislusenstvi.pdf",
+  "nazev": "Příslušenství (pdf)",
+  "url": "/data/products/motory-a-ovladace/downloads/prislusenstvi.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "prislusenstvi__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příslušenství",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příslušenství",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Aluprof",
+        "DC 50 – externí přijímač",
+        "Aluprof",
+        "ZenProRepeater – zesilovač signálu",
+        "Simu",
+        "Vysílač Hz pod vypínač – mikro vysílač",
+        "Simu",
+        "MICRO přijímač pod vypínač",
+        "Somfy",
+        "IZYMO Transmitter io – vysílač io pod vypínač",
+        "Somfy",
+        "IZYMO Shutter Reciever io – přijímač io pod vypínač",
+        "Somfy",
+        "R1J-U-E 230 relé"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "119",
+        "120",
+        "121",
+        "2008519",
+        "122",
+        "2008192",
+        "123",
+        "1822609",
+        "124",
+        "1822661",
+        "125",
+        "2007248"
+      ],
+      "obrazek": "prislusenstvi__s01.png",
+      "px": [
+        1581,
+        333
+      ]
+    }
+  ]
+}

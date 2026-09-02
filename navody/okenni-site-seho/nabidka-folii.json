@@ -1,0 +1,61 @@
+{
+  "slug": "okenni-site-seho",
+  "dokument": "nabidka-folii.pdf",
+  "nazev": "Základní nabídka fólií (pdf)",
+  "url": "/data/products/okenni-site-sel-15/downloads/nabidka-folii.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "nabidka-folii__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": null,
+      "popisky": [
+        "Základní nabídka fólií SEL-15, SEL-LUX, SEO-24  R1 + R2 (termín dodání do 3 týdnů)",
+        "Zlatý dub",
+        "Tmavý ořech",
+        "Tmavý dub",
+        "Noce sorrento balsamico",
+        "Mahagon",
+        "Třešeň amaretto",
+        "Streifen douglasie",
+        "Winchester",
+        "Oregon",
+        "Anthrazitgrau"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2178001",
+        "2",
+        "2178007",
+        "3",
+        "2052089",
+        "4",
+        "4363042",
+        "5",
+        "2097013",
+        "6",
+        "4363043",
+        "7",
+        "3152009",
+        "8",
+        "49240",
+        "9",
+        "1192001",
+        "10",
+        "7016051167"
+      ],
+      "obrazek": "nabidka-folii__s01.png",
+      "px": [
+        1581,
+        384
+      ]
+    }
+  ],
+  "prevzato_z": "okenni-site-sel-15"
+}

@@ -1,0 +1,68 @@
+{
+  "slug": "okenni-site-sel-lux",
+  "dokument": "reklamace-site.pdf",
+  "nazev": "Reklamační podmínky - sítě proti hmyzu (pdf)",
+  "url": "/data/products/okenni-site-sel-13/downloads/reklamace-site.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "reklamace-site__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Oprávněné reklamace",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Oprávněné reklamace",
+      "popisky": [
+        "jack west",
+        "Prohnutí profilu mimo toleranci oproti zadanému rozměru.",
+        "Rozměr sítě mimo toleranci oproti zadanému výrobnímu rozměru:",
+        "výrobní tolerance – celková šířka +0/-2 mm, celková výška +0/-2 mm."
+      ],
+      "poznamky": [],
+      "kotace": [
+        "184"
+      ],
+      "obrazek": "reklamace-site__s01.png",
+      "px": [
+        1584,
+        496
+      ]
+    },
+    {
+      "id": "reklamace-site__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": "Neoprávněné reklamace",
+      "h2": null,
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Neoprávněné reklamace",
+      "popisky": [
+        "Závady zboží způsobené jiným používáním, než ke kterému je výrobek určen.",
+        "Závady způsobené mechanickým poškozením ze strany uživatele.",
+        "Závady způsobené špatnou montáží, popřípadě montáží do nevhodného prostředí.",
+        "Nesrovnalosti způsobené chybným zadáním objednávky.",
+        "Závady, na které byl kupující předem upozorněn (např. závada vzniklá z důvodu překročení",
+        "rozměru, viz tabulka CENÍK nebo atypického provedení).",
+        "U sítí bez příčky ( u pevných okenních sítí od 1 500 mm, u dveřních sítí vždy) může dojít ke zhoršení",
+        "vlastností, např. síťovina není zcela vypnutá, průhyb profilu, svěšování sítí.",
+        "Rozdílné odstíny profilů, síťoviny a jiných komponentů u zakázek, které jsou vyráběny na dvě nebo",
+        "více částí (např. s různými termíny dodání).",
+        "Vzhledem technologii výroby nelze zaručit stejnou kresbu a barevnost u imitací dřeva.",
+        "Poškozená povrchová úprava profilů oken a dveří od kotvících prvků z důvodu špatně",
+        "zvoleného typu sítě.",
+        "Mírné zvlnění hrany plissé skladu síťoviny."
+      ],
+      "poznamky": [],
+      "kotace": [],
+      "obrazek": "reklamace-site__s02.png",
+      "px": [
+        1543,
+        765
+      ]
+    }
+  ],
+  "prevzato_z": "okenni-site-sel-13"
+}

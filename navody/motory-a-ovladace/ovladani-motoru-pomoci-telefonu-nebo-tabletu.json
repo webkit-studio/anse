@@ -1,0 +1,39 @@
+{
+  "slug": "motory-a-ovladace",
+  "dokument": "ovladani-motoru-pomoci-telefonu-nebo-tabletu.pdf",
+  "nazev": "Ovládání motoru pomocí telefonu nebo tabletu (pdf)",
+  "url": "/data/products/motory-a-ovladace/downloads/ovladani-motoru-pomoci-telefonu-nebo-tabletu.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "ovladani-motoru-pomoci-telefonu-nebo-tabletu__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Ovládání motorů pomocí telefonu nebo tabletu",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Ovládání motorů pomocí telefonu nebo tabletu",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Aluprof",
+        "ZenProSmartControl",
+        "Somfy",
+        "TAHOMA SWITCH io"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "117",
+        "118",
+        "1870594"
+      ],
+      "obrazek": "ovladani-motoru-pomoci-telefonu-nebo-tabletu__s01.png",
+      "px": [
+        1581,
+        185
+      ]
+    }
+  ]
+}

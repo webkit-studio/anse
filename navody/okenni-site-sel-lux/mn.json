@@ -1,0 +1,68 @@
+{
+  "slug": "okenni-site-sel-lux",
+  "dokument": "mn.pdf",
+  "nazev": "Vyměřovací a montážní návod (pdf)",
+  "url": "/data/products/okenni-site-sel-lux/downloads/mn.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "mn__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "upevnění pružinovými háčky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "upevnění pružinovými háčky",
+      "popisky": [
+        "Měřící bod",
+        "Pružinový háček",
+        "výrobní šířka (mm)",
+        "Sklo",
+        "Křídlo okna",
+        "Rám okna",
+        "Ostění"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "15"
+      ],
+      "obrazek": "mn__s01.png",
+      "px": [
+        1527,
+        986
+      ]
+    },
+    {
+      "id": "mn__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "upevnění otočnými háčky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "upevnění otočnými háčky",
+      "popisky": [
+        "Otočný háček",
+        "Měřící bod",
+        "otočného",
+        "výška",
+        "háčku",
+        "výrobní šířka (mm)",
+        "Sklo",
+        "Křídlo okna",
+        "Rám okna",
+        "Ostění"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "15"
+      ],
+      "obrazek": "mn__s02.png",
+      "px": [
+        1527,
+        927
+      ]
+    }
+  ]
+}

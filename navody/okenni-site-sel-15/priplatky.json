@@ -1,0 +1,95 @@
+{
+  "slug": "okenni-site-sel-15",
+  "dokument": "priplatky.pdf",
+  "nazev": "Příplatky (pdf)",
+  "url": "/data/products/okenni-site-sel-13/downloads/priplatky.pdf",
+  "sekci": 2,
+  "sekce": [
+    {
+      "id": "priplatky__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky",
+      "popisky": [
+        "Lepení kartáčku",
+        "Síťovina petscreen (pro domácí mazlíčky) – Šedá, šíře 1,8 m, Černá, šíře 1,6 m",
+        "(NELZE POUŽÍT U SÍTĚ SEHO)",
+        "Síťovina protipylová – Černá, šíře 1,6 m",
+        "Síťovina transparentní – Černá, šíře 1 m, 1,8 m",
+        "Síťovina nanovlákenná Respilon RWN 6.0 – černá, šíře 1,5 m",
+        "Příčka pro zpevnění v základní barvě",
+        "Příčka pro zpevnění v RAL a Renolitu",
+        "Ořez lemu sítě (SEL-15)",
+        "Pružinový kolík",
+        "Otočné háčky včetně nýtů – 0, 4, 6, 7, 9, 11, 12, 13, 15, 17, 19, 21, 23 mm",
+        "v barvě Bílá, Tm. hnědá, Sv. hnědá 8003, Antracit, Šedá",
+        "Pružinové háčky včetně nýtů"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11"
+      ],
+      "obrazek": "priplatky__s01.png",
+      "px": [
+        1581,
+        468
+      ]
+    },
+    {
+      "id": "priplatky__s02",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Příplatky bez nároku na slevy",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Příplatky bez nároku na slevy",
+      "popisky": [
+        "Typ uchycení – jiná (SEL-15, SEL-13, SEL-LUX)",
+        "Rádius u SEL-15 v základních barvách",
+        "Šikmina u SEL-15, SEL-13 v základních barvách",
+        "Práce firmy (minimální účtovaný čas je 0,5 hod)",
+        "Manipulační poplatek (nakládka, rozvoz, vykládka výrobku),",
+        "pokud bude výrobek odeslán přepravní službou, platí ceny viz. bod 5, 6, 7, 8, 9",
+        "PPL doprava – maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "PPL doprava – na dobírku, nad maximální rozměry 1200×600×600 mm, max. váha 31,5 kg",
+        "Toptrans"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "obrazek": "priplatky__s02.png",
+      "px": [
+        1581,
+        430
+      ]
+    }
+  ],
+  "prevzato_z": "okenni-site-sel-13"
+}

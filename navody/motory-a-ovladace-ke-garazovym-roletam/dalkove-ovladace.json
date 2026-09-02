@@ -1,0 +1,47 @@
+{
+  "slug": "motory-a-ovladace-ke-garazovym-roletam",
+  "dokument": "dalkove-ovladace.pdf",
+  "nazev": "Dálkové ovladače (pdf)",
+  "url": "/data/products/motory-a-ovladace-ke-garazovym-roletam/downloads/dalkove-ovladace.pdf",
+  "sekci": 1,
+  "sekce": [
+    {
+      "id": "dalkove-ovladace__s01",
+      "strana": 1,
+      "pokracovani": false,
+      "h1": null,
+      "h2": "Dálkové ovladače",
+      "krok": null,
+      "varianta": null,
+      "nadpis": "Dálkové ovladače",
+      "popisky": [
+        "Poř.číslo",
+        "Výrobce",
+        "Typ",
+        "Aluprof",
+        "DC2291      1 kanál – klíčenka",
+        "Simu",
+        "TSA+ Hz – 4 kanál – klíčenka",
+        "Somfy",
+        "Kódová klávesnice KeyPad 2 RTS",
+        "Somfy",
+        "Keygo 4 RTS"
+      ],
+      "poznamky": [],
+      "kotace": [
+        "19",
+        "20",
+        "2008038",
+        "21",
+        "1870917",
+        "22",
+        "1841064"
+      ],
+      "obrazek": "dalkove-ovladace__s01.png",
+      "px": [
+        1581,
+        263
+      ]
+    }
+  ]
+}
