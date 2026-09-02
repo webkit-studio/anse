@@ -1,17 +1,10 @@
 import { Link } from "react-router-dom";
 import type { ContactRow, OrderListRow } from "@shared/types";
 import { czDateShort } from "@shared/format";
+import { osloveni } from "@shared/vocative";
 import { useMe, useToday } from "../api/hooks";
 import { TechScreen } from "../components/Shell";
 import { EmptyState, PhaseBadge, Queue, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
-
-/** „Dobré ráno" / „Dobrý den" / „Dobrý večer" podle hodiny. */
-function greeting(now: Date): string {
-  const h = now.getHours();
-  if (h < 10) return "Dobré ráno";
-  if (h < 18) return "Dobrý den";
-  return "Dobrý večer";
-}
 
 function czToday(now: Date): string {
   const days = ["neděle", "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota"];
@@ -76,13 +69,10 @@ export default function DnesPage() {
 
   const data = today.data;
   const total = (data?.namontovat.length ?? 0) + (data?.dokoncit.length ?? 0) + (data?.ozvat.length ?? 0);
-  const firstName = me.data?.name.split(" ")[0] ?? "";
-  // 5. pád: Jakub → Jakube, Marek → Marku (jednoduchá heuristika pro česká jména)
-  const vocative = firstName.endsWith("k") ? `${firstName.slice(0, -1)}ku` : firstName ? `${firstName}e` : "";
 
   return (
     <TechScreen
-      title={vocative ? `${greeting(now)}, ${vocative}` : greeting(now)}
+      title={osloveni(me.data?.name ?? "", now.getHours())}
       subtitle={czToday(now)}
       bell
     >
