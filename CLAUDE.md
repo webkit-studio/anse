@@ -129,8 +129,12 @@ Katalog má dvě úrovně: **produkt** (Okenní síť) → **podkategorie**
   funkce; kdyby přesto pauzlo → Supabase dashboard → Restore/Resume.
 - **Zálohy**: noční `pg_dump` přes GitHub Actions (`.github/workflows/backup.yml`),
   artefakt 90 dnů. Obnova: `psql $DIRECT_DATABASE_URL < dump.sql`.
-- **Deploy**: push na branch → Netlify branch/deploy preview → merge do `main`
-  = produkce. Malé commity s popisem česky nebo anglicky, konzistentně.
+- **Deploy**: hotová práce jde VŽDY rovnou do produkce — commit na vývojovou
+  větev, hned merge do `main` a push (`main` = produkce, bez PR a bez čekání
+  na schválení; rozhodnutí zadavatele „vše rovnou na produkci“). Po pushi
+  ověřit, že se nová verze opravdu servíruje — asset v `/` obsahuje nový kód
+  a `/api/me` vrací 401, ne 5xx; deploy bez kontroly není hotový.
+  Malé commity s popisem česky nebo anglicky, konzistentně.
 - **Migrace + seed běží v Netlify buildu** (idempotentní) — úprava JSON definice
   → push → deploy = nová verze v DB. První seed: nastav `SEED_ADMIN_CODE`
   (6 číslic) v Netlify env → kód pro Lukáše, ostatní kódy se zobrazí v admin UI
