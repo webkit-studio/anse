@@ -10,7 +10,7 @@ import { PhotoPicker, uploadPending, type PendingPhoto } from "../components/Pho
 import { NavodOverlay, navodySlugsFor } from "../components/NavodOverlay";
 import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
-import { TechDetail } from "../components/Shell";
+import { TechDetailFramed } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
@@ -259,7 +259,7 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   // --- výběr produktu (jen nová položka) ------------------------------------
   if (mode === "new" && (!product || (activeKind === "config" && !sub))) {
     return (
-      <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
+      <TechDetailFramed back={`/zakazky/${orderId}`} backLabel="Zakázka">
         <h1 className="t-title" style={{ margin: "4px 0 0" }}>
           {activeKind === "config" ? "Co zaměřujeme" : "Co opravujeme"}
         </h1>
@@ -338,14 +338,14 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
             </Button>
           </>
         )}
-      </TechDetail>
+      </TechDetailFramed>
     );
   }
 
   // --- oprava ----------------------------------------------------------------
   if (activeKind === "oprava") {
     return (
-      <TechDetail
+      <TechDetailFramed
         back={`/zakazky/${orderId}`}
         backLabel="Zakázka"
         footer={
@@ -396,29 +396,29 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
             onConfirm={() => void remove()}
           />
         )}
-      </TechDetail>
+      </TechDetailFramed>
     );
   }
 
   // --- konfigurace podle definice / podkladů dodavatele ----------------------
   if (konfigKey && konfig.isError) {
     return (
-      <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
+      <TechDetailFramed back={`/zakazky/${orderId}`} backLabel="Zakázka">
         <p className="muted t-body-s">
           Podklady produktu se nepodařilo načíst. Zkontroluj připojení a zkus to znovu.
         </p>
         <Button variant="ghost" onClick={() => void konfig.refetch()}>
           Zkusit znovu
         </Button>
-      </TechDetail>
+      </TechDetailFramed>
     );
   }
   const konfigProduct = konfig.data?.product;
   if (konfigKey ? !konfigProduct : !definition) {
     return (
-      <TechDetail back={`/zakazky/${orderId}`} backLabel="Zakázka">
+      <TechDetailFramed back={`/zakazky/${orderId}`} backLabel="Zakázka">
         <Spinner />
-      </TechDetail>
+      </TechDetailFramed>
     );
   }
 

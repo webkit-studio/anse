@@ -15,14 +15,18 @@ import { Icon, type IconName } from "./Icon";
 import { Logo } from "./Logo";
 import { Button, Spinner, Switch } from "./ui";
 
-/** Kancelář na desktopu má vlastní rozvržení; na telefonu vidí totéž co technik
- *  (Marek jezdí zaměřovat — zadání §1). */
+/** Kancelář má vlastní rozvržení od tabletu výš; na telefonu vidí totéž co
+ *  technik (Marek jezdí zaměřovat — zadání §1).
+ *  Práh je 768 px: na iPadu na výšku (820) musí kancelář dostat fázový panel
+ *  a své akce — pod ním by nešlo nacenit, objednat ani vystavit montážní list. */
+const OFFICE_MIN = "(min-width: 768px)";
+
 export function useIsWide(): boolean {
   const [wide, setWide] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches,
+    () => typeof window !== "undefined" && window.matchMedia(OFFICE_MIN).matches,
   );
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia(OFFICE_MIN);
     const onChange = () => setWide(mq.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -179,14 +183,18 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
 
 export function TechNav() {
   const fresh = useFreshCount();
+  const me = useMe();
   const count = fresh.data?.count ?? 0;
+  // Kancelář na telefonu vidí tuhle navigaci taky — bez odkazu na Nastavení
+  // by se na účty a produkty nedostala jinak než ručním přepsáním adresy.
+  const office = me.data?.role === "kancelar";
   return (
-    <nav className="tech-nav" aria-label="Hlavní navigace">
+    <nav className={`tech-nav ${office ? "tech-nav-4" : ""}`} aria-label="Hlavní navigace">
       <NavLink to="/" end>
         <span className="tech-nav-icon">
           <Icon name="dnes" />
         </span>
-        Dnes
+        {office ? "Přehled" : "Dnes"}
       </NavLink>
       <NavLink to="/kontakty">
         <span className="tech-nav-icon">
@@ -201,7 +209,31 @@ export function TechNav() {
         </span>
         Zakázky
       </NavLink>
+      {office && (
+        <NavLink to="/nastaveni">
+          <span className="tech-nav-icon">
+            <Icon name="nastaveni" />
+          </span>
+          Nastavení
+        </NavLink>
+      )}
     </nav>
+  );
+}
+
+/**
+ * Mobilní obrazovku (technikův tvar) zasadí kanceláři do jejího rámu s railem.
+ * Detail kontaktu i formulář položky používají technikův layout v obou rolích —
+ * bez tohohle by kancelář uprostřed práce ztratila celou levou navigaci.
+ */
+function InOfficeFrame({ children }: { children: ReactNode }) {
+  const office = useOfficeView();
+  if (!office) return <>{children}</>;
+  return (
+    <div className="office office-embed">
+      <Rail />
+      <div className="office-main">{children}</div>
+    </div>
   );
 }
 
@@ -236,6 +268,15 @@ export function TechScreen({
       <div className={`tech-body ${nav ? "tech-body-nav" : ""}`}>{children}</div>
       {nav && <TechNav />}
     </div>
+  );
+}
+
+/** Detail v technikově tvaru, ale u kanceláře uvnitř jejího rámu s railem. */
+export function TechDetailFramed(props: Parameters<typeof TechDetail>[0]) {
+  return (
+    <InOfficeFrame>
+      <TechDetail {...props} />
+    </InOfficeFrame>
   );
 }
 
@@ -277,6 +318,47 @@ const RAIL: { to: string; label: string; icon: IconName; end: boolean }[] = [
   { to: "/nastaveni", label: "Nastavení", icon: "nastaveni", end: false },
 ];
 
+/** Levá navigace kanceláře. Sdílená i detailními obrazovkami (detail kontaktu,
+ *  formulář položky) — kancelář uprostřed práce nesmí přijít o navigaci. */
+export function Rail() {
+  const me = useMe();
+  const logout = useLogout();
+  const navigate = useNavigate();
+  const fresh = useFreshCount();
+  const freshCount = fresh.data?.count ?? 0;
+
+  return (
+    <aside className="rail">
+      <Link to="/" className="rail-logo" aria-label="Anse">
+        <Logo height={20} />
+      </Link>
+      <nav className="rail-nav" aria-label="Hlavní navigace">
+        {RAIL.map((r) => (
+          <NavLink key={r.to} to={r.to} end={r.end} className="rail-link" title={r.label}>
+            <span className="rail-icon">
+              <Icon name={r.icon} size={20} />
+            </span>
+            <span className="rail-label">{r.label}</span>
+            {r.to === "/kontakty" && freshCount > 0 && (
+              <span className="rail-badge">{freshCount}</span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+      <div className="rail-user">
+        <span>{me.data?.name}</span>
+        <button
+          type="button"
+          className="link-btn"
+          onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/login") })}
+        >
+          Odhlásit
+        </button>
+      </div>
+    </aside>
+  );
+}
+
 export function OfficeShell({
   title,
   subtitle,
@@ -290,43 +372,9 @@ export function OfficeShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  const me = useMe();
-  const logout = useLogout();
-  const navigate = useNavigate();
-  const fresh = useFreshCount();
-  const freshCount = fresh.data?.count ?? 0;
-
   return (
     <div className="office">
-      <aside className="rail">
-        <Link to="/" className="rail-logo" aria-label="Anse">
-          <Logo height={20} />
-        </Link>
-        <nav className="rail-nav" aria-label="Hlavní navigace">
-          {RAIL.map((r) => (
-            <NavLink key={r.to} to={r.to} end={r.end} className="rail-link">
-              <span className="rail-icon">
-                <Icon name={r.icon} size={20} />
-              </span>
-              <span>{r.label}</span>
-              {r.to === "/kontakty" && freshCount > 0 && (
-                <span className="rail-badge">{freshCount}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="rail-user">
-          <span>{me.data?.name}</span>
-          <button
-            type="button"
-            className="link-btn"
-            style={{ marginLeft: "auto" }}
-            onClick={() => logout.mutate(undefined, { onSuccess: () => navigate("/login") })}
-          >
-            Odhlásit
-          </button>
-        </div>
-      </aside>
+      <Rail />
       <div className="office-main">
         <header className="office-head">
           <div className="office-head-titles">

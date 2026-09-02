@@ -502,7 +502,8 @@ input[type="date"] {
 }
 
 .chip {
-  min-height: 36px;
+  /* dotykový cíl — CLAUDE.md předepisuje --tap (48 px) jako minimum */
+  min-height: 44px;
   padding: 0 14px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--c-border-strong);
@@ -918,10 +919,12 @@ input[type="date"] {
 
 .bell-count {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  min-width: 22px;
-  height: 22px;
+  /* uvnitř tlačítka — odznak přečnívající ven leze mimo dotykovou plochu
+     a v úzké hlavičce se dotýká sousedního prvku */
+  top: -1px;
+  right: -1px;
+  min-width: 20px;
+  height: 20px;
   padding: 0 6px;
   border-radius: var(--radius-pill);
   background: var(--c-green);
@@ -1166,15 +1169,18 @@ input[type="date"] {
   margin-top: 4px;
 }
 
-/* řádek s hodnotou (meta v detailu) */
+/* Řádek s hodnotou (meta v detailu). Mřížka, ne space-between: na širokém
+   monitoru by popisek visel u levé hrany a hodnota u pravé přes půl metru
+   prázdna a oko by je nespárovalo. */
 .meta-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: var(--sp-3);
   padding: 11px 0;
   border-bottom: 1px solid var(--c-hairline);
   font-size: 15px;
+  max-width: 760px;
 }
 
 .meta-row:last-child {
@@ -1189,7 +1195,6 @@ input[type="date"] {
 
 .meta-value {
   font-weight: 500;
-  text-align: right;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -1468,8 +1473,9 @@ input[type="date"] {
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 165px), 1fr));
   gap: 10px;
+  align-items: stretch;
 }
 
 .product-tile {
@@ -1849,8 +1855,7 @@ input[type="date"] {
   align-items: center;
   gap: var(--sp-4);
   min-height: 78px;
-  /* lišta zůstává přes celou šířku, obsah lícuje s centrovaným tělem (1280px) */
-  padding: var(--sp-3) max(28px, calc((100% - 1280px) / 2));
+  padding: var(--sp-3) var(--gutter);
   border-bottom: 1px solid var(--c-hairline);
   background: var(--c-bg);
   position: sticky;
@@ -1888,12 +1893,12 @@ input[type="date"] {
   border-color: transparent;
 }
 
+/* Žádný strop ani centrování: obsah drží okraje okna a šířku využívají mřížky
+   uvnitř (víc sloupců), ne prázdné pásy po stranách. Čitelnost hlídá --measure
+   u textu, ne úzký sloupec layoutu. */
 .office-body {
-  padding: 22px 28px 40px;
-  /* Na FullHD/2K se obsah centruje místo lepení vlevo (zpětná vazba z testu). */
-  max-width: 1280px;
+  padding: 22px var(--gutter) 48px;
   width: 100%;
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: 22px;
@@ -1926,7 +1931,7 @@ input[type="date"] {
 /* čtyři fronty vedle sebe */
 .queues {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
   gap: var(--sp-4);
   align-items: start;
 }
@@ -2121,7 +2126,7 @@ input[type="date"] {
 
 .detail-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 24vw, 400px);
   gap: 22px;
   align-items: start;
 }
@@ -2261,7 +2266,7 @@ input[type="date"] {
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: var(--sp-4);
 }
 
@@ -2311,7 +2316,8 @@ input[type="date"] {
   height: 100%;
   background: var(--c-green);
   border-radius: 8px;
-  min-width: 2px;
+  /* nula NESMÍ kreslit pahýl — graf by lhal o datech */
+  min-width: 0;
 }
 
 .funnel-value {
@@ -2324,7 +2330,7 @@ input[type="date"] {
 
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--sp-4);
 }
 
@@ -2512,34 +2518,6 @@ input[type="date"] {
   background: var(--c-hairline);
 }
 
-/* === TECHNIK na širokém displeji (tablet/desktop) ========================
-   Mobilní rozvržení se nechává, jen se zastropí šířka sloupce — jinak se
-   karty i tlačítka roztáhnou přes celý monitor (verdikt U4). Platí i pro
-   kancelář na úzkém okně: pod 1024 px padá do stejného mobilního pohledu. */
-@media (min-width: 1024px) {
-  .tech-head,
-  .tech-bar,
-  .tech-body,
-  .form-head,
-  .overlay-head,
-  .overlay-body {
-    width: 100%;
-    max-width: 780px;
-    margin-inline: auto;
-  }
-
-  .tech-nav,
-  .tech-footer,
-  .form-foot {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 780px;
-    border-inline: 1px solid var(--c-hairline);
-    border-radius: 14px 14px 0 0;
-  }
-}
 
 /* Ikonové tlačítko v tabulce (oko u kódu) — kulaté, decentní */
 .icon-btn {
@@ -2562,4 +2540,448 @@ input[type="date"] {
   min-height: 34px;
   padding: 0 8px;
   vertical-align: middle;
+}
+
+@media (pointer: coarse) {
+  .code-cell .btn {
+    min-height: 44px;
+  }
+}
+
+/* ==========================================================================
+   RESPONZIVITA
+   Pravidlo: layout drží okraje okna a šířku spotřebují MŘÍŽKY (víc sloupců),
+   ne prázdné pásy po stranách. Omezuje se jen délka řádku souvislého textu
+   (--measure), protože ta má fyziologický strop; tabulky, výkresy a seznamy
+   naopak z každého pixelu těží.
+   ========================================================================== */
+
+/* --- souvislý text: jediné, co se zastropuje ----------------------------- */
+.office-body > p,
+.office-body .card-pad > p,
+.office-subtitle,
+.settings-orig,
+.form-group > p,
+.overlay-body > p,
+.empty-state p {
+  max-width: var(--measure);
+}
+
+/* --- seznamy karet: na mobilu sloupec, na monitoru dlaždice -------------- */
+/* min() kvůli úzkým telefonům (320): bez něj je stopa sloupce širší než
+   kontejner a mřížka přeteče. */
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--col)), 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+/* --- technikův pohled na širokém displeji -------------------------------- */
+.tech-head,
+.tech-bar,
+.tech-body {
+  padding-inline: var(--gutter);
+}
+
+/* Formulář položky: 26–71 polí v jednom sloupci je na tabletu i monitoru
+   nekonečný svitek a input pro čtyřmístné číslo v mm je 700 px široký.
+   Od 760 px tečou pole do sloupců — obsah roste do šířky, ne do délky. */
+@media (min-width: 760px) {
+  .form-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 0 var(--sp-4);
+    align-items: start;
+  }
+  .form-group-title,
+  .form-group > p,
+  .form-group .photo-grid,
+  .form-group .order-delete {
+    grid-column: 1 / -1;
+  }
+  /* poznámka a víceřádkové vstupy zaberou celý řádek */
+  .form-group .field:has(textarea) {
+    grid-column: 1 / -1;
+  }
+  .definition-form .field:has(textarea) textarea {
+    max-width: var(--measure);
+  }
+}
+
+/* Nápověda pod polem patří k SVÉMU poli — bez tohohle se opticky lepí
+   k následujícímu (riziko špatně zadaného rozměru). */
+.field-help {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+/* Návod: výkres je jediný obsah, který z šířky opravdu těží. */
+.overlay-body {
+  padding-inline: var(--gutter);
+}
+
+.navod-sekce {
+  max-width: 1400px;
+}
+
+.overlay-body > p,
+.navod-hits {
+  max-width: var(--measure);
+}
+
+/* --- kancelář: rám kolem technikových detailů ---------------------------- */
+/* Fixní patky uvnitř rámu nesmí ležet přes rail. */
+.office-embed .tech-footer,
+.office-embed .form-foot,
+.office-embed .tech-nav {
+  left: var(--rail-w);
+}
+
+.office-embed .tech-nav {
+  display: none; /* v rámu navigaci nese rail */
+}
+
+.office-embed .tech {
+  min-height: calc(100dvh - 1px);
+}
+
+/* --- fronty na Přehledu: na velkém monitoru dvě karty vedle sebe ---------- */
+@media (min-width: 1700px) {
+  .queue-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: 10px;
+    align-content: start;
+  }
+  .queue-col-head,
+  .queue-col > p {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --- detail zakázky: panel se skládá dřív, ať se nepřekrývá s obsahem ----- */
+@media (max-width: 1199px) {
+  .detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .panel {
+    position: static;
+  }
+}
+
+/* --- tabulky: čitelné hodnoty místo oříznutých ---------------------------- */
+.table select.select {
+  min-width: 12ch;
+}
+
+.table .inline-edit {
+  min-width: 10ch;
+}
+
+/* posun uvnitř tabulky musí být vidět, jinak vypadá jako uříznutá */
+.table-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+
+/* --- notifikace: řádek roste podle obsahu -------------------------------- */
+.notif {
+  align-items: flex-start;
+  min-height: 0;
+  height: auto;
+}
+
+.notif-text {
+  overflow-wrap: anywhere;
+}
+
+/* --- sheet: na monitoru není přes celou obrazovku ------------------------ */
+@media (min-width: 760px) {
+  .sheet-backdrop {
+    align-items: center;
+    justify-content: center;
+  }
+  .sheet {
+    max-width: 520px;
+    border-radius: var(--radius-xl);
+    max-height: 80dvh;
+  }
+  .sheet::before {
+    display: none;
+  }
+}
+
+/* --- statistiky: trychtýř čitelný i na úzkém ----------------------------- */
+@media (max-width: 700px) {
+  .funnel-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "label value" "track track";
+    row-gap: 4px;
+  }
+  .funnel-track {
+    grid-area: track;
+  }
+}
+
+/* Pruh nemá cenu roztahovat přes celou šířku monitoru — rozdíl 18 vs 19
+   je pak nečitelný a oko cestuje od popisku k číslu půl obrazovky. */
+.funnel {
+  max-width: 900px;
+}
+
+/* --- kancelář na telefonu: rail naležato místo svislé lišty --------------- */
+/* Statistiky a Nastavení renderují kancelářský shell vždy — na telefonu by
+   svislý rail sebral 15 % šířky a text z něj vytékal přes obsah. */
+@media (max-width: 767px) {
+  .office {
+    grid-template-columns: 1fr;
+  }
+  .rail {
+    position: static;
+    height: auto;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: 6px var(--sp-3);
+    border-right: none;
+    border-bottom: 1px solid var(--c-hairline);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rail-logo {
+    display: none;
+  }
+  .rail-nav {
+    display: flex;
+    flex-direction: row;
+    gap: var(--sp-1);
+    flex: 1;
+    min-width: 0;
+  }
+  .rail-link {
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 10px;
+    font-size: 11px;
+    min-height: var(--tap);
+    white-space: nowrap;
+  }
+  .rail-user {
+    border-top: none;
+    padding: 0 0 0 var(--sp-2);
+    margin-left: auto;
+    flex: none;
+  }
+  .rail-user span {
+    display: none;
+  }
+  .office-head {
+    min-height: 0;
+    padding: var(--sp-3) var(--gutter);
+    flex-wrap: wrap;
+  }
+  .office-search {
+    width: 100%;
+    order: 3;
+  }
+}
+
+/* rail nikdy nesmí vytéct přes obsah */
+.rail {
+  overflow: hidden;
+}
+
+.rail-user span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rail-user .link-btn {
+  margin-left: auto;
+  flex: none;
+}
+
+/* ikonový rail (768–1023): popisky pryč, ale nic nepřetéká */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .rail-user {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .rail-user .link-btn {
+    margin-left: 0;
+    font-size: 12px;
+  }
+}
+
+/* --- spodní navigace pro kancelář na telefonu (4 cíle) ------------------- */
+.tech-nav-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* --- odznak u zvonku nesmí lézt mimo tlačítko ---------------------------- */
+.bell {
+  position: relative;
+  overflow: visible;
+}
+
+/* --- dotykové cíle: vizuál zůstává, klikací plocha se dotáhne na --tap ----
+   Přepínač má ::after obsazené knoflíkem, takže se plocha řeší polstrováním
+   s `background-clip: content-box` — pilulka zůstane 27px, prst má 45. */
+.switch {
+  box-sizing: content-box;
+  padding: 9px 0;
+  height: 27px;
+  min-height: 27px;
+  background-clip: content-box;
+}
+
+/* knoflík se posouvá s polstrováním, ať zůstane uvnitř pilulky */
+.switch::after {
+  top: 12px;
+}
+
+.icon-btn,
+.star-btn,
+.sheet-close {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* textová tlačítka (Odhlásit, zobrazit) musí jít trefit prstem */
+@media (pointer: coarse) {
+  .link-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* --- souvislý text: jediné, co má strop, ať je kontejner jakkoli široký -- */
+.tech-body p,
+.office-body p {
+  max-width: var(--measure);
+}
+
+/* --- ikonový rail (768–1023): popisky pryč, nic nepřetéká ---------------- */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .rail-label {
+    display: none;
+  }
+  .rail-nav {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .rail-link {
+    justify-content: center;
+    padding-inline: 0;
+    min-width: 0;
+  }
+}
+
+/* --- ikonový rail: odznak nesmí roztlačit odkaz ------------------------- */
+@media (max-width: 1023px) {
+  .rail-link {
+    position: relative;
+  }
+  .rail-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    margin: 0;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    font-size: 10.5px;
+  }
+}
+
+/* --- Nastavení → Produkty: řádek se na úzkém zalomí --------------------- */
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.settings-row > .settings-col {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.settings-row > .switch {
+  flex: none;
+  align-self: center;
+}
+
+.settings-sub {
+  padding-left: 20px;
+  border-left: 2px solid var(--c-hairline);
+}
+
+/* --- Účty: řádek pro založení účtu se na telefonu zalomí ---------------- */
+.user-new {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.user-new > .user-new-name {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.user-new > .user-new-role {
+  flex: 0 1 160px;
+  min-width: 0;
+}
+
+.user-new > .btn {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* --- prvky, které nemá smysl táhnout přes celý monitor ------------------- */
+/* Vyhledávání, jednořádkové vstupy mimo mřížku formuláře a hlavní akce mají
+   přirozenou velikost — roztažení na 2500 px z nich nic nezlepší. */
+.tech-body > input[type="search"],
+.tech-body > .sheet-search {
+  max-width: 520px;
+}
+
+@media (min-width: 900px) {
+  .tech-footer,
+  .form-foot {
+    justify-content: flex-end;
+    gap: var(--sp-4);
+    align-items: center;
+  }
+  .tech-footer .btn,
+  .form-foot .btn {
+    width: auto;
+    min-width: 220px;
+    max-width: 360px;
+  }
+  .form-foot .form-foot-note {
+    margin-right: auto;
+  }
+  .tech-footer .btn-block {
+    flex: none;
+  }
+}
+
+/* spodní navigace technika: pruh přes celou šířku, ale cíle u sebe —
+   rozházené od kraje ke kraji monitoru se hledají hůř než pohromadě */
+@media (min-width: 900px) {
+  .tech-nav {
+    grid-template-columns: repeat(3, 190px);
+    justify-content: center;
+  }
+  .tech-nav-4 {
+    grid-template-columns: repeat(4, 190px);
+  }
 }

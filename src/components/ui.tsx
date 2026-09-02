@@ -401,7 +401,7 @@ export function Queue({
         <span className="queue-title">{title}</span>
         <span className="queue-count">{count}</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{children}</div>
+      <div className="card-list">{children}</div>
     </section>
   );
 }

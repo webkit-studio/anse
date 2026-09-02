@@ -365,7 +365,7 @@ export default function KontaktyPage() {
 
       {contacts.isPending && showSkeleton && <SkeletonList />}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="card-list">
         {rows.map((c) => (
           <ContactRowCard key={c.id} contact={c} onToggleFresh={toggleFresh} />
         ))}

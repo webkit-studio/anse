@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { api, isConflict } from "../api/client";
 import { useInvalidateOrder, useOrder } from "../api/hooks";
 import { PhoneInput, emailIssue, phoneIssue } from "../components/PhoneInput";
-import { TechDetail } from "../components/Shell";
+import { TechDetailFramed } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import { Button, Field, Spinner, Switch, TextInput } from "../components/ui";
 
@@ -106,7 +106,7 @@ export default function UdajeZakaznikaPage() {
   }
 
   return (
-    <TechDetail
+    <TechDetailFramed
       back={`/zakazky/${orderId}`}
       backLabel="Zakázka"
       footer={
@@ -202,6 +202,6 @@ export default function UdajeZakaznikaPage() {
           </div>
         </>
       )}
-    </TechDetail>
+    </TechDetailFramed>
   );
 }

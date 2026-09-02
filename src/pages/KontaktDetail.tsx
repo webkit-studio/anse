@@ -6,7 +6,7 @@ import { api } from "../api/client";
 import { useContact, useInvalidateContacts, useInvalidateOrder, useMe, useUsers } from "../api/hooks";
 import { DateSheet, isoDay } from "../components/DateSheet";
 import { Icon } from "../components/Icon";
-import { TechDetail } from "../components/Shell";
+import { TechDetailFramed } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
@@ -144,14 +144,14 @@ export default function KontaktDetailPage() {
 
   if (detail.isError) {
     return (
-      <TechDetail back="/kontakty" backLabel="Kontakty">
+      <TechDetailFramed back="/kontakty" backLabel="Kontakty">
         <ErrorBanner message="Kontakt se nepodařilo načíst." onRetry={() => detail.refetch()} />
-      </TechDetail>
+      </TechDetailFramed>
     );
   }
 
   return (
-    <TechDetail
+    <TechDetailFramed
       back="/kontakty"
       backLabel="Kontakty"
       headRight={
@@ -228,7 +228,7 @@ export default function KontaktDetailPage() {
           {orders.length > 0 && (
             <section>
               <h2 className="card-section-title">Zakázky kontaktu</h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="card-list">
                 {orders.map((o) => (
                   <div className="card" key={o.id}>
                     <Link to={`/zakazky/${o.id}`} className="card-link">
@@ -303,6 +303,6 @@ export default function KontaktDetailPage() {
           }}
         />
       )}
-    </TechDetail>
+    </TechDetailFramed>
   );
 }

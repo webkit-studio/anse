@@ -4,7 +4,7 @@ import { HOURLY_RATE } from "@shared/types";
 import { money } from "@shared/format";
 import { api, isConflict } from "../api/client";
 import { useInvalidateOrder, useOrder } from "../api/hooks";
-import { TechDetail } from "../components/Shell";
+import { TechDetailFramed } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import { Button, Spinner } from "../components/ui";
 
@@ -79,7 +79,7 @@ export default function CenaPracePage() {
   const blockingLeft = (detail.data?.blocking ?? []).filter((b) => b !== "Cena práce");
 
   return (
-    <TechDetail
+    <TechDetailFramed
       back={`/zakazky/${orderId}`}
       backLabel="Zakázka"
       footer={
@@ -153,6 +153,6 @@ export default function CenaPracePage() {
           )}
         </>
       )}
-    </TechDetail>
+    </TechDetailFramed>
   );
 }

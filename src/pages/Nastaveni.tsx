@@ -50,8 +50,8 @@ function Produkty() {
       {types.isPending && <Spinner />}
       {(types.data?.product_types ?? []).map((t) => (
         <section className="card card-pad" key={t.id} style={{ display: "grid", gap: 12 }}>
-          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-            <div style={{ flex: 1 }}>
+          <div className="settings-row">
+            <div className="settings-col">
               <TextInput
                 defaultValue={t.custom_name}
                 placeholder={t.name}
@@ -62,7 +62,7 @@ function Produkty() {
               />
               <span className="settings-orig">{t.name}</span>
             </div>
-            <div style={{ flex: 1 }}>
+            <div className="settings-col">
               <TextInput
                 defaultValue={t.note_for_tech}
                 placeholder="Poznámka pro technika (ukáže se u výběru i jako návod)"
@@ -84,17 +84,8 @@ function Produkty() {
           </div>
 
           {t.subcategories.map((s) => (
-            <div
-              key={s.id}
-              style={{
-                display: "flex",
-                gap: 12,
-                alignItems: "flex-start",
-                paddingLeft: 20,
-                borderLeft: "2px solid var(--c-hairline)",
-              }}
-            >
-              <div style={{ flex: 1 }}>
+            <div key={s.id} className="settings-row settings-sub">
+              <div className="settings-col">
                 <TextInput
                   defaultValue={s.custom_name}
                   placeholder={s.name}
@@ -121,7 +112,7 @@ function Produkty() {
                   )}
                 </span>
               </div>
-              <div style={{ flex: 1 }}>
+              <div className="settings-col">
                 <TextInput
                   defaultValue={s.note}
                   placeholder="Poznámka"
@@ -277,8 +268,8 @@ function Ucty() {
 
   return (
     <OfficeShell title="Účty" subtitle="Přihlášení šestimístným kódem">
-      <section className="card card-pad" style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
-        <div style={{ flex: 1 }}>
+      <section className="card card-pad user-new">
+        <div className="user-new-name">
           <Field label="Jméno" htmlFor="u-new">
             <TextInput
               id="u-new"
@@ -288,7 +279,7 @@ function Ucty() {
             />
           </Field>
         </div>
-        <div style={{ width: 200 }}>
+        <div className="user-new-role">
           <Field label="Role" htmlFor="u-role">
             <NativeSelect
               id="u-role"

@@ -4,7 +4,7 @@ import { czDate } from "@shared/format";
 import { api } from "../api/client";
 import { useInvalidateOrder, useOrder } from "../api/hooks";
 import { PhotoPicker, type PendingPhoto } from "../components/PhotoPicker";
-import { TechDetail } from "../components/Shell";
+import { TechDetailFramed } from "../components/Shell";
 import { SignaturePad } from "../components/SignaturePad";
 import { useToast } from "../components/Toast";
 import { Button, Spinner } from "../components/ui";
@@ -53,7 +53,7 @@ export default function MontazPage() {
     : [];
 
   return (
-    <TechDetail
+    <TechDetailFramed
       back={`/zakazky/${orderId}`}
       backLabel="Zakázka"
       footer={
@@ -146,6 +146,6 @@ export default function MontazPage() {
           }}
         />
       )}
-    </TechDetail>
+    </TechDetailFramed>
   );
 }

@@ -167,7 +167,7 @@ export default function ZakazkyPage() {
               <span className="queue-title">{g.title}</span>
               <span className="queue-count">{g.rows.length}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="card-list">
               {g.rows.map((o) => (
                 <OrderCard key={o.id} order={o} />
               ))}

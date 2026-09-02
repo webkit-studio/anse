@@ -94,6 +94,12 @@
   --nav-h: 64px; /* spodní navigace technika */
   --footer-h: 78px; /* sticky patka s akcí fáze */
   --rail-w: 236px; /* levý rail kanceláře */
+
+  /* Responzivita: obsah drží okraje okna (žádný centrovaný sloupec), šířku
+     spotřebují mřížky uvnitř. Čitelnost hlídá --measure u souvislého textu. */
+  --gutter: clamp(16px, 2.2vw, 34px);
+  --measure: 74ch; /* nejdelší rozumný řádek souvislého textu */
+  --col: 300px; /* minimální sloupec v seznamech karet */
 }
 
 /* Typografická škála — jediné místo, kde se určují velikosti. */
