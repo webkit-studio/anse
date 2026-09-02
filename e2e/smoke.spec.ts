@@ -49,12 +49,10 @@ test("technik: kontakt → zakázka → položka → cena práce → k naceněn�
   await expect(page).toHaveURL(/\/zakazky\/[0-9a-f-]{36}$/);
   orderUrl = page.url();
 
-  // první položka se neobejde bez údajů zákazníka — appka tam pošle sama
+  // Měřit jde hned. Chybějící údaje zákazníka drží až odeslání k nacenění,
+  // nikoli zakládání položek — technik měří dřív, než se dostane k papírování.
   await page.getByRole("button", { name: "Přidat první položku" }).click();
-  await expect(page).toHaveURL(/\/zakaznik\?dal=polozka$/);
-  await page.locator("#u-email").fill("novak@example.cz");
-  await page.locator("#u-addr").fill("Nádražní 12, Ostrava");
-  await page.getByRole("button", { name: "Uložit a přidat položku" }).click();
+  await expect(page).toHaveURL(/\/polozka\/nova$/);
 
   // výběr produktu → formulář podle definice dodavatele
   await expect(page.getByRole("heading", { name: "Co zaměřujeme" })).toBeVisible();
@@ -71,6 +69,17 @@ test("technik: kontakt → zakázka → položka → cena práce → k naceněn�
   await page.getByRole("button", { name: "Uložit položku" }).click();
   await expect(page).toHaveURL(orderUrl);
   await expect(page.getByText("Kuchyně")).toBeVisible();
+
+  // Co chybí, se doplňuje rovnou v řádku — ne na jiné obrazovce.
+  await page.getByRole("button", { name: "Doplnit údaje zákazníka" }).click();
+  await page.locator('[data-row="email"] input').fill("novak@example.cz");
+  await page.keyboard.press("Enter");
+  await expect(page.locator('[data-row="email"]')).toContainText("novak@example.cz");
+
+  await page.locator('[data-row="adresa"] .value-row-edit').click();
+  await page.locator('[data-row="adresa"] input').fill("Nádražní 12, Ostrava");
+  await page.keyboard.press("Enter");
+  await expect(page.locator('[data-row="adresa"]')).toContainText("Nádražní 12, Ostrava");
 
   // bez ceny práce nejde odeslat — CTA rovnou říká, co chybí
   await page.getByRole("button", { name: "Doplnit cenu práce" }).click();
@@ -115,7 +124,7 @@ test("technik: montáž → podpis → hotovo", async ({ page }) => {
   await login(page, "111111");
   await page.goto(orderUrl);
   await expect(page.getByText("Termín dodání")).toBeVisible();
-  await page.getByRole("button", { name: /Zadat termín/ }).click();
+  await page.locator('[data-row="montaz"] .value-row-edit').click();
   await page.getByRole("button", { name: "Uložit termín" }).click();
 
   // podpis: bez něj se Hotovo neodešle

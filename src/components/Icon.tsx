@@ -30,6 +30,9 @@ export type IconName =
   | "hvezda-plna"
   | "oko"
   | "oko-skrt"
+  | "obalka"
+  | "mapa"
+  | "hotovo"
   | "obnovit"
   | "kos";
 
@@ -37,6 +40,22 @@ const STAR_PATH =
   "M12 3.6l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z";
 
 const PATHS: Record<IconName, JSX.Element> = {
+  // fajfka — potvrzení akce (zkopírováno)
+  hotovo: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  // obálka — napsat e-mail
+  obalka: (
+    <>
+      <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+      <path d="M3.8 7l7.3 5.2a1.5 1.5 0 0 0 1.8 0L20.2 7" />
+    </>
+  ),
+  // špendlík — otevřít v mapách
+  mapa: (
+    <>
+      <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.6" />
+    </>
+  ),
   // oko — zobrazit kód
   oko: (
     <>

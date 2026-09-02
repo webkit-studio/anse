@@ -99,7 +99,8 @@
      spotřebují mřížky uvnitř. Čitelnost hlídá --measure u souvislého textu. */
   --gutter: clamp(16px, 2.2vw, 34px);
   --measure: 74ch; /* nejdelší rozumný řádek souvislého textu */
-  --col: 300px; /* minimální sloupec v seznamech karet */
+  --col: 340px; /* minimální sloupec v seznamech karet */
+  --tech-bar-h: 56px; /* horní lišta detailu — pod ní se lepí hlavička formuláře */
 }
 
 /* Typografická škála — jediné místo, kde se určují velikosti. */

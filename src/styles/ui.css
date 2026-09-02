@@ -1128,6 +1128,16 @@ input[type="date"] {
   margin: 0 0 var(--sp-3);
 }
 
+/* nadpis uvnitř karty — menší, ať nekonkuruje jménu zakázky nad ní */
+.card-section-title-inline {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+  margin: 0 0 var(--sp-2);
+}
+
 /* šedý informační blok („N zakázek čeká na kancelář") */
 .info-row {
   display: flex;
@@ -1180,7 +1190,6 @@ input[type="date"] {
   padding: 11px 0;
   border-bottom: 1px solid var(--c-hairline);
   font-size: 15px;
-  max-width: 760px;
 }
 
 .meta-row:last-child {
@@ -1196,8 +1205,159 @@ input[type="date"] {
 .meta-value {
   font-weight: 500;
   min-width: 0;
+  max-width: 46ch;
+  /* hodnota bývá i <button> (inline editace) — ten by text centroval */
+  text-align: left;
   overflow-wrap: anywhere;
 }
+
+/* === Řádek s hodnotou =====================================================
+   Jediný způsob, jak se v detailech ukazuje a mění údaj. Akce mají pevné
+   sloty (kontextová · kopírovat · tužka), takže tužka je na všech řádcích ve
+   stejném sloupci a oko ji hledá jen jednou. Na telefonu je popisek nad
+   hodnotou — na 320 px by tři sloupce nechaly na hodnotu pár znaků.
+   ========================================================================== */
+.value-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label label"
+    "value actions";
+  align-items: center;
+  gap: 1px var(--sp-3);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--c-hairline);
+  font-size: 15px;
+  /* Skok z blokace nesmí řádek zaparkovat pod lepivou lištou. */
+  scroll-margin-top: calc(var(--tech-bar-h) + 16px);
+  scroll-margin-bottom: calc(var(--footer-h) + 16px);
+}
+
+/* Ikona uvnitř tlačítka nemá chytat kliknutí — cíl je tlačítko. */
+.value-row .icon-btn svg {
+  pointer-events: none;
+}
+
+.value-row:last-child {
+  border-bottom: none;
+}
+
+.value-row-label {
+  grid-area: label;
+  color: var(--c-text-muted);
+  font-size: 13.5px;
+}
+
+.value-row-value {
+  grid-area: value;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  font-weight: 500;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.value-row-hint {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--c-text-muted);
+}
+
+/* Tři sloty držené i prázdné — ikony pak nepoletují řádek od řádku.
+   Stopa slotu je 44 px, protože přesně tak velké je .icon-btn (dotykový cíl);
+   užší dráha by tlačítko nechala přetéct o 5 px přes okraj karty. */
+.value-row-actions {
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  align-items: center;
+  justify-items: center;
+  flex: none;
+}
+
+.icon-slot {
+  display: block;
+  width: 44px;
+  height: 44px;
+}
+
+/* Řádek, jehož hodnotou je ovládací prvek (výběr technika). Prázdné sloty
+   akcí zůstávají, aby ostatní řádky nepřeskočily o kus vedle. */
+.value-row-control {
+  padding: var(--sp-2) 0;
+}
+
+.value-row-control .value-row-value > * {
+  width: 100%;
+  margin: 0;
+}
+
+.value-row-input {
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 16px; /* pod 16 px iOS zoomuje */
+  font-weight: 500;
+  border: 1px solid var(--c-green);
+  border-radius: 10px;
+  background: var(--c-bg);
+  box-shadow: var(--focus-ring);
+}
+
+/* Ikony jsou VŽDY na svém místě a vždy klikací — jen zesvětlené, dokud na
+   řádek nenajedeš. Schovat je úplně (opacity 0 + pointer-events: none) je
+   past: hybridní zařízení (dotykový notebook, tablet s myší) hlásí hover
+   i dotyk zároveň a ovládání by na nich zmizelo. Tlumení navíc drží kartu
+   klidnou stejně dobře jako mizení. */
+.value-row .icon-btn {
+  opacity: 0.42;
+  transition: opacity var(--t-fast);
+}
+
+.value-row:hover .icon-btn,
+.value-row:focus-within .icon-btn,
+.value-row .icon-btn:focus-visible,
+.value-row .icon-btn-done {
+  opacity: 1;
+}
+
+/* Na dotyku není kam najet, tak svítí rovnou. */
+@media (hover: none) {
+  .value-row .icon-btn {
+    opacity: 1;
+  }
+}
+
+/* Na širokém monitoru se řádky nenatahují přes celou kartu — to by rozhodilo
+   popisek a hodnotu na opačné konce a ikony poslalo o půl metru vedle. Šířku
+   spotřebuje DRUHÝ SLOUPEC řádků, ne prázdno. */
+.value-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  column-gap: var(--sp-6);
+}
+
+@media (min-width: 560px) {
+  .value-row {
+    grid-template-columns: minmax(96px, 150px) minmax(0, 1fr) auto;
+    grid-template-areas: "label value actions";
+    gap: var(--sp-3);
+    padding: 3px 0;
+    min-height: 46px;
+  }
+
+  /* Ve dvou sloupcích musí mít linku i předposlední řádek. */
+  .value-rows .value-row:last-child {
+    border-bottom: 1px solid var(--c-hairline);
+  }
+
+  .value-rows .value-row:last-child:only-child {
+    border-bottom: none;
+  }
+}
+
 
 /* rozbalovací sekce */
 .disclosure {
@@ -1236,10 +1396,46 @@ input[type="date"] {
   font-weight: 500;
 }
 
+/* Co chybí, je rovnou cesta tam — vypsat problém a nechat člověka hledat
+   pole po kartě je práce navíc, kterou umí odvést aplikace. */
 .blocking-list {
   margin: 4px 0 0;
-  padding-left: 18px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.blocking-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 4px 11px;
   font-size: 13px;
+  font-weight: 600;
+  color: var(--c-warn);
+  background: var(--c-bg);
+  border: 1px solid var(--c-tone-wait-br);
+  border-radius: var(--radius-pill);
+}
+
+.blocking-go:hover {
+  background: var(--c-tone-wait-bg);
+}
+
+.blocking-go::after {
+  content: "›";
+  font-size: 15px;
+  line-height: 1;
+}
+
+@media (pointer: coarse) {
+  .blocking-go {
+    min-height: 44px;
+    padding: 4px 14px;
+  }
 }
 
 /* === Notifikace ========================================================== */
@@ -1307,7 +1503,9 @@ input[type="date"] {
 }
 
 .switch[aria-checked="true"] {
-  background: var(--c-green);
+  /* background-color, NE zkratka background — ta by resetovala background-clip
+     a ze zapnuté pilulky by byla zelená koule přes celé polstrování */
+  background-color: var(--c-green);
 }
 
 .switch::after {
@@ -2202,55 +2400,86 @@ input[type="date"] {
 }
 
 /* mini kalendář */
-.calendar {
-  position: absolute;
-  z-index: 40;
-  margin-top: 6px;
-  background: var(--c-bg);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-pop);
-  padding: var(--sp-3);
-  width: 268px;
-}
-
+/* Kalendář — jedna mřížka pro sheet v telefonu i bublinu v kanceláři.
+   Dny jsou čtvercové a roztahují se do dostupné šířky, takže na telefonu
+   vyjdou přes 44 px samy od sebe, bez zvláštního pravidla. */
 .calendar-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--sp-2);
   margin-bottom: var(--sp-2);
-  font-size: 13.5px;
+}
+
+.calendar-month {
   font-weight: 600;
+  font-size: 15px;
+  text-transform: capitalize;
+}
+
+.calendar-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--c-text);
+  background: var(--c-sunken);
+}
+
+.calendar-nav:hover:not(:disabled) {
+  background: var(--c-border);
+}
+
+.calendar-nav:disabled {
+  color: var(--c-border-strong);
+  background: none;
+  cursor: not-allowed;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 3px;
 }
 
 .calendar-dow {
-  font-size: 10.5px;
+  font-size: 11px;
   color: var(--c-text-muted);
   text-align: center;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
 }
 
 .calendar-day {
   aspect-ratio: 1;
-  min-height: 32px;
-  border-radius: 9px;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  font-size: 15px;
   font-variant-numeric: tabular-nums;
   background: none;
   padding: 0;
+  transition: background var(--t-fast);
 }
 
 .calendar-day:hover:not(:disabled) {
   background: var(--c-hairline);
 }
 
-.calendar-day-selected {
+/* Dnešek je orámovaný, vybraný den plný — dají se poznat i vedle sebe. */
+.calendar-day-today {
+  box-shadow: inset 0 0 0 1.5px var(--c-border-strong);
+  font-weight: 600;
+}
+
+/* :hover musí být i tady, jinak by vybraný den pod myší zešedl a vypadal
+   by jako nevybraný — selektor s :hover má vyšší váhu. */
+.calendar-day-selected,
+.calendar-day-selected:hover:not(:disabled) {
   background: var(--c-green);
   color: var(--c-green-on);
   font-weight: 700;
@@ -2260,6 +2489,89 @@ input[type="date"] {
   color: var(--c-border-strong);
   background: none;
   cursor: not-allowed;
+}
+
+.calendar {
+  position: absolute;
+  z-index: 40;
+  margin-top: 6px;
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+  padding: var(--sp-3);
+  width: 300px;
+}
+
+.calendar-mini .calendar-day {
+  font-size: 13px;
+  border-radius: 9px;
+}
+
+.calendar-mini .calendar-nav {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+}
+
+.calendar-mini .calendar-month {
+  font-size: 13.5px;
+}
+
+/* --- sheet s datem ------------------------------------------------------ */
+
+/* Obsah se posouvá, potvrzení stojí — na malém telefonu se jinak tlačítko
+   „Založit zakázku" ocitne pod ohybem a člověk ho hledá. */
+.sheet-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding-bottom: 2px;
+}
+
+.sheet-foot {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.sheet-picked {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.time-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.time-exact {
+  align-self: flex-start;
+  width: auto;
+  min-width: 150px;
+}
+
+/* Kalendář má nad tablet dost místa vedle sebe — sheet se nemusí natahovat. */
+@media (min-width: 560px) {
+  .sheet-date {
+    max-width: 460px;
+    margin: 0 auto;
+    border-radius: var(--radius-xl);
+  }
+
+  .sheet-backdrop:has(.sheet-date) {
+    align-items: center;
+    padding: var(--sp-4);
+  }
 }
 
 /* === Statistiky ========================================================= */
@@ -2397,9 +2709,6 @@ input[type="date"] {
   .settings-grid {
     grid-template-columns: 1fr;
   }
-  .table .col-secondary {
-    display: none;
-  }
   .office-search {
     width: 180px;
   }
@@ -2489,7 +2798,7 @@ input[type="date"] {
 
 /* Poznámka: .switch reaguje i na data-on (mimo role="switch" kontext). */
 .switch[data-on="true"] {
-  background: var(--c-green);
+  background-color: var(--c-green);
 }
 
 .switch[data-on="true"]::after {
@@ -2686,11 +2995,32 @@ input[type="date"] {
   overscroll-behavior-x: contain;
 }
 
-/* --- notifikace: řádek roste podle obsahu -------------------------------- */
+/* --- notifikace: řádek roste podle obsahu --------------------------------
+   <button> jako flex kontejner se v mřížce nezvětšil podle obsahu (řádek
+   zůstal 28 px při 91px textu a písmo vyteklo přes sousední zprávy).
+   Blokový layout s odsazenou tečkou je předvídatelný. */
 .notif {
-  align-items: flex-start;
+  display: block;
+  position: relative;
   min-height: 0;
   height: auto;
+  padding-left: 32px;
+}
+
+.notif-dot {
+  position: absolute;
+  left: 14px;
+  top: 19px;
+  margin: 0;
+}
+
+.notif-body {
+  display: block;
+}
+
+.notif-event,
+.notif-time {
+  display: block;
 }
 
 .notif-text {
@@ -2983,5 +3313,103 @@ input[type="date"] {
   }
   .tech-nav-4 {
     grid-template-columns: repeat(4, 190px);
+  }
+}
+
+/* ==========================================================================
+   OPRAVY Z OVĚŘOVACÍHO KOLA
+   ========================================================================== */
+
+/* --- svislé seznamy uvnitř sheetu/overlaye --------------------------------
+   Grid, který je flex-položkou s omezenou výškou, dostane definitivní výšku
+   a rovným dílem ji rozdělí mezi řádky — texty pak vytečou přes sousedy.
+   Řádky musí růst podle obsahu, ne podle zbylého místa. */
+/* Flex sloupec, ne mřížka: <button> jako položka mřížky dostal výšku řádku
+   (28 px) a text z něj vytékal přes sousední zprávy. Ve flexu s `flex: none`
+   se řádek řídí obsahem. */
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.notif-list > .notif {
+  flex: none;
+}
+
+/* --- sheet se musí dát odrolovat (telefon na šířku, malá výška) ---------- */
+.sheet {
+  overflow-y: auto;
+}
+
+/* --- vedlejší sloupce tabulek: rozhoduje šířka OBSAHU, ne okna ----------- */
+@media (max-width: 1199px) {
+  .table .col-secondary {
+    display: none;
+  }
+}
+
+/* --- posuv uvnitř tabulky musí být vidět --------------------------------- */
+.table-wrap {
+  position: relative;
+  background:
+    linear-gradient(to right, var(--c-bg) 30%, rgba(255, 255, 255, 0)) left / 40px 100% no-repeat,
+    linear-gradient(to left, var(--c-bg) 30%, rgba(255, 255, 255, 0)) right / 40px 100% no-repeat,
+    linear-gradient(to right, rgba(14, 21, 19, 0.13), rgba(255, 255, 255, 0)) left / 14px 100% no-repeat,
+    linear-gradient(to left, rgba(14, 21, 19, 0.13), rgba(255, 255, 255, 0)) right / 14px 100% no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
+
+/* --- dvě lepivé lišty nad sebou: hlavička formuláře patří POD horní lištu - */
+.form-head {
+  top: var(--tech-bar-h);
+}
+
+/* --- kancelářský rám kolem technikova detailu ----------------------------
+   Fixní patky musí lícovat s obsahem, ne s celým oknem — a rail je pod
+   1024 px úzký, takže se odsazení musí měnit s ním. */
+.office-embed .tech-footer,
+.office-embed .form-foot {
+  left: var(--rail-w);
+}
+
+@media (max-width: 1023px) {
+  .office-embed .tech-footer,
+  .office-embed .form-foot {
+    left: 56px;
+  }
+}
+
+@media (max-width: 767px) {
+  .office-embed .tech-footer,
+  .office-embed .form-foot {
+    left: 0;
+  }
+}
+
+/* --- kancelář na telefonu: jedna navigace, ne dvě ------------------------
+   Pod 768 px má kancelář spodní lištu jako všude jinde; ležatý rail nahoře
+   by byl druhé, jinak vypadající ovládání na téže obrazovce. */
+@media (max-width: 767px) {
+  .office > .rail {
+    display: none;
+  }
+  .office-body {
+    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--sp-5));
+  }
+}
+
+/* --- karty v mřížce nesmí být užší než na telefonu ----------------------- */
+.card-list {
+  --col: 340px;
+}
+
+/* spodní navigace v kancelářském shellu jen na telefonu — nad 768 px ji
+   nahrazuje levý rail */
+@media (min-width: 768px) {
+  .office .tech-nav {
+    display: none;
   }
 }

@@ -3,7 +3,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ContactRow } from "@shared/types";
 import { ago, czDateShort } from "@shared/format";
 import { api } from "../api/client";
-import { useContact, useInvalidateContacts, useInvalidateOrder, useMe, useUsers } from "../api/hooks";
+import {
+  useContact,
+  useInvalidateContacts,
+  useInvalidateOrder,
+  useMe,
+  useUsers,
+} from "../api/hooks";
 import { DateSheet, isoDay } from "../components/DateSheet";
 import { Icon } from "../components/Icon";
 import { TechDetailFramed } from "../components/Shell";
@@ -16,74 +22,9 @@ import {
   SelectSheet,
   SkeletonList,
   Textarea,
+  ValueRow,
   useDelayed,
 } from "../components/ui";
-
-/** Inline editovatelné pole — dashed podtržení a tužka, žádný modal. */
-function InlineField({
-  label,
-  value,
-  placeholder,
-  onSave,
-}: {
-  label: string;
-  value: string;
-  placeholder: string;
-  onSave: (next: string) => void;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
-
-  if (!editing) {
-    return (
-      <div className="meta-row">
-        <span className="meta-label">{label}</span>
-        <button
-          type="button"
-          className="meta-value"
-          style={{
-            background: "none",
-            borderBottom: "1px dashed var(--c-border-strong)",
-            minHeight: 32,
-            padding: "2px 0",
-          }}
-          onClick={() => {
-            setDraft(value);
-            setEditing(true);
-          }}
-        >
-          {value || <span className="muted">{placeholder}</span>}{" "}
-          <span aria-hidden="true" style={{ color: "var(--c-text-muted)" }}>
-            <Icon name="tuzka" size={14} />
-          </span>
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="field" style={{ marginBottom: 0, padding: "8px 0" }}>
-      <label className="field-label" htmlFor={`inline-${label}`}>
-        {label}
-      </label>
-      <input
-        id={`inline-${label}`}
-        value={draft}
-        autoFocus
-        placeholder={placeholder}
-        onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-          if (e.key === "Escape") setEditing(false);
-        }}
-        onBlur={() => {
-          setEditing(false);
-          if (draft !== value) onSave(draft);
-        }}
-      />
-    </div>
-  );
-}
 
 export default function KontaktDetailPage() {
   const { contactId = "" } = useParams();
@@ -113,7 +54,10 @@ export default function KontaktDetailPage() {
     const text = note.trim();
     if (!text) return;
     setNote("");
-    await api(`/api/contacts/${contactId}/notes`, { method: "POST", body: { text } });
+    await api(`/api/contacts/${contactId}/notes`, {
+      method: "POST",
+      body: { text },
+    });
     await invalidate(contactId);
   }
 
@@ -136,7 +80,10 @@ export default function KontaktDetailPage() {
   }
 
   async function cancelContact(reason: string) {
-    await api(`/api/contacts/${contactId}/cancel`, { method: "POST", body: { reason } });
+    await api(`/api/contacts/${contactId}/cancel`, {
+      method: "POST",
+      body: { reason },
+    });
     await invalidate(contactId);
     toast("Kontakt zrušený");
     navigate("/kontakty");
@@ -188,41 +135,42 @@ export default function KontaktDetailPage() {
           </div>
 
           <section className="card card-pad">
-            <div className="field" style={{ marginBottom: 4 }}>
-              <label className="field-label" htmlFor="c-assignee">
-                Ozve se
-              </label>
-              <SelectSheet
-                id="c-assignee"
-                value={contact.assigned_to ?? ""}
-                placeholder="— nikdo —"
-                options={[
-                  { value: "", label: "— nikdo —" },
-                  ...(users.data?.users ?? [])
-                    .filter((u) => u.active)
-                    .map((u) => ({ value: u.id, label: u.name })),
-                ]}
-                onChange={(v) => void patch({ assigned_to: (v || null) as never })}
+            <div className="value-rows">
+              <ValueRow label="Ozve se" value="">
+                <SelectSheet
+                  id="c-assignee"
+                  value={contact.assigned_to ?? ""}
+                  placeholder="— nikdo —"
+                  options={[
+                    { value: "", label: "— nikdo —" },
+                    ...(users.data?.users ?? [])
+                      .filter((u) => u.active)
+                      .map((u) => ({ value: u.id, label: u.name })),
+                  ]}
+                  onChange={(v) => void patch({ assigned_to: (v || null) as never })}
+                />
+              </ValueRow>
+              <ValueRow
+                label="Jméno"
+                value={contact.name}
+                placeholder="doplnit jméno"
+                onSave={(name) => void patch({ name })}
+              />
+              <ValueRow
+                label="Telefon"
+                kind="tel"
+                value={contact.phone}
+                placeholder="doplnit telefon"
+                onSave={(phone) => void patch({ phone })}
+              />
+              <ValueRow
+                label="Místo"
+                kind="adresa"
+                value={contact.place}
+                placeholder="doplnit místo"
+                onSave={(place) => void patch({ place })}
               />
             </div>
-            <InlineField
-              label="Jméno"
-              value={contact.name}
-              placeholder="doplnit jméno"
-              onSave={(name) => void patch({ name })}
-            />
-            <InlineField
-              label="Telefon"
-              value={contact.phone}
-              placeholder="doplnit telefon"
-              onSave={(phone) => void patch({ phone })}
-            />
-            <InlineField
-              label="Místo"
-              value={contact.place}
-              placeholder="doplnit místo"
-              onSave={(place) => void patch({ place })}
-            />
           </section>
 
           {orders.length > 0 && (

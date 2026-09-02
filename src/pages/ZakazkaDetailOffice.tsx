@@ -20,6 +20,7 @@ import {
   SkeletonList,
   TextInput,
   ToneBadge,
+  ValueRow,
   useDelayed,
 } from "../components/ui";
 
@@ -138,42 +139,70 @@ export default function ZakazkaDetailOfficePage() {
                 </span>
               </div>
 
-              <div className="meta-row">
-                <span className="meta-label">Telefon</span>
-                <span className="meta-value">{order.customer_phone || "—"}</span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">E-mail</span>
-                <span className="meta-value">{order.customer_email || "—"}</span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">Fakturační adresa</span>
-                <span className="meta-value">
-                  {order.addr_fakt_same
-                    ? `${order.addr_montaz || "—"}${order.addr_montaz ? " (stejná jako montážní)" : ""}`
-                    : order.addr_fakt || "—"}
-                </span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">IČO / DIČ</span>
-                <span className="meta-value">
-                  {[order.ico, order.dic].filter(Boolean).join(" / ") || "—"}
-                </span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">Zaměřeno</span>
-                <span className="meta-value">
-                  {czDate(order.measured_at)}
-                  {order.measured_time ? ` v ${order.measured_time}` : ""}
-                </span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">Cena práce technika</span>
-                <span className="meta-value">{money(order.price_montage)}</span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">Technik</span>
-                <span className="meta-value" style={{ minWidth: 200 }}>
+              <div className="value-rows">
+                <ValueRow
+                  label="Jméno"
+                  value={order.customer_name}
+                  placeholder="doplnit jméno"
+                  onSave={(v) => void patch({ customer_name: v })}
+                />
+                <ValueRow
+                  label="Telefon"
+                  kind="tel"
+                  value={order.customer_phone}
+                  placeholder="doplnit telefon"
+                  onSave={(v) => void patch({ customer_phone: v })}
+                />
+                <ValueRow
+                  label="E-mail"
+                  kind="email"
+                  value={order.customer_email}
+                  placeholder="doplnit e-mail"
+                  onSave={(v) => void patch({ customer_email: v })}
+                />
+                <ValueRow
+                  label="Adresa montáže"
+                  kind="adresa"
+                  value={order.addr_montaz}
+                  placeholder="doplnit adresu"
+                  onSave={(v) => void patch({ addr_montaz: v })}
+                />
+                <ValueRow
+                  label="Fakturační adresa"
+                  kind="adresa"
+                  value={order.addr_fakt_same ? order.addr_montaz : order.addr_fakt}
+                  hint={order.addr_fakt_same ? "stejná jako montážní" : undefined}
+                  placeholder={order.addr_fakt_same ? "podle montážní" : "doplnit adresu"}
+                  onSave={order.addr_fakt_same ? undefined : (v) => void patch({ addr_fakt: v })}
+                />
+                <ValueRow
+                  label="IČO / DIČ"
+                  value={[order.ico, order.dic].filter(Boolean).join(" / ")}
+                  placeholder="jen u firem"
+                  copy={!!order.ico || !!order.dic}
+                  onSave={(v) => {
+                    const [ico = "", dic = ""] = v.split("/").map((s) => s.trim());
+                    void patch({ ico, dic });
+                  }}
+                />
+                <ValueRow
+                  label="Zaměřeno"
+                  copy={false}
+                  value={
+                    czDate(order.measured_at) +
+                    (order.measured_time ? ` v ${order.measured_time}` : "")
+                  }
+                />
+                <ValueRow
+                  label="Cena práce technika"
+                  kind="castka"
+                  copy={false}
+                  value={order.price_montage.trim() ? money(order.price_montage) : ""}
+                  editValue={order.price_montage}
+                  placeholder="zadá technik"
+                  onSave={(v) => void patch({ price_montage: v })}
+                />
+                <ValueRow label="Technik" value="">
                   <NativeSelect
                     value={order.assignee_id ?? ""}
                     placeholder="Nepřidělen"
@@ -188,7 +217,7 @@ export default function ZakazkaDetailOfficePage() {
                         </option>
                       ))}
                   </NativeSelect>
-                </span>
+                </ValueRow>
               </div>
             </section>
 
@@ -240,7 +269,13 @@ export default function ZakazkaDetailOfficePage() {
                 <h2 className="card-section-title">Fotky</h2>
                 <div className="photo-grid" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
                   {[...d.items.flatMap((i) => i.photos), ...d.photos].map((p) => (
-                    <a className="photo-slot" key={p.id} href={p.data} target="_blank" rel="noreferrer">
+                    <a
+                      className="photo-slot"
+                      key={p.id}
+                      href={p.data}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       <img src={p.data} alt="" />
                     </a>
                   ))}
@@ -287,13 +322,17 @@ export default function ZakazkaDetailOfficePage() {
                       inputMode="numeric"
                       value={price}
                       onChange={(e) => setPrice(e.target.value.replace(/[^\d]/g, ""))}
-                      onBlur={() => price !== (order.price_customer ?? "") && void patch({ price_customer: price })}
+                      onBlur={() =>
+                        price !== (order.price_customer ?? "") &&
+                        void patch({ price_customer: price })
+                      }
                     />
                     <span className="input-unit-label">Kč</span>
                   </div>
                 </Field>
                 <p className="field-help" style={{ marginTop: -8 }}>
-                  Přepiš z nacenění. Cena práce technika {money(order.price_montage)} je její součástí.
+                  Přepiš z nacenění. Cena práce technika {money(order.price_montage)} je její
+                  součástí.
                 </p>
 
                 <div style={{ position: "relative" }}>
@@ -330,7 +369,11 @@ export default function ZakazkaDetailOfficePage() {
                 </Button>
                 {(!order.price_customer?.trim() || !order.term_dodani) && (
                   <p className="field-help">
-                    Chybí: {[!order.price_customer?.trim() && "cena zakázky", !order.term_dodani && "termín dodání"]
+                    Chybí:{" "}
+                    {[
+                      !order.price_customer?.trim() && "cena zakázky",
+                      !order.term_dodani && "termín dodání",
+                    ]
                       .filter(Boolean)
                       .join(", ")}
                   </p>
@@ -365,7 +408,9 @@ export default function ZakazkaDetailOfficePage() {
                     {order.term_montaz ? czDate(order.term_montaz) : "zadá technik"}
                   </span>
                 </div>
-                <p className="muted t-body-s">Montuje technik. Po podpisu se zakázka posune k fakturaci.</p>
+                <p className="muted t-body-s">
+                  Montuje technik. Po podpisu se zakázka posune k fakturaci.
+                </p>
               </>
             )}
 
@@ -376,7 +421,9 @@ export default function ZakazkaDetailOfficePage() {
                     id="p-fa"
                     value={invoice}
                     onChange={(e) => setInvoice(e.target.value)}
-                    onBlur={() => invoice !== order.invoice_no && void patch({ invoice_no: invoice })}
+                    onBlur={() =>
+                      invoice !== order.invoice_no && void patch({ invoice_no: invoice })
+                    }
                   />
                 </Field>
                 <Button
@@ -387,7 +434,9 @@ export default function ZakazkaDetailOfficePage() {
                 >
                   Vystavit montážní list
                 </Button>
-                {pdfMissing.length > 0 && <p className="field-help">Chybí: {pdfMissing.join(", ")}.</p>}
+                {pdfMissing.length > 0 && (
+                  <p className="field-help">Chybí: {pdfMissing.join(", ")}.</p>
+                )}
                 <Button
                   variant="primary"
                   className="btn-block"
@@ -419,7 +468,9 @@ export default function ZakazkaDetailOfficePage() {
                   onClick={async () => {
                     setBusy(true);
                     try {
-                      await api(`/api/orders/${orderId}/restore`, { method: "POST" });
+                      await api(`/api/orders/${orderId}/restore`, {
+                        method: "POST",
+                      });
                       await invalidate(orderId);
                       toast("Zakázka obnovená — vrací se tam, kde byla.");
                     } catch (err) {
@@ -435,7 +486,12 @@ export default function ZakazkaDetailOfficePage() {
             )}
 
             {order.phase !== "hotovo" && order.phase !== "zruseno" && (
-              <div style={{ borderTop: "1px solid var(--c-hairline)", paddingTop: 12 }}>
+              <div
+                style={{
+                  borderTop: "1px solid var(--c-hairline)",
+                  paddingTop: 12,
+                }}
+              >
                 <CancelBlock
                   label="Zrušit zakázku"
                   onCancel={(reason) => void movePhase("zruseno", reason)}

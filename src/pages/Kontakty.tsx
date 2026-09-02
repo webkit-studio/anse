@@ -165,36 +165,6 @@ function ContactRowCard({
   );
 }
 
-/** Inline editovatelná buňka v tabulce kanceláře. */
-function InlineCell({
-  value,
-  placeholder,
-  onSave,
-}: {
-  value: string;
-  placeholder: string;
-  onSave: (next: string) => void;
-}) {
-  const [draft, setDraft] = useState(value);
-  return (
-    <input
-      className="inline-edit"
-      value={draft}
-      placeholder={placeholder}
-      aria-label={placeholder}
-      onClick={(e) => e.stopPropagation()}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={() => {
-        if (draft !== value) onSave(draft);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") e.currentTarget.blur();
-        if (e.key === "Escape") setDraft(value);
-      }}
-    />
-  );
-}
-
 export default function KontaktyPage() {
   const office = useOfficeView();
   const [params, setParams] = useSearchParams();
@@ -283,27 +253,12 @@ export default function KontaktyPage() {
                   <td style={{ width: 44 }}>
                     <FreshStar contact={c} onToggle={toggleFresh} />
                   </td>
-                  <td className="cell-strong">
-                    <InlineCell
-                      value={c.name}
-                      placeholder="Jméno"
-                      onSave={(name) => void patch(c.id, { name })}
-                    />
-                  </td>
-                  <td>
-                    <InlineCell
-                      value={c.phone}
-                      placeholder="Telefon"
-                      onSave={(phone) => void patch(c.id, { phone })}
-                    />
-                  </td>
-                  <td>
-                    <InlineCell
-                      value={c.place}
-                      placeholder="Místo"
-                      onSave={(place) => void patch(c.id, { place })}
-                    />
-                  </td>
+                  {/* Údaje se v tabulce jen čtou — měnit se dají v detailu,
+                      kde má každý řádek tužku, kopii a akci. V tabulce zůstává
+                      jen to, co je stav (ozvat se, komu patří). */}
+                  <td className="cell-strong">{c.name || <span className="cell-muted">—</span>}</td>
+                  <td>{c.phone || <span className="cell-muted">—</span>}</td>
+                  <td>{c.place || <span className="cell-muted">—</span>}</td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <NativeSelect
                       value={c.assigned_to ?? ""}

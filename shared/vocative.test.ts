@@ -119,6 +119,73 @@ describe("5. pád — ženská jména", () => {
   });
 });
 
+// Nálezy tří korektorů — každý řádek níž byl chyba, která se dostala do UI.
+
+describe("ženská jména na souhlásku se NESKLOŇUJÍ", () => {
+  // Kořen všech nalezených chyb: ženské jméno propadlo mužským pravidlům.
+  // Proto se skloňuje jen tam, kde je zakončení jednoznačně mužské, nebo je
+  // jméno v seznamu MUZSKA — jinak radši první pád.
+  it.each([
+    ["Nicol", "Nicol"], // dřív „Nicole" — jiné jméno, ne jiný pád
+    ["Esther", "Esther"],
+    ["Judit", "Judit"],
+    ["Judith", "Judith"],
+    ["Ráchel", "Ráchel"],
+    ["Isabel", "Isabel"],
+    ["Rut", "Rut"],
+    ["Astrid", "Astrid"],
+    ["Carmen", "Carmen"],
+    ["Mirjam", "Mirjam"],
+    ["Sharon", "Sharon"],
+    ["Marion", "Marion"],
+    ["Vivien", "Vivien"],
+    ["Lilian", "Lilian"],
+    ["Kim", "Kim"],
+    ["Yasmin", "Yasmin"],
+    ["Jasmin", "Jasmin"], // pravopis jména se nepřepisuje na „Jasmín"
+    ["Doris", "Doris"], // -s nese i ženská jména, proto se ptáme na seznam
+    ["Iris", "Iris"],
+    ["Sarah", "Sarah"],
+  ])("%s → %s", (jmeno, ocekavano) => {
+    expect(vokativ(jmeno)).toBe(ocekavano);
+  });
+});
+
+describe("zakončení, která pravidla dřív komolila", () => {
+  it.each([
+    // -ěk mimo -něk: vypadává ě a kmen měkne
+    ["Luděk", "Luďku"],
+    ["Zdeněk", "Zdeňku"],
+    ["Zbyněk", "Zbyňku"],
+    // po ď/ť/ň se píše tvrdé i — „Miloňi" neexistuje
+    ["Miloň", "Miloni"],
+    ["Bohuň", "Bohuni"],
+    // cizí -ek/-ec, kde se -e- nevypouští
+    ["Derek", "Dereku"],
+    ["Alec", "Alecu"],
+    // cizí -h, které se nečte tvrdě
+    ["Rajesh", "Rajeshi"],
+    ["Joseph", "Josephe"],
+  ])("%s → %s", (jmeno, ocekavano) => {
+    expect(vokativ(jmeno)).toBe(ocekavano);
+  });
+});
+
+describe("zápis jména se nemá rozbít", () => {
+  it("verzálky zůstanou verzálkami, ne „PETře“", () => {
+    expect(vokativ("PETR")).toBe("PETŘE");
+    expect(vokativ("MAREK")).toBe("MARKU");
+    expect(vokativ("JAN")).toBe("JANE");
+    expect(vokativ("KAREL")).toBe("KARLE");
+    expect(vokativ("JANA")).toBe("JANO");
+  });
+
+  it("složené jméno se skloňuje po částech", () => {
+    expect(vokativ("Jan-Karel")).toBe("Jane-Karle");
+    expect(vokativ("Anna-Marie")).toBe("Anno-Marie");
+  });
+});
+
 describe("ošklivé vstupy nesmí nic rozbít", () => {
   it("prázdno a mezery", () => {
     expect(vokativ("")).toBe("");
@@ -127,10 +194,38 @@ describe("ošklivé vstupy nesmí nic rozbít", () => {
     expect(osloveni("   ", 9)).toBe("Dobré dopoledne");
   });
 
+  it("jedno písmeno je iniciála, ne jméno", () => {
+    // dřív: „A" → „o", „J" → „Ji", „R" → „Re"
+    expect(vokativ("A")).toBe("A");
+    expect(vokativ("J")).toBe("J");
+    expect(vokativ("R")).toBe("R");
+  });
+
+  it("klíče z Object.prototype nevrací funkci ani objekt", () => {
+    expect(typeof vokativ("constructor")).toBe("string");
+    expect(typeof vokativ("__proto__")).toBe("string");
+    expect(typeof vokativ("toString")).toBe("string");
+  });
+
+  it("netextový vstup nespadne", () => {
+    expect(vokativ(null as never)).toBe("");
+    expect(vokativ(undefined as never)).toBe("");
+    expect(vokativ(42 as never)).toBe("");
+    expect(krestni(null as never)).toBe("");
+  });
+
   it("křestní jméno se bere z celého jména", () => {
     expect(krestni("Jakub Svoboda")).toBe("Jakub");
     expect(krestni("  Marek   Konderla ")).toBe("Marek");
     expect(krestni("Jednoslovné")).toBe("Jednoslovné");
+  });
+
+  it("titul není jméno", () => {
+    // dřív: „Dobré dopoledne, Ing."
+    expect(krestni("Ing. Jakub")).toBe("Jakub");
+    expect(krestni("Mgr. Jan Novák")).toBe("Jan");
+    expect(krestni("MUDr. Petr Svoboda")).toBe("Petr");
+    expect(osloveni("Ing. Jakub Svoboda", 9)).toBe("Dobré dopoledne, Jakube");
   });
 
   it("celé oslovení", () => {

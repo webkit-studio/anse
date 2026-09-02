@@ -12,7 +12,7 @@ import {
 } from "react";
 import type { OrderPhase, Role, Tone } from "@shared/types";
 import { phaseLabelFor, phaseTone } from "@shared/types";
-import { ToneGlyph } from "./Icon";
+import { Icon, ToneGlyph } from "./Icon";
 
 // --- Button -------------------------------------------------------------
 
@@ -538,5 +538,238 @@ export function ConfirmButton({
     >
       {arming ? confirmLabel : label}
     </button>
+  );
+}
+
+// --- Řádek s hodnotou a akcemi ---------------------------------------------
+
+/** Zkopíruje text a řekne to. Bez clipboard API (starší prohlížeč) neselže. */
+export async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Odkaz na mapy — otevře se v appce, když ji člověk má, jinak na webu. */
+export function mapUrl(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
+export function telUrl(phone: string): string {
+  return `tel:${phone.replace(/\s/g, "")}`;
+}
+
+/**
+ * Druh údaje. Určuje kontextovou akci vpravo (zavolat / napsat / navigovat)
+ * a klávesnici, která na telefonu vyjede při editaci.
+ */
+export type ValueKind = "text" | "tel" | "email" | "adresa" | "castka" | "datum";
+
+const KIND_INPUT: Record<ValueKind, { mode: InputHTMLAttributes<HTMLInputElement>["inputMode"]; type: string }> = {
+  text: { mode: "text", type: "text" },
+  tel: { mode: "tel", type: "tel" },
+  email: { mode: "email", type: "email" },
+  adresa: { mode: "text", type: "text" },
+  castka: { mode: "numeric", type: "text" },
+  datum: { mode: "text", type: "text" },
+};
+
+/** Skočí na řádek a rovnou otevře jeho editaci — z klikací blokace. */
+export function focusValueRow(row: string) {
+  const el = document.querySelector<HTMLElement>(`[data-row="${row}"]`);
+  if (!el) return;
+  el.scrollIntoView({ block: "center", behavior: "smooth" });
+  el.querySelector<HTMLButtonElement>(".value-row-edit")?.click();
+}
+
+/**
+ * Řádek „popisek — hodnota — akce". JEDINÝ způsob, jak se v detailech ukazuje
+ * a mění údaj — aby to nebylo pokaždé jinak.
+ *
+ * Akce sedí v pevných slotech (kontextová · kopírovat · tužka), takže tužka je
+ * na všech řádcích ve stejném sloupci. Na myši se rozsvítí až při najetí, ať
+ * karta není poseta ikonami; na dotyku svítí pořád, protože tam hover není.
+ * Editace probíhá rovnou v řádku, nikdy v jiném okně.
+ */
+export function ValueRow({
+  label,
+  value,
+  editValue,
+  placeholder = "—",
+  kind = "text",
+  hint,
+  row,
+  copy = true,
+  onSave,
+  onEdit,
+  children,
+}: {
+  label: string;
+  /** Co se ukazuje (u částky už zformátované). */
+  value: string;
+  /** Co se nabídne k editaci, když se liší od zobrazeného (částka, datum). */
+  editValue?: string;
+  placeholder?: string;
+  kind?: ValueKind;
+  /** Drobná věta pod hodnotou — třeba proč pole nejde vyplnit. */
+  hint?: string;
+  /** Kotva pro focusValueRow (klikací blokace). */
+  row?: string;
+  copy?: boolean;
+  /** Uloží novou hodnotu. Bez něj je řádek jen ke čtení (bez tužky). */
+  onSave?: (next: string) => void;
+  /** Vlastní editor místo inputu (kalendář). Má přednost před onSave. */
+  onEdit?: () => void;
+  /** Vlastní ovládání v místě hodnoty (výběr technika) — ať i select sedí
+   *  ve stejné mřížce jako ostatní řádky a nekazí rytmus karty. */
+  children?: ReactNode;
+}) {
+  const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fieldId = useId();
+  const has = value.trim() !== "";
+  const raw = editValue ?? (has ? value : "");
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 1600);
+    return () => clearTimeout(t);
+  }, [copied]);
+
+  function open() {
+    if (onEdit) {
+      onEdit();
+      return;
+    }
+    setDraft(raw);
+    setEditing(true);
+  }
+
+  function commit() {
+    setEditing(false);
+    const next = draft.trim();
+    if (next !== raw.trim()) onSave?.(next);
+  }
+
+  if (editing) {
+    return (
+      <div className="value-row value-row-editing" data-row={row}>
+        <label className="value-row-label" htmlFor={fieldId}>
+          {label}
+        </label>
+        <span className="value-row-value">
+          <input
+            id={fieldId}
+            ref={inputRef}
+            className="value-row-input"
+            value={draft}
+            autoFocus
+            type={KIND_INPUT[kind].type}
+            inputMode={KIND_INPUT[kind].mode}
+            placeholder={placeholder}
+            autoComplete="off"
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+              if (e.key === "Escape") setEditing(false);
+            }}
+          />
+        </span>
+        <span className="value-row-actions">
+          <span className="icon-slot" />
+          <span className="icon-slot" />
+          <button
+            type="button"
+            className="icon-btn icon-btn-done"
+            title="Uložit"
+            aria-label="Uložit"
+            onClick={() => inputRef.current?.blur()}
+          >
+            <Icon name="hotovo" size={18} />
+          </button>
+        </span>
+      </div>
+    );
+  }
+
+  const akce =
+    has && kind === "tel" ? (
+      <a className="icon-btn" href={telUrl(value)} aria-label={`Zavolat na ${value}`} title="Zavolat">
+        <Icon name="volat" size={18} />
+      </a>
+    ) : has && kind === "email" ? (
+      <a className="icon-btn" href={`mailto:${value}`} aria-label={`Napsat na ${value}`} title="Napsat e-mail">
+        <Icon name="obalka" size={18} />
+      </a>
+    ) : has && kind === "adresa" ? (
+      <a
+        className="icon-btn"
+        href={mapUrl(value)}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Zobrazit ${value} v mapách`}
+        title="Zobrazit v mapách"
+      >
+        <Icon name="mapa" size={18} />
+      </a>
+    ) : null;
+
+  if (children) {
+    return (
+      <div className="value-row value-row-control" data-row={row}>
+        <span className="value-row-label">{label}</span>
+        <span className="value-row-value">{children}</span>
+        <span className="value-row-actions">
+          <span className="icon-slot" />
+          <span className="icon-slot" />
+          <span className="icon-slot" />
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="value-row" data-row={row}>
+      <span className="value-row-label">{label}</span>
+      <span className="value-row-value">
+        {has ? value : <span className="muted">{placeholder}</span>}
+        {hint && <span className="value-row-hint">{hint}</span>}
+      </span>
+      <span className="value-row-actions">
+        {akce ?? <span className="icon-slot" />}
+        {has && copy ? (
+          <button
+            type="button"
+            className={`icon-btn ${copied ? "icon-btn-done" : ""}`}
+            aria-label={`Zkopírovat ${label.toLowerCase()}`}
+            title={copied ? "Zkopírováno" : "Zkopírovat"}
+            onClick={() => void copyText(value).then(setCopied)}
+          >
+            <Icon name={copied ? "hotovo" : "kopie"} size={18} />
+          </button>
+        ) : (
+          <span className="icon-slot" />
+        )}
+        {onSave || onEdit ? (
+          <button
+            type="button"
+            className="icon-btn value-row-edit"
+            aria-label={`Upravit ${label.toLowerCase()}`}
+            title="Upravit"
+            onClick={open}
+          >
+            <Icon name="tuzka" size={18} />
+          </button>
+        ) : (
+          <span className="icon-slot" />
+        )}
+      </span>
+    </div>
   );
 }

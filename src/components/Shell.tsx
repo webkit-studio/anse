@@ -57,7 +57,7 @@ function NotifList({
 
   return (
     <>
-      <div style={{ display: "grid", gap: 8, overflowY: "auto" }}>
+      <div className="notif-list">
         {rows.map((n) => (
           <button
             key={n.id}
@@ -226,7 +226,7 @@ export function TechNav() {
  * Detail kontaktu i formulář položky používají technikův layout v obou rolích —
  * bez tohohle by kancelář uprostřed práce ztratila celou levou navigaci.
  */
-function InOfficeFrame({ children }: { children: ReactNode }) {
+export function InOfficeFrame({ children }: { children: ReactNode }) {
   const office = useOfficeView();
   if (!office) return <>{children}</>;
   return (
@@ -386,6 +386,9 @@ export function OfficeShell({
           {actions}
         </header>
         <div className="office-body">{children}</div>
+        {/* na telefonu má kancelář stejnou spodní navigaci jako technik —
+            dvě různá ovládání na jedné appce jsou horší než jedno */}
+        <TechNav />
       </div>
     </div>
   );

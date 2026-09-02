@@ -10,7 +10,7 @@ import { PhotoPicker, uploadPending, type PendingPhoto } from "../components/Pho
 import { NavodOverlay, navodySlugsFor } from "../components/NavodOverlay";
 import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
-import { TechDetailFramed } from "../components/Shell";
+import { InOfficeFrame, TechDetailFramed } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
   Button,
@@ -115,13 +115,9 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   const d = detail.data;
   const item = mode === "edit" ? d?.items.find((i) => i.id === itemId) : undefined;
 
-  // Blokující krok: údaje zákazníka se vyplňují před první položkou.
-  useEffect(() => {
-    if (mode !== "new" || !d || detail.isFetching) return;
-    if (d.items.length === 0 && d.blocking.includes("Údaje zákazníka")) {
-      navigate(`/zakazky/${orderId}/zakaznik?dal=polozka`, { replace: true });
-    }
-  }, [mode, d, detail.isFetching, navigate, orderId]);
+  // Údaje zákazníka tu ZÁMĚRNĚ nic neblokují. Technik měří hned, jak vejde do
+  // domu, a jméno s e-mailem dopisuje, až na ně přijde řeč — chybí jen k tomu,
+  // aby šla zakázka poslat k nacenění, a to hlídá warn-bar na detailu.
   const productTypes = types.data?.product_types ?? [];
 
   // Editace: produkt, podkategorie i verze definice jsou dané položkou.
@@ -431,6 +427,7 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   }`;
 
   return (
+    <InOfficeFrame>
     <div className="tech">
       <div className="tech-bar">
         <Link to={`/zakazky/${orderId}`} className="back-btn">
@@ -524,5 +521,6 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
         />
       )}
     </div>
+    </InOfficeFrame>
   );
 }

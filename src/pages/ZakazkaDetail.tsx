@@ -17,15 +17,10 @@ import {
   PhaseBadge,
   SkeletonList,
   ToneBadge,
+  ValueRow,
+  focusValueRow,
   useDelayed,
 } from "../components/ui";
-
-/** Kolik údajů zákazníka chybí (badge u rozbalovací sekce). */
-function missingCustomer(o: OrderDetail["order"]): number {
-  return [o.customer_name, o.customer_phone, o.customer_email, o.addr_montaz].filter(
-    (v) => !v.trim(),
-  ).length;
-}
 
 /** Souhrn položky: rozměr · strana · barva (printMap definice, u konfigurátoru
  *  ho počítá server). */
@@ -73,7 +68,12 @@ function ItemCard({
       {item.photos.length > 0 && (
         <span
           className="muted t-caption"
-          style={{ flex: "none", display: "inline-flex", alignItems: "center", gap: 3 }}
+          style={{
+            flex: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 3,
+          }}
         >
           {item.photos.length}
           <Icon name="foto" size={15} />
@@ -95,25 +95,26 @@ export default function ZakazkaDetailPage() {
   const invalidate = useInvalidateOrder();
   const showSkeleton = useDelayed(detail.isPending);
 
-  const [showCustomer, setShowCustomer] = useState(false);
   const [montazOpen, setMontazOpen] = useState(false);
+  const [zamereniOpen, setZamereniOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const role = me.data?.role ?? "technik";
   const d = detail.data;
   const order = d?.order;
 
-  async function setTermMontaz(iso: string) {
+  /** Jedna cesta pro všechny úpravy hlavičky — včetně optimistického zámku. */
+  async function patch(body: Record<string, unknown>, hlaska: string) {
     if (!order) return;
     try {
       await api(`/api/orders/${orderId}`, {
         method: "PATCH",
-        body: { term_montaz: iso, expected_updated_at: order.updated_at },
+        body: { ...body, expected_updated_at: order.updated_at },
       });
       await invalidate(orderId);
-      toast(`Termín montáže ${czDate(iso)}`);
+      toast(hlaska);
     } catch (err) {
-      toast(err instanceof Error ? err.message : "Termín se nepodařilo uložit.");
+      toast(err instanceof Error ? err.message : "Nepodařilo se uložit.");
     }
   }
 
@@ -142,6 +143,43 @@ export default function ZakazkaDetailPage() {
     );
   }
 
+  /** Blokace není jen hláška — každá vede rovnou na místo, kde se doplní. */
+  function jdiNa(blokace: string) {
+    if (blokace === "Aspoň jedna položka") {
+      navigate(`/zakazky/${orderId}/polozka/nova`);
+      return;
+    }
+    if (blokace === "Cena práce") {
+      // Ne do řádku, ale na „poslední krok": jsou tam sazbové zkratky
+      // (půl dne, celý den) a uloží se i odešle jedním ťuknutím. Cenu jde
+      // pořád přepsat tužkou v řádku jako každý jiný údaj.
+      navigate(`/zakazky/${orderId}/cena`);
+      return;
+    }
+    if (blokace === "Údaje zákazníka" && order) {
+      const chybi = (
+        [
+          ["jmeno", order.customer_name],
+          ["telefon", order.customer_phone],
+          ["email", order.customer_email],
+          ["adresa", order.addr_montaz],
+        ] as const
+      ).find(([, v]) => !v.trim());
+      focusValueRow(chybi?.[0] ?? "jmeno");
+      return;
+    }
+    if (blokace === "Termín montáže") {
+      setMontazOpen(true);
+      return;
+    }
+    if (blokace === "Podpis zákazníka") {
+      navigate(`/zakazky/${orderId}/montaz`);
+      return;
+    }
+    // Zbytek (technik, termín dodání, faktura) dělá kancelář — technik jen vidí.
+    toast("Tohle doplní kancelář.");
+  }
+
   // Patka podle fáze — jedno hlavní tlačítko, ať je jasné, co se čeká.
   let footer: JSX.Element | undefined;
   if (order) {
@@ -150,12 +188,21 @@ export default function ZakazkaDetailPage() {
       const blocking = d?.blocking ?? [];
       const noItems = (d?.items.length ?? 0) === 0;
       const next = noItems
-        ? { label: "Přidat první položku", act: () => navigate(`/zakazky/${orderId}/polozka/nova`) }
+        ? {
+            label: "Přidat první položku",
+            act: () => navigate(`/zakazky/${orderId}/polozka/nova`),
+          }
         : blocking.includes("Údaje zákazníka")
-          ? { label: "Doplnit údaje zákazníka", act: () => navigate(`/zakazky/${orderId}/zakaznik`) }
+          ? {
+              label: "Doplnit údaje zákazníka",
+              act: () => jdiNa("Údaje zákazníka"),
+            }
           : blocking.includes("Cena práce")
-            ? { label: "Doplnit cenu práce", act: () => navigate(`/zakazky/${orderId}/cena`) }
-            : { label: "K nacenění — odeslat", act: () => void movePhase("k_naceneni") };
+            ? { label: "Doplnit cenu práce", act: () => jdiNa("Cena práce") }
+            : {
+                label: "K nacenění — odeslat",
+                act: () => void movePhase("k_naceneni"),
+              };
 
       footer = (
         <>
@@ -224,33 +271,12 @@ export default function ZakazkaDetailPage() {
             </h1>
             <p className="muted t-body-s" style={{ margin: 0 }}>
               {order.addr_montaz || "adresa montáže se doplní"}
-            {d.items.length > 0 ? ` · ${czItems(d.items.length)}` : ""}
+              {d.items.length > 0 ? ` · ${czItems(d.items.length)}` : ""}
             </p>
           </div>
 
           {order.phase === "zruseno" && order.cancelled_reason && (
             <div className="warn-bar">Zrušeno: {order.cancelled_reason}</div>
-          )}
-
-          {order.phase === "k_montazi" && (
-            <>
-              <div className="dark-card">
-                <div className="dark-card-label">Termín dodání</div>
-                <div className="dark-card-value">{czDate(order.term_dodani)}</div>
-                <div className="dark-card-sub">zadává kancelář</div>
-              </div>
-              <button type="button" className="card card-link" onClick={() => setMontazOpen(true)}>
-                <span className="card-main">
-                  <span className="meta-label">Termín montáže</span>
-                  <span className="card-title" style={{ fontSize: 16 }}>
-                    {order.term_montaz ? czDate(order.term_montaz) : "Zadat termín"}
-                  </span>
-                </span>
-                <span className="card-chevron" aria-hidden="true">
-                  ›
-                </span>
-              </button>
-            </>
           )}
 
           {d.blocking.length > 0 && order.phase !== "zruseno" && (
@@ -260,92 +286,131 @@ export default function ZakazkaDetailPage() {
                 Než pošleš dál, chybí:
                 <ul className="blocking-list">
                   {d.blocking.map((b) => (
-                    <li key={b}>{b}</li>
+                    <li key={b}>
+                      <button type="button" className="blocking-go" onClick={() => jdiNa(b)}>
+                        {b}
+                      </button>
+                    </li>
                   ))}
                 </ul>
               </span>
             </div>
           )}
 
-          <section className="card">
-            <div className="card-pad" style={{ paddingBottom: 0 }}>
-              <div className="meta-row">
-                <span className="meta-label">Zaměření</span>
-                <span className="meta-value">
-                  {czDateShort(order.measured_at)}
-                  {order.measured_time ? ` v ${order.measured_time}` : ""}
-                </span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">Položek</span>
-                <span className="meta-value">{d.items.length}</span>
-              </div>
-              <div className="meta-row">
-                <span className="meta-label">Cena práce</span>
-                <span className="meta-value">{money(order.price_montage)}</span>
-              </div>
+          {/* Zákazník je první: technik ho má před sebou a vyplňuje ho jako
+              první věc po příchodu. Nic se neschovává za rozbalovátko. */}
+          <section className="card card-pad">
+            <h2 className="card-section-title card-section-title-inline">Zákazník</h2>
+            <div className="value-rows">
+              <ValueRow
+                label="Jméno"
+                row="jmeno"
+                value={order.customer_name}
+                placeholder="doplnit jméno"
+                onSave={(v) => void patch({ customer_name: v }, "Jméno uloženo")}
+              />
+              <ValueRow
+                label="Telefon"
+                row="telefon"
+                kind="tel"
+                value={order.customer_phone}
+                placeholder="doplnit telefon"
+                onSave={(v) => void patch({ customer_phone: v }, "Telefon uložen")}
+              />
+              <ValueRow
+                label="E-mail"
+                row="email"
+                kind="email"
+                value={order.customer_email}
+                placeholder="doplnit e-mail"
+                onSave={(v) => void patch({ customer_email: v }, "E-mail uložen")}
+              />
+              <ValueRow
+                label="Adresa montáže"
+                row="adresa"
+                kind="adresa"
+                value={order.addr_montaz}
+                placeholder="doplnit adresu"
+                onSave={(v) => void patch({ addr_montaz: v }, "Adresa uložena")}
+              />
+              <ValueRow
+                label="Fakturační adresa"
+                kind="adresa"
+                value={order.addr_fakt_same ? order.addr_montaz : order.addr_fakt}
+                hint={order.addr_fakt_same ? "stejná jako montážní" : undefined}
+                placeholder={order.addr_fakt_same ? "podle montážní" : "doplnit adresu"}
+                onSave={
+                  order.addr_fakt_same
+                    ? undefined
+                    : (v) => void patch({ addr_fakt: v }, "Fakturační adresa uložena")
+                }
+              />
+              <ValueRow
+                label="IČO / DIČ"
+                value={[order.ico, order.dic].filter(Boolean).join(" / ")}
+                placeholder="jen u firem"
+                copy={!!order.ico || !!order.dic}
+                onEdit={() => navigate(`/zakazky/${orderId}/zakaznik`)}
+              />
+            </div>
+          </section>
+
+          {/* Zakázka: termíny v pořadí, v jakém opravdu jdou po sobě. */}
+          <section className="card card-pad">
+            <h2 className="card-section-title card-section-title-inline">Zakázka</h2>
+            <div className="value-rows">
+              <ValueRow
+                label="Zaměření"
+                kind="datum"
+                copy={false}
+                value={
+                  czDateShort(order.measured_at) +
+                  (order.measured_time ? ` v ${order.measured_time}` : "")
+                }
+                onEdit={order.phase === "k_zamereni" ? () => setZamereniOpen(true) : undefined}
+              />
+              <ValueRow
+                label="Termín dodání"
+                kind="datum"
+                copy={false}
+                value={order.term_dodani ? czDate(order.term_dodani) : ""}
+                placeholder="zatím neznámý"
+                hint={order.term_dodani ? undefined : "doplní kancelář po objednání u dodavatele"}
+              />
+              <ValueRow
+                label="Termín montáže"
+                row="montaz"
+                kind="datum"
+                copy={false}
+                value={order.term_montaz ? czDate(order.term_montaz) : ""}
+                placeholder={order.term_dodani ? "zadat termín" : "až bude známé dodání"}
+                hint={order.term_dodani ? undefined : "montáž se domlouvá, až kancelář zná dodání"}
+                onEdit={order.term_dodani ? () => setMontazOpen(true) : undefined}
+              />
+              <ValueRow label="Položek" value={String(d.items.length)} copy={false} />
+              <ValueRow
+                label="Cena práce"
+                row="cena-prace"
+                kind="castka"
+                copy={false}
+                value={order.price_montage.trim() ? money(order.price_montage) : ""}
+                editValue={order.price_montage}
+                placeholder="doplnit cenu"
+                // Vysvětlení je nápověda k vyplnění, ne trvalý popisek —
+                // jakmile je cena zadaná, řádek se uklidní.
+                hint={
+                  order.price_montage.trim() ? undefined : "tvoje odměna za montáž, určuješ si ji sám"
+                }
+                onSave={
+                  order.phase === "k_zamereni"
+                    ? (v) => void patch({ price_montage: v }, "Cena práce uložena")
+                    : undefined
+                }
+              />
               {role === "kancelar" && (
-                <div className="meta-row">
-                  <span className="meta-label">Cena zakázky</span>
-                  <span className="meta-value">{money(order.price_customer)}</span>
-                </div>
+                <ValueRow label="Cena zakázky" value={money(order.price_customer)} copy={false} />
               )}
             </div>
-
-            <button
-              type="button"
-              className="disclosure"
-              aria-expanded={showCustomer}
-              onClick={() => setShowCustomer((v) => !v)}
-            >
-              <span>Další údaje zákazníka</span>
-              <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                {missingCustomer(order) > 0 && (
-                  <span className="disclosure-badge">chybí {missingCustomer(order)}</span>
-                )}
-                <span aria-hidden="true">{showCustomer ? "▴" : "▾"}</span>
-              </span>
-            </button>
-
-            {showCustomer && (
-              <div className="card-pad" style={{ paddingTop: 0 }}>
-                <div className="meta-row">
-                  <span className="meta-label">Jméno</span>
-                  <span className="meta-value">{order.customer_name || "—"}</span>
-                </div>
-                <div className="meta-row">
-                  <span className="meta-label">Telefon</span>
-                  <span className="meta-value">{order.customer_phone || "—"}</span>
-                </div>
-                <div className="meta-row">
-                  <span className="meta-label">E-mail</span>
-                  <span className="meta-value">{order.customer_email || "—"}</span>
-                </div>
-                <div className="meta-row">
-                  <span className="meta-label">Fakturační adresa</span>
-                  <span className="meta-value">
-                    {order.addr_fakt_same
-                      ? `${order.addr_montaz || "—"}${order.addr_montaz ? " (stejná)" : ""}`
-                      : order.addr_fakt || "—"}
-                  </span>
-                </div>
-                {(order.ico || order.dic) && (
-                  <div className="meta-row">
-                    <span className="meta-label">IČO / DIČ</span>
-                    <span className="meta-value">
-                      {[order.ico, order.dic].filter(Boolean).join(" / ")}
-                    </span>
-                  </div>
-                )}
-                <Link
-                  to={`/zakazky/${orderId}/zakaznik`}
-                  className="btn btn-secondary btn-block"
-                  style={{ marginTop: 12 }}
-                >
-                  Upravit údaje zákazníka
-                </Link>
-              </div>
-            )}
           </section>
 
           <section>
@@ -399,20 +464,6 @@ export default function ZakazkaDetailPage() {
             </div>
           </section>
 
-          {order.price_montage && (
-            <section className="card card-pad">
-              <span className="meta-label">Cena práce</span>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-                <span className="t-display-m">{money(order.price_montage)}</span>
-                {order.phase === "k_zamereni" && (
-                  <Link to={`/zakazky/${orderId}/cena`} className="link-btn">
-                    Upravit
-                  </Link>
-                )}
-              </div>
-            </section>
-          )}
-
           {order.signed_at && (
             <div className="info-row">
               <ToneBadge tone="done">Podepsáno {czDateShort(order.signed_at)}</ToneBadge>
@@ -438,7 +489,22 @@ export default function ZakazkaDetailPage() {
           onClose={() => setMontazOpen(false)}
           onPick={(iso) => {
             setMontazOpen(false);
-            void setTermMontaz(iso);
+            void patch({ term_montaz: iso }, `Termín montáže ${czDate(iso)}`);
+          }}
+        />
+      )}
+
+      {zamereniOpen && order && (
+        <DateSheet
+          title="Termín zaměření"
+          value={order.measured_at}
+          withTime
+          time={order.measured_time}
+          confirmLabel="Uložit termín"
+          onClose={() => setZamereniOpen(false)}
+          onPick={(iso, time) => {
+            setZamereniOpen(false);
+            void patch({ measured_at: iso, measured_time: time }, `Zaměření ${czDate(iso)}`);
           }}
         />
       )}
