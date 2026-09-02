@@ -57,6 +57,10 @@ function initState(product: KonfigProduct, initial: Params): KonfigState {
   }
   if (Object.keys(state).length === 0) {
     for (const f of product.fields) {
+      // Povinná čísla se nepředvyplňují — rozměry musí technik změřit a napsat
+      // sám (SUYS má u šířky/výšky výchozí 1000, to by svádělo k neměření).
+      // Nepovinná čísla (množství 1 ks) zůstávají pohodlím.
+      if (f.input === "number" && f.required) continue;
       if (f.defaultVisible && f.defaultValue.trim() !== "") state[f.code] = f.defaultValue;
     }
   }
