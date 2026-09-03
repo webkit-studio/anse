@@ -7,7 +7,7 @@ import { NOTIF_EVENTS } from "../shared/types";
 const base: NotifMailData = {
   title: "Novákovi · Květinová 128, Průhonice",
   body: "Novákovi · Květinová 128, Průhonice — 7 položek k nacenění.",
-  eventLabel: "Nové zaměření",
+  eventLabel: "K nacenění",
   url: "https://anse-zakazky.netlify.app/zakazky/8f2c1e4a-1111-2222-3333-444455556666",
   cta: "Otevřít zakázku",
 };
@@ -30,13 +30,13 @@ describe("parseRecipients", () => {
 describe("notifMail", () => {
   it("předmět nese událost i zakázku", () => {
     expect(notifMailSubject(base)).toBe(
-      "Nové zaměření — Novákovi · Květinová 128, Průhonice",
+      "K nacenění — Novákovi · Květinová 128, Průhonice",
     );
   });
 
   it("HTML obsahuje zprávu i odkaz na zakázku", () => {
     const html = notifMailHtml(base);
-    expect(html).toContain("Nové zaměření");
+    expect(html).toContain("K nacenění");
     expect(html).toContain("7 položek k nacenění");
     expect(html).toContain(base.url);
     expect(html).toContain("Otevřít zakázku");
@@ -50,7 +50,7 @@ describe("notifMail", () => {
 
   it("textová varianta drží stejná data", () => {
     const text = notifMailText(base);
-    expect(text).toContain("Nové zaměření");
+    expect(text).toContain("K nacenění");
     expect(text).toContain("7 položek k nacenění");
     expect(text).toContain(base.url);
   });

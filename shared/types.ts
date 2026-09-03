@@ -85,11 +85,6 @@ export function phaseLabelFor(phase: OrderPhase, role: Role): string {
 }
 
 /**
- * Povolené přechody — JEN VPŘED, o jeden krok.
- * `zruseno` je mimo linku: technik ruší, dokud se nezačalo objednávat,
- * kancelář kdykoli mimo hotovo (zákazník nepřijal cenu).
- */
-/**
  * Čí úkol je odblokovat. Technik v terénu nemá co dělat s číslem faktury ani
  * s cenou pro zákazníka — vypisovat mu je do „chybí" jen mate, protože s tím
  * nic nesvede. Řetězce MUSÍ sedět s blockingFor() v server/routes/orders.ts;
@@ -113,6 +108,11 @@ export function blokaceProRoli(blokace: string[], role: Role): string[] {
   return blokace.filter((b) => BLOKACE_PATRI[b] !== "kancelar");
 }
 
+/**
+ * Povolené přechody — JEN VPŘED, o jeden krok.
+ * `zruseno` je mimo linku: technik ruší, dokud se nezačalo objednávat,
+ * kancelář kdykoli mimo hotovo (zákazník nepřijal cenu).
+ */
 export const ALLOWED_PHASE_TRANSITIONS: Record<Role, Partial<Record<OrderPhase, OrderPhase[]>>> = {
   technik: {
     // admin i technik zaměřují (Marek jezdí taky) — odeslání k nacenění
@@ -396,8 +396,10 @@ export const NOTIF_EVENTS: NotifEventMeta[] = [
   {
     event: "nove_zamereni",
     to: "kancelar",
-    label: "Nové zaměření",
-    trigger: "Technik odešle K nacenění",
+    // Popisek je z pohledu PŘÍJEMCE, ne odesílatele: kancelář nezajímá, že
+    // technik dozaměřil, ale že jí na stole přistálo něco k nacenění.
+    label: "K nacenění",
+    trigger: "Technik odešle zaměření",
     template: "{zakázka} — {položky} k nacenění.",
     emailDefault: true,
   },

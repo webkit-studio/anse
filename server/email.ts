@@ -14,7 +14,7 @@ export interface NotifMailData {
   title: string;
   /** Tělo zprávy (jedna věta). */
   body: string;
-  /** Štítek události („Nové zaměření"). */
+  /** Štítek události („K nacenění"). */
   eventLabel: string;
   /** Odkaz do aplikace (detail zakázky nebo kontaktu). */
   url: string;

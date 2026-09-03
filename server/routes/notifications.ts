@@ -13,7 +13,10 @@ export const notificationRoutes: Route[] = [
   makeRoute("GET", "/api/notifications", async (_req, ctx) => {
     const db = sql();
     const rows = await db`
-      select id, event, title, body, order_id, contact_id, read, created_at
+      -- id::int, protože bigint vrací ovladač jako ŘETĚZEC. Typ NotificationRow
+      -- slibuje číslo a kontrakt /read číslo vyžaduje, takže klik na zprávu
+      -- končil na 400 a nic se neoznačilo za přečtené.
+      select id::int as id, event, title, body, order_id, contact_id, read, created_at
       from notifications where user_id = ${ctx.user.id}
       order by created_at desc limit 50
     `;

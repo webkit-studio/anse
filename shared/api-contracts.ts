@@ -219,7 +219,9 @@ export const notifPrefBody = z.object({
 
 export const notifReadBody = z.object({
   /** Prázdné = označit všechny přečtené. */
-  ids: z.array(z.number()).optional(),
+  // coerce: id je v DB bigint a ovladač ho umí vrátit jako řetězec. Server ho
+  // sice posílá jako číslo, ale ať se na tom neseknou starší otevřené záložky.
+  ids: z.array(z.coerce.number().int()).optional(),
 });
 
 export type ContactCreateBody = z.infer<typeof contactCreateBody>;

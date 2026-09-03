@@ -96,7 +96,9 @@ export const contactRoutes: Route[] = [
     if (!contact) throw new ApiError(404, "Kontakt nenalezen.");
 
     const notes = await db`
-      select n.id, n.contact_id, n.author_id, u.name as author_name, n.text, n.created_at
+      -- id::int ze stejného důvodu jako u notifikací: bigint chodí
+      -- z ovladače jako řetězec, ale typ ContactNote slibuje číslo.
+      select n.id::int as id, n.contact_id, n.author_id, u.name as author_name, n.text, n.created_at
       from contact_notes n join users u on u.id = n.author_id
       where n.contact_id = ${contact.id}
       order by n.created_at desc
