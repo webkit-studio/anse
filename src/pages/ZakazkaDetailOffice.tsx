@@ -66,35 +66,26 @@ function ExportyDodavateli({
         Podklady pro dodavatele
       </h3>
 
-      {nabidky.map((n) =>
-        n.csv ? (
-          <div key={n.subcategory_id} style={{ display: "grid", gap: 4 }}>
-            {/* Zkratka místo celého názvu: přesně ji kancelář vidí v portálu
-                ve sloupci Výrobek, takže se soubor pozná i bez čtení názvu —
-                a popisek se vejde na jeden řádek. Počet je pod tlačítkem. */}
-            <Button
-              variant="secondary"
-              title={n.nazev}
-              onClick={() => void download(`/export/jw-csv/${orderId}/${n.subcategory_id}`, toast)}
-            >
-              CSV pro Jack West · {n.zkratka}
-            </Button>
-            <p className="field-help">
-              {czItems(n.pocet)} v souboru.{" "}
-              {n.overeno
-                ? "Sloupce sedí na vzor od výrobce."
-                : `Sloupce pro ${n.zkratka} nemáme potvrzené vzorem od výrobce — portál po importu nabídne opravu hodnot, první objednávku projdi, než ji odešleš.`}
-            </p>
-          </div>
-        ) : (
-          // Výrobek bez importu se musí vypsat jménem, jinak kancelář zjistí až
-          // u dodavatele, že jí v objednávce chybí položky.
-          <p className="field-help" key={n.subcategory_id}>
-            {n.nazev} ({czItems(n.pocet)}) — import CSV u tohoto výrobku Jack West nemá, přepiš ho
-            v portálu ručně.
+      {nabidky.map((n) => (
+        <div key={n.subcategory_id} style={{ display: "grid", gap: 4 }}>
+          {/* Zkratka místo celého názvu: přesně ji kancelář vidí v portálu
+              ve sloupci Výrobek, takže se soubor pozná i bez čtení názvu —
+              a popisek se vejde na jeden řádek. Počet je pod tlačítkem. */}
+          <Button
+            variant="secondary"
+            title={n.nazev}
+            onClick={() => void download(`/export/jw-csv/${orderId}/${n.subcategory_id}`, toast)}
+          >
+            CSV pro Jack West · {n.zkratka}
+          </Button>
+          <p className="field-help">
+            {czItems(n.pocet)} v souboru.{" "}
+            {n.overeno
+              ? "Sloupce sedí na vzor od výrobce."
+              : `Sloupce pro ${n.zkratka} nemáme potvrzené vzorem od výrobce — portál po importu nabídne opravu hodnot, první objednávku projdi, než ji odešleš.`}
           </p>
-        ),
-      )}
+        </div>
+      ))}
 
       <Button
         variant="secondary"

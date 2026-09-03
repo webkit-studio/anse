@@ -18,9 +18,8 @@ od Věry Syryčanské (systémový analytik JW), 3. 9. 2026. Vzor je v repu jako
    doporučuje první importovanou objednávku projít, než se odešle.
 
 Tlačítko se objeví jen u výrobků, kde má **JW import zapnutý**: `ESD`, `PD`,
-`SEL-13`, `SEL-15`. Ostatní výrobky Jack Westu v zakázce se v panelu **vypíšou
-jménem** s poznámkou, že se přepisují ručně — ať se na ně nezapomene a nezjistí
-se to až u dodavatele podle chybějících položek.
+`SEL-13`, `SEL-15`. U ostatních výrobků — Jack Westu i jiných dodavatelů — se
+v panelu nic navíc nevypisuje, objednávají se v portálu ručně.
 
 ## Tvar souboru
 

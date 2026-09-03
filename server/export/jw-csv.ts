@@ -151,24 +151,21 @@ export async function buildJwCsv(
   return { csv, filename: nazevSouboru(zkratka, znacka), mapa };
 }
 
-/** Jeden výrobek Jack Westu v zakázce a jak se dá objednat. */
+/** Jeden výrobek zakázky, ke kterému jde stáhnout importní soubor. */
 export interface JwCsvNabidka {
   subcategory_id: string;
   nazev: string;
   zkratka: string;
-  /** false = tenhle výrobek portál ze souboru nenačte, přepisuje se ručně. */
-  csv: boolean;
   /** false = sloupce jsou odvozené, ne z exportu portálu — první import prověřit. */
   overeno: boolean;
   pocet: number;
 }
 
 /**
- * Výrobky Jack Westu v zakázce i s tím, jestli je portál umí načíst ze souboru.
- * Rozhoduje server: zná zkratky s povoleným importem i mapy sloupců, klient jen
- * vykreslí tlačítka a nemůže nabídnout soubor, který by portál odmítl. Výrobky
- * bez importu se vypisují taky — kancelář musí vědět, co v portálu ještě
- * přepsat ručně, a ne to zjistit až podle chybějící položky v objednávce.
+ * Které výrobky zakázky umí portál Jack Westu načíst ze souboru. Rozhoduje
+ * server: zná zkratky s povoleným importem i mapy sloupců, klient jen vykreslí
+ * tlačítka a nemůže nabídnout soubor, který by portál odmítl. Výrobky bez
+ * importu se nevypisují vůbec — panel má nabízet, ne komentovat.
  */
 export interface JwCsvPolozkaRadek {
   subcategory_id: string | null;
@@ -196,18 +193,15 @@ export function jwCsvNabidky(items: JwCsvPolozkaRadek[]): JwCsvNabidka[] {
       ? getKonfigProduct(i.subcategory_konfig_key)
       : undefined;
     const zkratka = product?.kod ?? i.subcategory_code ?? "";
-    const mapa = maJwCsv(zkratka)
-      ? product
-        ? jwCsvMapaZKonfiguratoru(product)
-        : JW_CSV_MAPY[zkratka]
-      : undefined;
+    if (!maJwCsv(zkratka)) continue;
+    const mapa = product ? jwCsvMapaZKonfiguratoru(product) : JW_CSV_MAPY[zkratka];
+    if (!mapa) continue;
 
     dle.set(i.subcategory_id, {
       subcategory_id: i.subcategory_id,
       nazev: i.subcategory_custom_name || i.subcategory_name || product?.nazev || zkratka,
       zkratka,
-      csv: !!mapa,
-      overeno: mapa?.overeno ?? false,
+      overeno: mapa.overeno,
       pocet: 1,
     });
   }
