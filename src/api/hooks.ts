@@ -257,7 +257,9 @@ export function useStatsMonth(month: string) {
 export function useSettings(enabled: boolean) {
   return useQuery({
     queryKey: ["settings"],
-    queryFn: () => api<{ admin_group_email: string }>("/api/settings"),
+    queryFn: () => api<{ admin_group_email: string; admin_group_events: Record<string, boolean> }>(
+        "/api/settings",
+      ),
     enabled,
   });
 }

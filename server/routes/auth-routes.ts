@@ -1,5 +1,5 @@
 import { loginBody } from "../../shared/api-contracts";
-import { clearSessionCookie, login, sessionCookie } from "../auth";
+import { activeUser, clearSessionCookie, login, sessionCookie } from "../auth";
 import { json } from "../http";
 import { makeRoute, parseBody, type Route } from "../router";
 
@@ -22,5 +22,10 @@ export const authRoutes: Route[] = [
     { isPublic: true },
   ),
 
-  makeRoute("GET", "/api/me", async (_req, ctx) => json({ user: ctx.user })),
+  makeRoute("GET", "/api/me", async (_req, ctx) => {
+    // Adresa se dobírá k session z cache uživatelů — v tokenu není, aby po
+    // změně v Účtech nesvítila v Notifikacích ta stará.
+    const u = await activeUser(ctx.user.id);
+    return json({ user: { ...ctx.user, email: u?.email ?? "" } });
+  }),
 ];

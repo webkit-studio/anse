@@ -97,10 +97,21 @@ export async function notify(input: NotifyInput): Promise<void> {
     // Společná adresa kanceláře se PŘIDÁVÁ, nenahrazuje. Dřív se použila jen
     // tehdy, když osobní adresu neměl vůbec nikdo — takže stačil jeden kolega
     // s adresou a na zbytek kanceláře se tiše zapomnělo.
+    // Společná adresa kanceláře má vlastní zapínání per událost — kancelář si
+    // řídí, co chodí všem, nezávisle na tom, co si kdo nastavil u sebe.
     let addresses = osobni;
     if (meta.to === "kancelar") {
-      const [s] = await db`select value from settings where key = 'admin_group_email'`;
-      addresses = [...new Set([...osobni, ...parseRecipients(String(s?.value ?? ""))])];
+      const rows = await db`
+        select key, value from settings where key in ('admin_group_email', 'admin_group_events')
+      `;
+      const mapa = new Map(rows.map((r) => [r.key as string, r.value]));
+      const zapnuto =
+        (mapa.get("admin_group_events") as Record<string, boolean> | undefined)?.[input.event] ??
+        meta.emailDefault;
+      if (zapnuto) {
+        const spolecne = parseRecipients(String(mapa.get("admin_group_email") ?? ""));
+        addresses = [...new Set([...osobni, ...spolecne])];
+      }
     }
     if (addresses.length === 0) return;
 

@@ -146,6 +146,8 @@ export interface SessionUser {
   id: string;
   name: string;
   role: Role;
+  /** Vlastní adresa pro notifikace; prázdná = e-maily uživateli nechodí. */
+  email?: string;
 }
 
 export interface UserRow {

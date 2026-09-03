@@ -16,6 +16,7 @@ import {
   Spinner,
   Switch,
   TextInput,
+  ValueRow,
 } from "../components/ui";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -147,15 +148,22 @@ function Notifikace() {
   const settings = useSettings(true);
   const toast = useToast();
   const [email, setEmail] = useState("");
+  const [udalosti, setUdalosti] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (settings.data) setEmail(settings.data.admin_group_email);
+    if (!settings.data) return;
+    setEmail(settings.data.admin_group_email);
+    setUdalosti(settings.data.admin_group_events ?? {});
   }, [settings.data]);
 
   async function save() {
-    await api("/api/settings", { method: "PUT", body: { admin_group_email: email } });
-    toast("Adresa uložená");
+    await api("/api/settings", {
+      method: "PUT",
+      body: { admin_group_email: email, admin_group_events: udalosti },
+    });
+    await settings.refetch();
+    toast("Nastavení uložené");
   }
 
   async function test() {
@@ -171,6 +179,15 @@ function Notifikace() {
     <OfficeShell title="Notifikace" subtitle="Zprávy v aplikaci chodí vždy, e-mail je volitelný">
       <section className="card card-pad">
         <h2 className="card-section-title">Moje e-maily</h2>
+        <p className="muted t-body-s">
+          Chodí na adresu tvého účtu{me.data?.email ? ` (${me.data.email})` : ""}. Vlastní adresu
+          si nastav v Účtech.
+        </p>
+        {!me.data?.email && (
+          <p className="field-msg field-msg-warning">
+            U tvého účtu není e-mail, takže ti žádný nedorazí. Doplň ho v Nastavení → Účty.
+          </p>
+        )}
         <NotifPrefsPanel />
       </section>
 
@@ -209,13 +226,35 @@ function Notifikace() {
       <section className="card card-pad">
         <h2 className="card-section-title">Společná adresa kanceláře</h2>
         <p className="muted t-body-s">
-          Sem chodí zprávy pro kancelář, pokud nikdo nemá vyplněný vlastní e-mail. Víc adres
-          oddělte čárkou.
+          Adresa, na kterou chodí zprávy pro celou kancelář — nezávisle na tom, co má kdo
+          nastavené u sebe. Víc adres oddělte čárkou.
         </p>
-        <Field label="E-mail pro notifikace" htmlFor="s-email">
-          <TextInput id="s-email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Field label="E-mail kanceláře" htmlFor="s-email">
+          <TextInput
+            id="s-email"
+            type="email"
+            value={email}
+            placeholder="kancelar@anse.cz"
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </Field>
-        <div style={{ display: "flex", gap: 8 }}>
+
+        <h3 className="card-section-title card-section-title-inline" style={{ marginTop: 16 }}>
+          Co na ni chodí
+        </h3>
+        <div className="value-rows">
+          {NOTIF_EVENTS.filter((e) => e.to === "kancelar").map((e) => (
+            <ValueRow key={e.event} label={e.label} value="" hint={e.trigger}>
+              <Switch
+                checked={udalosti[e.event] ?? e.emailDefault}
+                label={`Na adresu kanceláře: ${e.label}`}
+                onChange={(v) => setUdalosti({ ...udalosti, [e.event]: v })}
+              />
+            </ValueRow>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
           <Button variant="primary" onClick={() => void save()}>
             Uložit
           </Button>
@@ -223,6 +262,11 @@ function Notifikace() {
             {busy ? "Odesílám…" : "Poslat zkušební zprávu"}
           </Button>
         </div>
+        {!email.trim() && (
+          <p className="field-msg field-msg-warning" style={{ marginTop: 8 }}>
+            Bez adresy nechodí kanceláři žádný e-mail. Zprávy v aplikaci chodí vždycky.
+          </p>
+        )}
       </section>
     </OfficeShell>
   );

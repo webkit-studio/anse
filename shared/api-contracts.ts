@@ -190,6 +190,8 @@ export const userUpdateBody = z.object({
 
 export const settingsBody = z.object({
   admin_group_email: trimmed,
+  /** Které události jdou na společnou adresu kanceláře. Chybí = default události. */
+  admin_group_events: z.record(z.string(), z.boolean()).optional(),
 });
 
 // === produkty ==============================================================

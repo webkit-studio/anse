@@ -10,8 +10,14 @@ export const settingsRoutes: Route[] = [
     "/api/settings",
     async () => {
       const db = sql();
-      const [row] = await db`select value from settings where key = 'admin_group_email'`;
-      return json({ admin_group_email: (row?.value as string | undefined) ?? "" });
+      const rows = await db`
+        select key, value from settings where key in ('admin_group_email', 'admin_group_events')
+      `;
+      const mapa = new Map(rows.map((r) => [r.key as string, r.value]));
+      return json({
+        admin_group_email: (mapa.get("admin_group_email") as string | undefined) ?? "",
+        admin_group_events: (mapa.get("admin_group_events") as Record<string, boolean>) ?? {},
+      });
     },
     { officeOnly: true },
   ),
@@ -27,7 +33,17 @@ export const settingsRoutes: Route[] = [
         values ('admin_group_email', ${db.json(body.admin_group_email)})
         on conflict (key) do update set value = excluded.value
       `;
-      return json({ admin_group_email: body.admin_group_email });
+      if (body.admin_group_events !== undefined) {
+        await db`
+          insert into settings (key, value)
+          values ('admin_group_events', ${db.json(body.admin_group_events)})
+          on conflict (key) do update set value = excluded.value
+        `;
+      }
+      return json({
+        admin_group_email: body.admin_group_email,
+        admin_group_events: body.admin_group_events ?? {},
+      });
     },
     { officeOnly: true },
   ),

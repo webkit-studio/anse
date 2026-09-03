@@ -84,6 +84,8 @@ export function shouldRenew(session: VerifiedSession): boolean {
 interface CachedUser {
   role: Role;
   name: string;
+  /** Čte se z cache, ne z tokenu — po změně adresy by v tokenu zůstala stará. */
+  email: string;
   active: boolean;
 }
 
@@ -91,10 +93,15 @@ let usersCache: { at: number; byId: Map<string, CachedUser> } | null = null;
 
 export async function activeUser(id: string): Promise<CachedUser | null> {
   if (!usersCache || Date.now() - usersCache.at > 60_000) {
-    const rows = await sql()`select id, name, role, active from users`;
+    const rows = await sql()`select id, name, role, email, active from users`;
     usersCache = {
       at: Date.now(),
-      byId: new Map(rows.map((r) => [r.id as string, { role: r.role, name: r.name, active: r.active }])),
+      byId: new Map(
+        rows.map((r) => [
+          r.id as string,
+          { role: r.role, name: r.name, email: String(r.email ?? ""), active: r.active },
+        ]),
+      ),
     };
   }
   const user = usersCache.byId.get(id);
