@@ -44,8 +44,8 @@ test("technik: kontakt → zakázka → položka → cena práce → k naceněn�
   await expect(page.getByText("Volal kvůli sítím do oken.")).toBeVisible();
 
   // zakázka vzniká zadáním termínu zaměření
-  await page.getByRole("button", { name: "Zadat termín zaměření" }).click();
-  await page.getByRole("button", { name: "Založit zakázku" }).click();
+  await page.getByRole("button", { name: "Zaměřit", exact: true }).click();
+  await page.locator(".sheet").getByRole("button", { name: "Zaměřit" }).click();
   await expect(page).toHaveURL(/\/zakazky\/[0-9a-f-]{36}$/);
   orderUrl = page.url();
 
@@ -76,9 +76,14 @@ test("technik: kontakt → zakázka → položka → cena práce → k naceněn�
   await page.keyboard.press("Enter");
   await expect(page.locator('[data-row="email"]')).toContainText("novak@example.cz");
 
+  // Potvrzení FAJFKOU, ne Enterem: tlačítko sedí ve stejném slotu jako tužka,
+  // takže dokud stisk bral fokus inputu, uložilo se, řádek se překreslil a
+  // puštění myši dopadlo na tužku, která editaci hned zase otevřela — se starou
+  // hodnotou. Kontroluje se i to, že se nová hodnota ukáže hned.
   await page.locator('[data-row="adresa"] .value-row-edit').click();
   await page.locator('[data-row="adresa"] input').fill("Nádražní 12, Ostrava");
-  await page.keyboard.press("Enter");
+  await page.locator('[data-row="adresa"] [title="Uložit"]').click();
+  await expect(page.locator('[data-row="adresa"] input')).toHaveCount(0);
   await expect(page.locator('[data-row="adresa"]')).toContainText("Nádražní 12, Ostrava");
 
   // bez ceny práce nejde odeslat — CTA rovnou říká, co chybí
@@ -156,13 +161,13 @@ test.describe("kancelář: fakturace (desktop)", () => {
   test("faktura odemkne montážní list", async ({ page }) => {
     await login(page, "999999");
     await page.goto(orderUrl);
-    await expect(page.getByRole("button", { name: "Vystavit montážní list" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Stáhnout montážní list" })).toBeDisabled();
     await page.locator("#p-fa").fill(`E2E-${SUFFIX}`);
     await page.locator("#p-fa").blur();
-    await expect(page.getByRole("button", { name: "Vystavit montážní list" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Stáhnout montážní list" })).toBeEnabled();
 
     const download = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Vystavit montážní list" }).click();
+    await page.getByRole("button", { name: "Stáhnout montážní list" }).click();
     expect((await download).suggestedFilename()).toMatch(/\.pdf$/);
   });
 });

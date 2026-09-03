@@ -175,8 +175,13 @@ export function useNotifications() {
     queryKey: ["notifications"],
     queryFn: () =>
       api<{ notifications: NotificationRow[]; unread: number }>("/api/notifications"),
-    staleTime: 30_000,
-    refetchInterval: 120_000,
+    staleTime: 20_000,
+    // Zvonek se musí obnovit i po návratu do záložky a v záložce na pozadí —
+    // jinak kancelář po přepnutí zpět kouká na dvě minuty starý odznak
+    // a čerstvá zpráva se objeví „až za chvíli". Dotaz je levný (50 řádků).
+    refetchInterval: 45_000,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
   });
 }
 

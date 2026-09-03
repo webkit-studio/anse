@@ -1,5 +1,6 @@
 import { orderCreateBody, orderUpdateBody, phaseBody } from "../../shared/api-contracts";
 import { czDate, items as czItems } from "../../shared/format";
+import { paramyZDefinice, paramyZKonfiguratoru } from "../../shared/item-view";
 import { konfigSummary } from "../../shared/konfigurator";
 import {
   ARCHIVE_PHASES,
@@ -323,11 +324,23 @@ export const orderRoutes: Route[] = [
       rooms,
       items: items.map((i) => {
         const product = i.konfig_key ? getKonfigProduct(i.konfig_key as string) : undefined;
+        // Přehled parametrů skládá server: kancelář ho přepisuje do konfigurátoru
+        // dodavatele a musí odpovídat TÉ verzi definice, na které je položka
+        // připnutá — ne tomu, co má zrovna v prohlížeči.
+        const def = i.form_definition_id
+          ? defs.find((d) => d.id === i.form_definition_id)?.definition
+          : undefined;
+        const params_view = product
+          ? paramyZKonfiguratoru(product, i.params ?? {})
+          : def
+            ? paramyZDefinice(def as never, i.params ?? {})
+            : [];
         return {
           ...i,
           product_type_name: i.product_type_custom_name || i.product_type_name,
           subcategory_name: i.subcategory_custom_name || i.subcategory_name,
           konfig_summary: product ? konfigSummary(product, i.params ?? {}) : undefined,
+          params_view,
           photos: photos.filter((p) => p.item_id === i.id),
         };
       }),

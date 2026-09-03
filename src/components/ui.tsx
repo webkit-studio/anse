@@ -620,7 +620,7 @@ export function ValueRow({
   row?: string;
   copy?: boolean;
   /** Uloží novou hodnotu. Bez něj je řádek jen ke čtení (bez tužky). */
-  onSave?: (next: string) => void;
+  onSave?: (next: string) => void | Promise<void>;
   /** Vlastní editor místo inputu (kalendář). Má přednost před onSave. */
   onEdit?: () => void;
   /** Vlastní ovládání v místě hodnoty (výběr technika) — ať i select sedí
@@ -630,10 +630,17 @@ export function ValueRow({
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
+  // Právě uložená hodnota. Ukazuje se hned, ať se nečeká na uložení a načtení
+  // ze serveru — jinak řádek po potvrzení bliká zpátky na prázdno.
+  const [ulozeno, setUlozeno] = useState<string | null>(null);
+  // Potvrdit se smí jen jednou: fajfka commituje z kliku a input z rozostření,
+  // a obojí se při jednom potvrzení spustí za sebou.
+  const hotovoRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const fieldId = useId();
-  const has = value.trim() !== "";
-  const raw = editValue ?? (has ? value : "");
+  const zobrazene = ulozeno ?? value;
+  const has = zobrazene.trim() !== "";
+  const raw = editValue ?? (has ? zobrazene : "");
 
   useEffect(() => {
     if (!copied) return;
@@ -646,14 +653,25 @@ export function ValueRow({
       onEdit();
       return;
     }
+    hotovoRef.current = false;
     setDraft(raw);
     setEditing(true);
   }
 
-  function commit() {
+  async function commit() {
+    if (hotovoRef.current) return;
+    hotovoRef.current = true;
     setEditing(false);
     const next = draft.trim();
-    if (next !== raw.trim()) onSave?.(next);
+    if (next === raw.trim()) return;
+    setUlozeno(next);
+    try {
+      await onSave?.(next);
+    } finally {
+      // Uvolnit až po uložení: to už má řádek novou hodnotu z props, a když
+      // uložení selhalo, vrátí se poctivě ta původní.
+      setUlozeno(null);
+    }
   }
 
   if (editing) {
@@ -674,7 +692,7 @@ export function ValueRow({
             placeholder={placeholder}
             autoComplete="off"
             onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
+            onBlur={() => void commit()}
             onKeyDown={(e) => {
               if (e.key === "Enter") e.currentTarget.blur();
               if (e.key === "Escape") setEditing(false);
@@ -689,7 +707,11 @@ export function ValueRow({
             className="icon-btn icon-btn-done"
             title="Uložit"
             aria-label="Uložit"
-            onClick={() => inputRef.current?.blur()}
+            // Bez tohohle vezme stisk fokus inputu, ten se rozostří a uloží,
+            // řádek se překreslí do čtení — a puštění myši dopadne na tužku,
+            // která sedí ve stejném slotu a editaci hned zase otevře.
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => void commit()}
           >
             <Icon name="hotovo" size={18} />
           </button>
@@ -738,7 +760,7 @@ export function ValueRow({
     <div className="value-row" data-row={row}>
       <span className="value-row-label">{label}</span>
       <span className="value-row-value">
-        {has ? value : <span className="muted">{placeholder}</span>}
+        {has ? zobrazene : <span className="muted">{placeholder}</span>}
         {hint && <span className="value-row-hint">{hint}</span>}
       </span>
       <span className="value-row-actions">

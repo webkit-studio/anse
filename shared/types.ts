@@ -89,6 +89,30 @@ export function phaseLabelFor(phase: OrderPhase, role: Role): string {
  * `zruseno` je mimo linku: technik ruší, dokud se nezačalo objednávat,
  * kancelář kdykoli mimo hotovo (zákazník nepřijal cenu).
  */
+/**
+ * Čí úkol je odblokovat. Technik v terénu nemá co dělat s číslem faktury ani
+ * s cenou pro zákazníka — vypisovat mu je do „chybí" jen mate, protože s tím
+ * nic nesvede. Řetězce MUSÍ sedět s blockingFor() v server/routes/orders.ts;
+ * hlídá to test v server/blocking.test.ts.
+ */
+export const BLOKACE_PATRI: Record<string, Role> = {
+  "Přidělit technika": "kancelar",
+  "Údaje zákazníka": "technik",
+  "Aspoň jedna položka": "technik",
+  "Cena práce": "technik",
+  "Cena zakázky": "kancelar",
+  "Termín dodání": "kancelar",
+  "Termín montáže": "technik",
+  "Podpis zákazníka": "technik",
+  "Číslo faktury": "kancelar",
+};
+
+/** Co z blokací má smysl ukazovat dané roli. Kancelář vidí všechno. */
+export function blokaceProRoli(blokace: string[], role: Role): string[] {
+  if (role === "kancelar") return blokace;
+  return blokace.filter((b) => BLOKACE_PATRI[b] !== "kancelar");
+}
+
 export const ALLOWED_PHASE_TRANSITIONS: Record<Role, Partial<Record<OrderPhase, OrderPhase[]>>> = {
   technik: {
     // admin i technik zaměřují (Marek jezdí taky) — odeslání k nacenění
@@ -252,6 +276,8 @@ export interface ItemPhoto {
 }
 
 export interface ItemRow {
+  /** Popisky a hodnoty parametrů podle připnuté verze definice (počítá server). */
+  params_view?: { nazev: string; polozky: { label: string; value: string; code: string }[] }[];
   id: string;
   order_id: string;
   room_id: string;

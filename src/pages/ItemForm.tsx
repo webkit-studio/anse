@@ -236,14 +236,6 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
     }
   }
 
-  async function duplicate() {
-    if (!item) return;
-    await api(`/api/items/${item.id}/duplicate`, { method: "POST" });
-    await invalidate(orderId);
-    toast("Zkopírováno — rozměry přepiš");
-    navigate(`/zakazky/${orderId}`);
-  }
-
   async function remove() {
     if (!item) return;
     await api(`/api/items/${item.id}`, { method: "DELETE" });
@@ -420,11 +412,19 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
 
   const roomName =
     "id" in room ? (rooms.find((r) => r.id === room.id)?.name ?? "") : room.name;
-  // Krátký nadpis: kategorie produktu + místnost (celý název podkategorie
-  // je i tak vidět ve výběru a v detailu zakázky).
-  const title = `${product ? displayName(product) : (item?.product_type_name ?? "")} · ${
-    item ? (rooms.find((r) => r.id === item.room_id)?.name ?? "") : roomName || "bez místnosti"
-  }`;
+  // Nadpis pojmenuje položku STEJNĚ jako seznam v zakázce („Jack West · SEL 15"),
+  // ne jen kategorii („Okenní síť“) — jinak to vypadá, že je člověk jinde.
+  const nazevProduktu = item
+    ? item.subcategory_name || item.product_type_name
+    : sub
+      ? displayName(sub)
+      : product
+        ? displayName(product)
+        : "";
+  const mistnostNazev = item
+    ? (rooms.find((r) => r.id === item.room_id)?.name ?? "")
+    : roomName;
+  const title = [nazevProduktu, mistnostNazev || "vyber místnost"].filter(Boolean).join(" · ");
 
   return (
     <InOfficeFrame>
@@ -434,11 +434,8 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
           ← Zakázka
         </Link>
         <div style={{ display: "flex", gap: 8 }}>
-          {item && (
-            <Button variant="ghost" onClick={() => void duplicate()} aria-label="Duplikovat položku">
-              <Icon name="kopie" size={19} />
-            </Button>
-          )}
+          {/* Duplikace sedí u položky v seznamu zakázky, ne tady: kopíruje se
+              podle toho, co je v seznamu vidět, ne z otevřeného formuláře. */}
           {/* Tlačítko je vždy — když návod ještě není, overlay to řekne (U8). */}
           <Button variant="ghost" onClick={() => setNavod(true)}>
             <Icon name="navod" size={19} /> Návod

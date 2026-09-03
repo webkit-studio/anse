@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import type { OrderPhase } from "@shared/types";
+import { Fragment, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import type { ItemRow, OrderPhase } from "@shared/types";
 import { PHASE_FLOW, PHASE_LABELS } from "@shared/types";
 import { czDate, items as czItems, money } from "@shared/format";
 import { missingForPdf } from "@shared/print";
 import { api, isConflict } from "../api/client";
 import { useInvalidateOrder, useOrder, useUsers } from "../api/hooks";
 import { MiniCalendar } from "../components/DateSheet";
+import { Icon } from "../components/Icon";
+import { PhotoLightbox } from "../components/PhotoLightbox";
 import { OfficeShell } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
@@ -21,6 +23,7 @@ import {
   TextInput,
   ToneBadge,
   ValueRow,
+  copyText,
   useDelayed,
 } from "../components/ui";
 
@@ -41,6 +44,113 @@ async function download(url: string, toast: (t: string) => void) {
   URL.revokeObjectURL(link.href);
 }
 
+
+/**
+ * Rozbalený detail položky pro kancelář. Objednává se ručním přepisem do
+ * konfigurátoru dodavatele, takže tady rozhoduje přehlednost: parametry ve
+ * skupinách a pořadí formuláře dodavatele, u každého i kód, který se do
+ * konfigurátoru opisuje, a tlačítko na zkopírování celé skupiny.
+ */
+function PolozkaDetail({
+  item,
+  nazev,
+  mistnost,
+  orderId,
+  onFoto,
+}: {
+  item: ItemRow;
+  nazev: string;
+  mistnost?: string;
+  orderId: string;
+  onFoto: (photoId: string) => void;
+}) {
+  const [zkopirovano, setZkopirovano] = useState(false);
+  const skupiny = item.params_view ?? [];
+
+  useEffect(() => {
+    if (!zkopirovano) return;
+    const t = setTimeout(() => setZkopirovano(false), 1600);
+    return () => clearTimeout(t);
+  }, [zkopirovano]);
+
+  const vseTextem = [
+    `${nazev}${mistnost ? ` · ${mistnost}` : ""}`,
+    ...skupiny.flatMap((sk) => [
+      "",
+      sk.nazev,
+      ...sk.polozky.map((p) => `${p.label}: ${p.value}${p.value === p.code ? "" : ` (${p.code})`}`),
+    ]),
+    ...(item.note ? ["", `Poznámka: ${item.note}`] : []),
+  ].join("\n");
+
+  return (
+    <div className="polozka-detail">
+      <div className="polozka-detail-head">
+        <span className="polozka-detail-nazev">{nazev}</span>
+        {mistnost && <span className="muted t-body-s">{mistnost}</span>}
+        <button
+          type="button"
+          className={`btn btn-ghost ${zkopirovano ? "btn-ok" : ""}`}
+          onClick={() => void copyText(vseTextem).then(setZkopirovano)}
+        >
+          <Icon name={zkopirovano ? "hotovo" : "kopie"} size={17} />{" "}
+          {zkopirovano ? "Zkopírováno" : "Zkopírovat vše"}
+        </button>
+        <Link to={`/zakazky/${orderId}/polozka/${item.id}`} className="btn btn-secondary">
+          <Icon name="tuzka" size={16} /> Upravit
+        </Link>
+      </div>
+
+      {item.kind === "oprava" ? (
+        <p className="polozka-defekt">{item.defect_note || "Bez popisu závady."}</p>
+      ) : skupiny.length === 0 ? (
+        <p className="muted t-body-s">U téhle položky nejsou vyplněné žádné parametry.</p>
+      ) : (
+        <div className="param-skupiny">
+          {skupiny.map((sk) => (
+            <section className="param-skupina" key={sk.nazev}>
+              <h3 className="param-skupina-nazev">{sk.nazev}</h3>
+              <dl className="param-list">
+                {sk.polozky.map((par) => (
+                  <div className="param-radek" key={par.label + par.code}>
+                    <dt>{par.label}</dt>
+                    <dd>
+                      {par.value}
+                      {par.value !== par.code && <span className="param-kod">{par.code}</span>}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
+        </div>
+      )}
+
+      {item.note && (
+        <p className="polozka-poznamka">
+          <strong>Poznámka technika:</strong> {item.note}
+        </p>
+      )}
+
+      {item.photos.length > 0 && (
+        <div className="polozka-fotky">
+          {item.photos.map((f) => (
+            <button
+              type="button"
+              className="photo-slot"
+              key={f.id}
+              onClick={() => onFoto(f.id)}
+              aria-label={`Otevřít fotku k ${nazev}`}
+            >
+              <img src={f.data} alt={`Fotka k ${nazev}`} />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ZakazkaDetailOfficePage() {
   const { orderId = "" } = useParams();
   const navigate = useNavigate();
@@ -58,6 +168,8 @@ export default function ZakazkaDetailOfficePage() {
   const [calOpen, setCalOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [foto, setFoto] = useState<number | null>(null);
+  const [otevrenaPolozka, setOtevrenaPolozka] = useState<string | null>(null);
 
   useEffect(() => {
     if (!order || loaded) return;
@@ -111,6 +223,24 @@ export default function ZakazkaDetailOfficePage() {
   }
 
   const currentIndex = order ? PHASE_FLOW.indexOf(order.phase) : -1;
+  // Fotka bez popisu je k ničemu — kancelář musí vědět, co na ní hledat.
+  const fotky = d
+    ? [
+        ...d.items.flatMap((i) =>
+          i.photos.map((p) => ({
+            id: p.id,
+            data: p.data,
+            popis: `${i.subcategory_name || i.product_type_name}${
+              d.rooms.find((r) => r.id === i.room_id)?.name
+                ? ` · ${d.rooms.find((r) => r.id === i.room_id)!.name}`
+                : ""
+            }`,
+          })),
+        ),
+        ...d.photos.map((p) => ({ id: p.id, data: p.data, popis: "K celé zakázce" })),
+      ]
+    : [];
+
   const pdfMissing = order
     ? missingForPdf({ invoice_no: order.invoice_no, signed: !!order.signed_at })
     : [];
@@ -144,36 +274,39 @@ export default function ZakazkaDetailOfficePage() {
                   label="Jméno"
                   value={order.customer_name}
                   placeholder="doplnit jméno"
-                  onSave={(v) => void patch({ customer_name: v })}
+                  onSave={(v) => patch({ customer_name: v })}
                 />
                 <ValueRow
                   label="Telefon"
                   kind="tel"
                   value={order.customer_phone}
                   placeholder="doplnit telefon"
-                  onSave={(v) => void patch({ customer_phone: v })}
+                  onSave={(v) => patch({ customer_phone: v })}
                 />
                 <ValueRow
                   label="E-mail"
                   kind="email"
                   value={order.customer_email}
                   placeholder="doplnit e-mail"
-                  onSave={(v) => void patch({ customer_email: v })}
+                  onSave={(v) => patch({ customer_email: v })}
                 />
                 <ValueRow
                   label="Adresa montáže"
                   kind="adresa"
                   value={order.addr_montaz}
                   placeholder="doplnit adresu"
-                  onSave={(v) => void patch({ addr_montaz: v })}
+                  onSave={(v) => patch({ addr_montaz: v })}
                 />
+                {/* Vlastní fakturační adresa přebíjí montážní; dokud se
+                    nevyplní, ukazuje se montážní. Měnit jde vždycky. */}
                 <ValueRow
                   label="Fakturační adresa"
                   kind="adresa"
-                  value={order.addr_fakt_same ? order.addr_montaz : order.addr_fakt}
-                  hint={order.addr_fakt_same ? "stejná jako montážní" : undefined}
-                  placeholder={order.addr_fakt_same ? "podle montážní" : "doplnit adresu"}
-                  onSave={order.addr_fakt_same ? undefined : (v) => void patch({ addr_fakt: v })}
+                  value={order.addr_fakt.trim() || order.addr_montaz}
+                  editValue={order.addr_fakt}
+                  hint={order.addr_fakt.trim() ? undefined : "stejná jako montážní"}
+                  placeholder="stejná jako montážní"
+                  onSave={(v) => patch({ addr_fakt: v, addr_fakt_same: v.trim() === "" })}
                 />
                 <ValueRow
                   label="IČO / DIČ"
@@ -200,7 +333,7 @@ export default function ZakazkaDetailOfficePage() {
                   value={order.price_montage.trim() ? money(order.price_montage) : ""}
                   editValue={order.price_montage}
                   placeholder="zadá technik"
-                  onSave={(v) => void patch({ price_montage: v })}
+                  onSave={(v) => patch({ price_montage: v })}
                 />
                 <ValueRow label="Technik" value="">
                   <NativeSelect
@@ -241,13 +374,26 @@ export default function ZakazkaDetailOfficePage() {
                       const w = i.params.sirka ?? i.params.width;
                       const h = i.params.vyska ?? i.params.height;
                       const rozmer = i.konfig_summary || (w && h ? `${w} × ${h}` : "—");
+                      const nazev =
+                        i.kind === "oprava"
+                          ? `Oprava — ${i.product_type_name}`
+                          : i.subcategory_name || i.product_type_name;
+                      const rozbaleno = otevrenaPolozka === i.id;
                       return (
-                        <tr key={i.id}>
+                        <Fragment key={i.id}>
+                        {/* Klik rozbalí všechny parametry — kancelář je přepisuje
+                            do konfigurátoru dodavatele a potřebuje je vidět. */}
+                        <tr
+                          className="row-link"
+                          aria-expanded={rozbaleno}
+                          onClick={() => setOtevrenaPolozka(rozbaleno ? null : i.id)}
+                        >
                           <td className="cell-muted">{room?.name ?? "—"}</td>
                           <td className="cell-strong">
-                            {i.kind === "oprava"
-                              ? `Oprava — ${i.product_type_name}`
-                              : i.subcategory_name || i.product_type_name}
+                            <span className="polozka-caret" aria-hidden="true">
+                              {rozbaleno ? "▾" : "▸"}
+                            </span>
+                            {nazev}
                           </td>
                           <td className="num">{rozmer}</td>
                           <td className="cell-muted">
@@ -256,6 +402,23 @@ export default function ZakazkaDetailOfficePage() {
                               .join(" – ") || "—"}
                           </td>
                         </tr>
+                        {rozbaleno && (
+                          <tr className="polozka-detail-row">
+                            <td colSpan={4}>
+                              <PolozkaDetail
+                                item={i}
+                                nazev={nazev}
+                                mistnost={room?.name}
+                                orderId={orderId}
+                                onFoto={(id) => {
+                                  const idx = fotky.findIndex((f) => f.id === id);
+                                  if (idx >= 0) setFoto(idx);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        )}
+                        </Fragment>
                       );
                     })}
                   </tbody>
@@ -268,16 +431,17 @@ export default function ZakazkaDetailOfficePage() {
               <section>
                 <h2 className="card-section-title">Fotky</h2>
                 <div className="photo-grid" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
-                  {[...d.items.flatMap((i) => i.photos), ...d.photos].map((p) => (
-                    <a
+                  {fotky.map((p, i) => (
+                    <button
+                      type="button"
                       className="photo-slot"
                       key={p.id}
-                      href={p.data}
-                      target="_blank"
-                      rel="noreferrer"
+                      title={p.popis}
+                      aria-label={`Otevřít fotku — ${p.popis}`}
+                      onClick={() => setFoto(i)}
                     >
-                      <img src={p.data} alt="" />
-                    </a>
+                      <img src={p.data} alt={p.popis} />
+                    </button>
                   ))}
                 </div>
               </section>
@@ -426,17 +590,9 @@ export default function ZakazkaDetailOfficePage() {
                     }
                   />
                 </Field>
-                <Button
-                  variant="system"
-                  className="btn-block"
-                  disabled={pdfMissing.length > 0}
-                  onClick={() => void download(`/export/montazni-list-pdf/${orderId}`, toast)}
-                >
-                  Vystavit montážní list
-                </Button>
-                {pdfMissing.length > 0 && (
-                  <p className="field-help">Chybí: {pdfMissing.join(", ")}.</p>
-                )}
+                {/* Napřed uzavřít, teprve pak stahovat. Obráceně to vypadalo,
+                    že se montážní list musí stáhnout hned a pak už nepůjde —
+                    přitom jde stáhnout kdykoli, i po uzavření. */}
                 <Button
                   variant="primary"
                   className="btn-block"
@@ -444,6 +600,17 @@ export default function ZakazkaDetailOfficePage() {
                   onClick={() => void movePhase("hotovo")}
                 >
                   Hotovo
+                </Button>
+                {pdfMissing.length > 0 && (
+                  <p className="field-help">Chybí: {pdfMissing.join(", ")}.</p>
+                )}
+                <Button
+                  variant="secondary"
+                  className="btn-block"
+                  disabled={pdfMissing.length > 0}
+                  onClick={() => void download(`/export/montazni-list-pdf/${orderId}`, toast)}
+                >
+                  Stáhnout montážní list
                 </Button>
               </>
             )}
@@ -454,7 +621,7 @@ export default function ZakazkaDetailOfficePage() {
                 className="btn-block"
                 onClick={() => void download(`/export/montazni-list-pdf/${orderId}`, toast)}
               >
-                Montážní list (PDF)
+                Stáhnout montážní list
               </Button>
             )}
 
@@ -512,6 +679,10 @@ export default function ZakazkaDetailOfficePage() {
             />
           </aside>
         </div>
+      )}
+
+      {foto !== null && (
+        <PhotoLightbox photos={fotky} index={foto} onIndex={setFoto} onClose={() => setFoto(null)} />
       )}
     </OfficeShell>
   );

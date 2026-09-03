@@ -77,9 +77,6 @@ function NotifList({
           </button>
         ))}
       </div>
-      <Button variant="ghost" onClick={() => markRead.mutate(undefined)}>
-        Označit přečtené
-      </Button>
     </>
   );
 }
@@ -118,6 +115,7 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
   const [open, setOpen] = useState(false);
   const [settings, setSettings] = useState(false);
   const notifs = useNotifications();
+  const markAll = useMarkNotificationsRead();
   const navigate = useNavigate();
   const unread = notifs.data?.unread ?? 0;
 
@@ -157,21 +155,42 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
           >
             <div className="sheet-head">
               <span className="sheet-title">{settings ? "Nastavení notifikací" : "Zprávy"}</span>
-              <button
-                type="button"
-                className="sheet-close"
-                onClick={() => (settings ? setSettings(false) : setOpen(false))}
-                aria-label={settings ? "Zpět na zprávy" : "Zavřít"}
-              >
-                {settings ? "←" : "✕"}
-              </button>
+              <span className="notif-head-akce">
+                {/* Přečtení je akce nad seznamem, ne tlačítko pod ním — dole
+                    se schovávalo pod zprávami a nikdo ho nenašel. */}
+                {!settings && unread > 0 && (
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    title="Označit vše jako přečtené"
+                    aria-label="Označit vše jako přečtené"
+                    onClick={() => markAll.mutate(undefined)}
+                  >
+                    <Icon name="hotovo" size={18} />
+                  </button>
+                )}
+                {!settings && (
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    title="Nastavení notifikací"
+                    aria-label="Nastavení notifikací"
+                    onClick={() => setSettings(true)}
+                  >
+                    <Icon name="nastaveni" size={18} />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="sheet-close"
+                  onClick={() => (settings ? setSettings(false) : setOpen(false))}
+                  aria-label={settings ? "Zpět na zprávy" : "Zavřít"}
+                >
+                  {settings ? "←" : "✕"}
+                </button>
+              </span>
             </div>
             {settings ? <NotifPrefsPanel /> : <NotifList onOpen={openTarget} />}
-            {!settings && (
-              <Button variant="ghost" onClick={() => setSettings(true)}>
-                ⚙ Nastavení notifikací
-              </Button>
-            )}
           </div>
         </div>
       )}

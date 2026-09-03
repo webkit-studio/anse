@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { FormDefinition } from "@shared/form-schema";
 import type { ItemRow, OrderDetail } from "@shared/types";
+import { blokaceProRoli } from "@shared/types";
 import { czDate, czDateShort, items as czItems, money } from "@shared/format";
 import { api } from "../api/client";
 import { useInvalidateOrder, useMe, useOrder } from "../api/hooks";
@@ -43,14 +44,18 @@ function ItemCard({
   item,
   orderId,
   def,
+  onDuplicate,
 }: {
   item: ItemRow;
   orderId: string;
   def?: FormDefinition;
+  /** Duplikace sedí u položky v seznamu — kopíruje se to, co je vidět. */
+  onDuplicate?: () => void;
 }) {
   const summary = itemSummary(item, def);
 
   return (
+    <div className="item-row">
     <Link
       to={`/zakazky/${orderId}/polozka/${item.id}`}
       className={`card-link ${item.kind === "oprava" ? "repair-card" : ""}`}
@@ -83,6 +88,18 @@ function ItemCard({
         ›
       </span>
     </Link>
+      {onDuplicate && (
+        <button
+          type="button"
+          className="icon-btn item-dup"
+          title="Duplikovat položku"
+          aria-label={`Duplikovat ${item.subcategory_name || item.product_type_name}`}
+          onClick={onDuplicate}
+        >
+          <Icon name="kopie" size={18} />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -102,6 +119,8 @@ export default function ZakazkaDetailPage() {
   const role = me.data?.role ?? "technik";
   const d = detail.data;
   const order = d?.order;
+  // Technikovi se vypisuje jen to, co může sám odblokovat.
+  const mojeBlokace = blokaceProRoli(d?.blocking ?? [], role);
 
   /** Jedna cesta pro všechny úpravy hlavičky — včetně optimistického zámku. */
   async function patch(body: Record<string, unknown>, hlaska: string) {
@@ -115,6 +134,17 @@ export default function ZakazkaDetailPage() {
       toast(hlaska);
     } catch (err) {
       toast(err instanceof Error ? err.message : "Nepodařilo se uložit.");
+    }
+  }
+
+  /** Kopie položky — rozměry se pak jen přepíšou. */
+  async function duplikovat(itemId: string) {
+    try {
+      await api(`/api/items/${itemId}/duplicate`, { method: "POST" });
+      await invalidate(orderId);
+      toast("Zkopírováno — rozměry přepiš");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Kopii se nepodařilo vytvořit.");
     }
   }
 
@@ -200,7 +230,7 @@ export default function ZakazkaDetailPage() {
           : blocking.includes("Cena práce")
             ? { label: "Doplnit cenu práce", act: () => jdiNa("Cena práce") }
             : {
-                label: "K nacenění — odeslat",
+                label: "Odeslat k nacenění",
                 act: () => void movePhase("k_naceneni"),
               };
 
@@ -279,13 +309,13 @@ export default function ZakazkaDetailPage() {
             <div className="warn-bar">Zrušeno: {order.cancelled_reason}</div>
           )}
 
-          {d.blocking.length > 0 && order.phase !== "zruseno" && (
+          {mojeBlokace.length > 0 && order.phase !== "zruseno" && (
             <div className="warn-bar">
               <span aria-hidden="true">●</span>
               <span>
                 Než pošleš dál, chybí:
                 <ul className="blocking-list">
-                  {d.blocking.map((b) => (
+                  {mojeBlokace.map((b) => (
                     <li key={b}>
                       <button type="button" className="blocking-go" onClick={() => jdiNa(b)}>
                         {b}
@@ -307,7 +337,7 @@ export default function ZakazkaDetailPage() {
                 row="jmeno"
                 value={order.customer_name}
                 placeholder="doplnit jméno"
-                onSave={(v) => void patch({ customer_name: v }, "Jméno uloženo")}
+                onSave={(v) => patch({ customer_name: v }, "Jméno uloženo")}
               />
               <ValueRow
                 label="Telefon"
@@ -315,7 +345,7 @@ export default function ZakazkaDetailPage() {
                 kind="tel"
                 value={order.customer_phone}
                 placeholder="doplnit telefon"
-                onSave={(v) => void patch({ customer_phone: v }, "Telefon uložen")}
+                onSave={(v) => patch({ customer_phone: v }, "Telefon uložen")}
               />
               <ValueRow
                 label="E-mail"
@@ -323,7 +353,7 @@ export default function ZakazkaDetailPage() {
                 kind="email"
                 value={order.customer_email}
                 placeholder="doplnit e-mail"
-                onSave={(v) => void patch({ customer_email: v }, "E-mail uložen")}
+                onSave={(v) => patch({ customer_email: v }, "E-mail uložen")}
               />
               <ValueRow
                 label="Adresa montáže"
@@ -331,18 +361,22 @@ export default function ZakazkaDetailPage() {
                 kind="adresa"
                 value={order.addr_montaz}
                 placeholder="doplnit adresu"
-                onSave={(v) => void patch({ addr_montaz: v }, "Adresa uložena")}
+                onSave={(v) => patch({ addr_montaz: v }, "Adresa uložena")}
               />
+              {/* Vlastní fakturační adresa přebíjí montážní. Dokud se nevyplní,
+                  ukazuje se montážní jako odvozená — ale měnit jde vždycky. */}
               <ValueRow
                 label="Fakturační adresa"
                 kind="adresa"
-                value={order.addr_fakt_same ? order.addr_montaz : order.addr_fakt}
-                hint={order.addr_fakt_same ? "stejná jako montážní" : undefined}
-                placeholder={order.addr_fakt_same ? "podle montážní" : "doplnit adresu"}
-                onSave={
-                  order.addr_fakt_same
-                    ? undefined
-                    : (v) => void patch({ addr_fakt: v }, "Fakturační adresa uložena")
+                value={order.addr_fakt.trim() || order.addr_montaz}
+                editValue={order.addr_fakt}
+                hint={order.addr_fakt.trim() ? undefined : "stejná jako montážní"}
+                placeholder="stejná jako montážní"
+                onSave={(v) =>
+                  patch(
+                    { addr_fakt: v, addr_fakt_same: v.trim() === "" },
+                    v.trim() ? "Fakturační adresa uložena" : "Fakturační adresa je zas montážní",
+                  )
                 }
               />
               <ValueRow
@@ -403,7 +437,7 @@ export default function ZakazkaDetailPage() {
                 }
                 onSave={
                   order.phase === "k_zamereni"
-                    ? (v) => void patch({ price_montage: v }, "Cena práce uložena")
+                    ? (v) => patch({ price_montage: v }, "Cena práce uložena")
                     : undefined
                 }
               />
@@ -433,6 +467,9 @@ export default function ZakazkaDetailPage() {
                             i.form_definition_id
                               ? d.definitions[i.form_definition_id]?.definition
                               : undefined
+                          }
+                          onDuplicate={
+                            order.phase === "k_zamereni" ? () => void duplikovat(i.id) : undefined
                           }
                         />
                       ))}

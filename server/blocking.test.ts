@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { BLOKACE_PATRI, ORDER_PHASES, blokaceProRoli } from "../shared/types";
 import { blockingFor } from "./routes/orders";
 
 const full = {
@@ -61,5 +62,43 @@ describe("blokující kroky", () => {
     expect(blockingFor("k_fakturaci", { ...full, invoice_no: "" }, 1, true)).toEqual([
       "Číslo faktury",
     ]);
+  });
+});
+
+// Mapa „čí je to úkol" žije v shared/types.ts, ale řetězce vyrábí blockingFor.
+// Kdyby se rozešly, technik by zase viděl „Číslo faktury" — nebo naopak přišel
+// o vlastní blokaci. Proto se sem sype všechno, co blockingFor umí vyslovit.
+describe("blokace mají všechny určeného vlastníka", () => {
+  it("žádný řetězec z blockingFor nechybí v BLOKACE_PATRI", () => {
+    const prazdna = {
+      assignee_id: null,
+      customer_name: "",
+      customer_phone: "",
+      customer_email: "",
+      addr_montaz: "",
+      price_montage: "",
+      price_customer: "",
+      term_dodani: null,
+      term_montaz: null,
+      invoice_no: "",
+    };
+    const vsechny = new Set<string>();
+    for (const faze of ORDER_PHASES) {
+      for (const podpis of [false, true]) {
+        for (const pocet of [0, 1]) {
+          for (const b of blockingFor(faze, prazdna, pocet, podpis)) vsechny.add(b);
+        }
+      }
+    }
+    expect(vsechny.size).toBeGreaterThan(0);
+    for (const b of vsechny) {
+      expect(BLOKACE_PATRI[b], `blokace „${b}" nemá vlastníka`).toBeDefined();
+    }
+  });
+
+  it("technik nevidí, co dělá kancelář", () => {
+    const vse = ["Údaje zákazníka", "Cena práce", "Číslo faktury", "Termín dodání"];
+    expect(blokaceProRoli(vse, "technik")).toEqual(["Údaje zákazníka", "Cena práce"]);
+    expect(blokaceProRoli(vse, "kancelar")).toEqual(vse);
   });
 });

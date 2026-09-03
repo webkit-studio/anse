@@ -111,7 +111,7 @@ export default function KontaktDetailPage() {
       footer={
         contact && (
           <Button variant="primary" onClick={() => setDateOpen(true)} disabled={busy}>
-            {orders.length === 0 ? "Zadat termín zaměření" : "＋ Nová zakázka"}
+            {orders.length === 0 ? "Zaměřit" : "＋ Další zaměření"}
           </Button>
         )
       }
@@ -154,21 +154,21 @@ export default function KontaktDetailPage() {
                 label="Jméno"
                 value={contact.name}
                 placeholder="doplnit jméno"
-                onSave={(name) => void patch({ name })}
+                onSave={(name) => patch({ name })}
               />
               <ValueRow
                 label="Telefon"
                 kind="tel"
                 value={contact.phone}
                 placeholder="doplnit telefon"
-                onSave={(phone) => void patch({ phone })}
+                onSave={(phone) => patch({ phone })}
               />
               <ValueRow
                 label="Místo"
                 kind="adresa"
                 value={contact.place}
                 placeholder="doplnit místo"
-                onSave={(place) => void patch({ place })}
+                onSave={(place) => patch({ place })}
               />
             </div>
           </section>
@@ -243,7 +243,9 @@ export default function KontaktDetailPage() {
           title="Termín zaměření"
           value={isoDay(new Date())}
           withTime
-          confirmLabel="Založit zakázku"
+          // „Zaměřit" je to, co technik opravdu dělá; zakázka ve fázi
+          // k zaměření z toho vznikne sama, ale nemusí to znít jako papírování.
+          confirmLabel="Zaměřit"
           onClose={() => setDateOpen(false)}
           onPick={(iso, time) => {
             setDateOpen(false);

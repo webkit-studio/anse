@@ -300,7 +300,10 @@ export function NavodOverlay({
                 {merged.map((s) => {
                   const h1 = s.h1 && s.h1 !== lastH1 ? s.h1 : null;
                   if (s.h1) lastH1 = s.h1;
-                  const title = s.krok ?? s.nadpis ?? s.h2 ?? "";
+                  // Titulek sekce se často jmenuje stejně jako nadpis nad kartou
+                  // (a potřetí je vypálený v samotném výkresu) — jednou stačí.
+                  const rawTitle = s.krok ?? s.nadpis ?? s.h2 ?? "";
+                  const title = rawTitle && rawTitle === (h1 ?? s.h1) ? "" : rawTitle;
                   const notes = [...new Set(s.poznamky.filter((p) => p.trim().length >= 8))];
                   return (
                     <div key={s.id} data-sekce={s.id}>
@@ -317,7 +320,7 @@ export function NavodOverlay({
                             key={img}
                             className="navod-img"
                             src={`/navody/${current!.slug}/${img}`}
-                            alt={title || "Výkres"}
+                            alt={rawTitle || s.h1 || "Výkres"}
                             loading="lazy"
                           />
                         ))}

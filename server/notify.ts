@@ -40,9 +40,18 @@ async function recipients(input: NotifyInput): Promise<{ id: string; email: stri
   const meta = META.get(input.event);
   if (!meta) return [];
 
-  const rows = input.userIds?.length
-    ? await db`select id, email from users where id = any(${input.userIds}) and active`
-    : await db`select id, email from users where role = ${meta.to} and active`;
+  // Prázdný seznam znamená „nikdo", ne „celá role". Bez toho rozlišení rozeslala
+  // zakázka bez přiděleného technika zprávu VŠEM technikům — dozvěděli se
+  // o termínu dodání zakázky, kterou nikdy neviděli.
+  if (input.userIds) {
+    if (input.userIds.length === 0) return [];
+    const adresni = await db`select id, email from users where id = any(${input.userIds}) and active`;
+    return adresni
+      .filter((r) => r.id !== input.actorId)
+      .map((r) => ({ id: r.id as string, email: String(r.email ?? "") }));
+  }
+
+  const rows = await db`select id, email from users where role = ${meta.to} and active`;
 
   return rows
     .filter((r) => r.id !== input.actorId)
@@ -81,14 +90,17 @@ export async function notify(input: NotifyInput): Promise<void> {
     `;
     const prefByUser = new Map(prefs.map((p) => [p.user_id as string, p.email as boolean]));
 
-    let addresses = targets
+    const osobni = targets
       .filter((t) => (prefByUser.get(t.id) ?? meta.emailDefault) && t.email.includes("@"))
       .map((t) => t.email);
 
-    // Kancelář bez osobních adres spadne na společnou adresu z nastavení.
-    if (addresses.length === 0 && meta.to === "kancelar") {
+    // Společná adresa kanceláře se PŘIDÁVÁ, nenahrazuje. Dřív se použila jen
+    // tehdy, když osobní adresu neměl vůbec nikdo — takže stačil jeden kolega
+    // s adresou a na zbytek kanceláře se tiše zapomnělo.
+    let addresses = osobni;
+    if (meta.to === "kancelar") {
       const [s] = await db`select value from settings where key = 'admin_group_email'`;
-      addresses = parseRecipients(String(s?.value ?? ""));
+      addresses = [...new Set([...osobni, ...parseRecipients(String(s?.value ?? ""))])];
     }
     if (addresses.length === 0) return;
 
