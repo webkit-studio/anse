@@ -8,7 +8,7 @@ import {
   useInvalidateContacts,
   useInvalidateOrder,
   useMe,
-  useUsers,
+  useUsersForPicker,
 } from "../api/hooks";
 import { DateSheet, isoDay } from "../components/DateSheet";
 import { Icon } from "../components/Icon";
@@ -32,7 +32,7 @@ export default function KontaktDetailPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const detail = useContact(contactId);
-  const users = useUsers(true);
+  const users = useUsersForPicker();
   const invalidate = useInvalidateContacts();
   const invalidateOrder = useInvalidateOrder();
   const showSkeleton = useDelayed(detail.isPending);
@@ -143,9 +143,7 @@ export default function KontaktDetailPage() {
                   placeholder="— nikdo —"
                   options={[
                     { value: "", label: "— nikdo —" },
-                    ...(users.data?.users ?? [])
-                      .filter((u) => u.active)
-                      .map((u) => ({ value: u.id, label: u.name })),
+                    ...(users.data?.users ?? []).map((u) => ({ value: u.id, label: u.name })),
                   ]}
                   onChange={(v) => void patch({ assigned_to: (v || null) as never })}
                 />

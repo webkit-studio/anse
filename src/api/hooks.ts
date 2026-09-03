@@ -16,6 +16,7 @@ import type {
   OrderPhase,
   PhaseCounts,
   ProductTypeRow,
+  Role,
   SessionUser,
   StatsMonth,
   TodayData,
@@ -236,6 +237,15 @@ export function useKonfigProduct(key: string | null | undefined) {
 }
 
 // --- kancelář -------------------------------------------------------------------
+
+/** Jména pro přidělení (technik i kancelář) — bez kódů a kontaktů. */
+export function useUsersForPicker() {
+  return useQuery({
+    queryKey: ["users", "vyber"],
+    queryFn: () => api<{ users: { id: string; name: string; role: Role }[] }>("/api/users/vyber"),
+    staleTime: 5 * 60_000,
+  });
+}
 
 export function useUsers(enabled: boolean) {
   return useQuery({

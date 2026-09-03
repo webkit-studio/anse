@@ -21,6 +21,17 @@ async function generateUniqueCode(): Promise<string> {
 const USER_COLS = "id, name, code, role, phone, email, active, created_at";
 
 export const userRoutes: Route[] = [
+  // Kdo si může vzít kontakt nebo zakázku. Vidí ho i technik — bez něj měl
+  // v „Ozve se" jedinou možnost „— nikdo —", protože /api/users je jen pro
+  // kancelář. Posílá se jen jméno a role: žádné kódy, telefony ani e-maily.
+  makeRoute("GET", "/api/users/vyber", async () => {
+    const db = sql();
+    const users = await db`
+      select id, name, role from users where active order by name
+    `;
+    return json({ users });
+  }),
+
   makeRoute(
     "GET",
     "/api/users",

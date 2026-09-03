@@ -1651,6 +1651,23 @@ input[type="date"] {
   flex: none;
 }
 
+/* Myš trefí i menší cíl, tak si ikony neukusují 132 px z každého řádku.
+   Dráha i tlačítko se musí zúžit SPOLU — samotná užší dráha nechá 44px
+   tlačítko přetéct přes okraj karty (přesně to se tu už jednou stalo). */
+@media (hover: hover) and (pointer: fine) {
+  .value-row-actions {
+    grid-template-columns: repeat(3, 36px);
+  }
+
+  .value-row-actions .icon-slot,
+  .value-row-actions .icon-btn {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+}
+
 .icon-slot {
   display: block;
   width: 44px;
@@ -1661,6 +1678,40 @@ input[type="date"] {
    akcí zůstávají, aby ostatní řádky nepřeskočily o kus vedle. */
 .value-row-control {
   padding: var(--sp-2) 0;
+}
+
+/* Výběr v řádku vypadá jako hodnota, ne jako pole: žádný rámeček ani pozadí,
+   stejné písmo jako sousední řádky, jen šipka napovídá, že se dá rozkliknout.
+   Rámeček v řádku působil jako jediné „opravdové" pole na kartě. */
+.value-row-control .select-sheet-trigger {
+  min-height: 0;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  border-radius: 0;
+  font-size: 15px;
+  font-weight: 500;
+  justify-content: flex-start;
+  gap: var(--sp-2);
+  cursor: pointer;
+}
+
+.value-row-control .select-sheet-trigger:hover .select-sheet-value {
+  text-decoration: underline;
+  text-decoration-color: var(--c-border-strong);
+  text-underline-offset: 3px;
+}
+
+.value-row-control .select-sheet-trigger .select-sheet-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value-row-control .select-sheet-caret {
+  color: var(--c-text-muted);
+  flex: none;
 }
 
 /* Roztahují se jen pole, která to chtějí (výběr, input). Přepínač si drží
@@ -1709,18 +1760,18 @@ input[type="date"] {
   }
 }
 
-/* Na širokém monitoru se řádky nenatahují přes celou kartu — to by rozhodilo
-   popisek a hodnotu na opačné konce a ikony poslalo o půl metru vedle. Šířku
-   spotřebuje DRUHÝ SLOUPEC řádků, ne prázdno. */
+/* Řádky jdou přes celou šířku karty, v jednom sloupci. Dva sloupce se zdály
+   jako dobrý způsob, jak využít monitor, jenže hodnotě pak zbylo 231 px:
+   výběr technika se do ní nevešel a krátká hodnota plavala mezi popiskem
+   a ikonami, což vypadalo jako vycentrované. */
 .value-rows {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
-  column-gap: var(--sp-6);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media (min-width: 560px) {
   .value-row {
-    grid-template-columns: minmax(96px, 150px) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(88px, 132px) minmax(0, 1fr) auto;
     grid-template-areas: "label value actions";
     gap: var(--sp-3);
     padding: 3px 0;
@@ -3305,7 +3356,9 @@ input[type="date"] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--col)), 1fr));
   gap: 10px;
-  align-items: start;
+  /* stretch, ne start: vedle sebe stojící karty mají mít stejnou výšku i když
+     jedna nese odznak „Ozvat se" a tlačítko Volat a druhá ne */
+  align-items: stretch;
 }
 
 /* --- technikův pohled na širokém displeji -------------------------------- */
