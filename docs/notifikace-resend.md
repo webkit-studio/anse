@@ -5,17 +5,17 @@ předvoleb uživatelů (Nastavení → Notifikace, technik přes ⚙ ve zvonku).
 konfigurace appka funguje dál — e-maily se jen tiše přeskakují, in-app zprávy
 chodí vždy.
 
-**Stav k 2. 9. 2026: ZPROVOZNĚNO.** Doména `anse.webkit.studio` je v Resendu
-ověřená (eu-west-1, SPF + DKIM + DMARC přes CNAME záznamy — novější styl,
-u `numulo` je starší MX+TXT, obojí je správně). V Netlify je platný
-`RESEND_API_KEY` (klíč „Netlify") a `RESEND_FROM = Anse Aplikace
-<zpravy@anse.webkit.studio>`. Doména `anse.cz` dál čeká na DNS u správce
-Světa hostingu (viz [`dns-zaznamy-pro-spravce.txt`](./dns-zaznamy-pro-spravce.txt));
-až bude ověřená, stačí přepnout `RESEND_FROM` a udělat Trigger deploy.
+**Stav k 2. 9. 2026: ZPROVOZNĚNO.** Odesílatelem je a zůstane
+`Anse Aplikace <zpravy@anse.webkit.studio>` — rozhodnutí zadavatele, `anse.cz` se pro
+odesílání používat nebude. Doména `anse.webkit.studio` je v Resendu ověřená
+(eu-west-1, SPF + DKIM + DMARC přes CNAME záznamy — novější styl, u `numulo`
+je starší MX+TXT, obojí je správně). V Netlify stačí `RESEND_API_KEY`
+(klíč „Netlify"); `RESEND_FROM` je nepovinná, protože stejná adresa je
+i výchozí v `server/email.ts`.
 
 ---
 
-## Rychlá cesta (hned): `anse.webkit.studio`
+## Odesílací doména: `anse.webkit.studio`
 
 DNS `webkit.studio` ovládá Lukáš → hotovo za ~15 minut, na nikoho se nečeká.
 
@@ -39,7 +39,8 @@ DNS `webkit.studio` ovládá Lukáš → hotovo za ~15 minut, na nikoho se neče
 
 3. V Resendu **Verify** (propsání bývá minuty).
 4. Pokračovat sekcí *API klíč* a *Netlify* níže s
-   `RESEND_FROM = Anse Aplikace <zpravy@anse.webkit.studio>`.
+   `RESEND_FROM = Anse Aplikace <zpravy@anse.webkit.studio>` (nepovinné — stejná adresa
+   je i výchozí v kódu).
 
 **Proč to nepadá do spamu:** o skóre rozhoduje autentizace (SPF + DKIM na
 přesně té doméně, ze které se posílá, tzv. alignment), ne hezkost adresy.
@@ -49,13 +50,15 @@ plnohodnotný odesílatel. Jediné, co žádná konfigurace nezaručí, je reput
 provozu stačí, když si Marek s Darinou adresu jednou přidají do kontaktů,
 případně první zprávu označí „není spam".
 
-## Finální cesta (až správce zapíše DNS): `anse.cz`
+## Proč ne `anse.cz`
 
-Záznamy pro správce jsou hotové v `dns-zaznamy-pro-spravce.txt` (pozor na
-wildcard `*.anse.cz` — detailně popsáno tamtéž). Až Resend ukáže `anse.cz`
-jako *Verified*, stačí v Netlify přepnout
-`RESEND_FROM = Anse Aplikace <zakazky@anse.cz>` a udělat Trigger deploy.
-Obě domény můžou v Resendu klidně žít vedle sebe.
+Odesílat se bude jen z `anse.webkit.studio` — zadavatel to takhle rozhodl
+a nepočítá se se změnou. `anse.cz` je v Resendu založená, ale neověřená
+(*not started*), a **odeslání z neověřené domény Resend odmítne** hláškou
+„the anse.cz domain is not verified". Kdyby ji někdo v budoucnu ověřit chtěl,
+záznamy pro správce leží v `dns-zaznamy-pro-spravce.txt` (pozor na wildcard
+`*.anse.cz`) a přepíná se to jedinou proměnnou `RESEND_FROM` — do kódu se
+sahat nemusí.
 
 ## API klíč (dělá Lukáš)
 
@@ -72,7 +75,7 @@ Klíč nikam neposílej v chatu ani ho nedávej do repa — patří přímo do N
 | Key | Value | Poznámka |
 | --- | --- | --- |
 | `RESEND_API_KEY` | `re_…` | zaškrtnout **Contains secret values** |
-| `RESEND_FROM` | `Anse Aplikace <zpravy@anse.webkit.studio>` | musí být na ověřené doméně |
+| `RESEND_FROM` | nepovinné (výchozí `Anse Aplikace <zpravy@anse.webkit.studio>`) | musí být na doméně ověřené v Resendu |
 | `APP_URL` | `https://anse-zakazky.netlify.app` | základ odkazů v e-mailu |
 
 Scope musí zahrnovat **Functions**, kontext **Production** (nebo všechny).

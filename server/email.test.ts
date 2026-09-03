@@ -30,7 +30,7 @@ describe("parseRecipients", () => {
 describe("notifMail", () => {
   it("předmět nese událost i zakázku", () => {
     expect(notifMailSubject(base)).toBe(
-      "Anse: Nové zaměření — Novákovi · Květinová 128, Průhonice",
+      "Nové zaměření — Novákovi · Květinová 128, Průhonice",
     );
   });
 

@@ -6,7 +6,7 @@ const RESEND_ENDPOINT = "https://api.resend.com/emails";
 // Výchozí odesílatel musí být na doméně OVĚŘENÉ v Resendu, jinak služba
 // zprávu odmítne. anse.cz ověřená (zatím) není, anse.webkit.studio ano.
 // Až se anse.cz ověří, stačí přepsat RESEND_FROM v Netlify — kód se nemění.
-const DEFAULT_FROM = "Anse <zpravy@anse.webkit.studio>";
+const DEFAULT_FROM = "Anse Aplikace <zpravy@anse.webkit.studio>";
 const SEND_TIMEOUT_MS = 4000;
 
 export interface NotifMailData {
@@ -39,7 +39,9 @@ export function parseRecipients(value: string): string[] {
 }
 
 export function notifMailSubject(d: NotifMailData): string {
-  return `Anse: ${d.eventLabel} — ${d.title}`;
+  // Bez prefixu „Anse:" — odesílatel se jmenuje Anse Aplikace, takže v seznamu
+  // pošty to stojí hned vedle sebe a v předmětu by se to jen opakovalo.
+  return `${d.eventLabel} — ${d.title}`;
 }
 
 const FONT = "'Helvetica Neue',Helvetica,Arial,sans-serif";
@@ -246,7 +248,7 @@ export async function sendTestMail(to: string[], userName: string): Promise<Send
 </html>`;
 
   return deliver(to, {
-    subject: "Anse: zkušební notifikace",
+    subject: "Zkušební notifikace",
     html,
     text: `Zkušební zpráva z aplikace Anse. Vyžádal ${userName}. Notifikace fungují.`,
   });
