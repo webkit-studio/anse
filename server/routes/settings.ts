@@ -71,7 +71,11 @@ export const settingsRoutes: Route[] = [
       const MESSAGES: Record<typeof result.reason, string> = {
         no_recipients: "Nejdřív vyplň a ulož adresu pro notifikace.",
         no_key: "Odesílání zatím není nakonfigurované (chybí klíč k e-mailové službě) — doplní se v nastavení Netlify.",
-        rejected: `E-mailová služba zprávu odmítla: ${result.detail ?? "neznámý důvod"}`,
+        // Nejčastější důvod odmítnutí je neověřená doména odesílatele —
+        // řekne se to rovnou i s tím, kde se to spravuje.
+        rejected: /domain is not verified/i.test(result.detail ?? "")
+          ? `Doména odesílatele není v Resendu ověřená, proto zprávu odmítl. Zkontroluj RESEND_FROM v Netlify — musí být na ověřené doméně. (${result.detail})`
+          : `E-mailová služba zprávu odmítla: ${result.detail ?? "neznámý důvod"}`,
         error: `E-mail se nepodařilo odeslat: ${result.detail ?? "neznámá chyba"}`,
       };
       return json({ ok: false, message: MESSAGES[result.reason] });

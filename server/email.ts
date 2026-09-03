@@ -3,7 +3,10 @@
 // Odeslání nikdy neshodí požadavek: chyby se jen zalogují.
 
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
-const DEFAULT_FROM = "Anse Aplikace <zakazky@anse.cz>";
+// Výchozí odesílatel musí být na doméně OVĚŘENÉ v Resendu, jinak služba
+// zprávu odmítne. anse.cz ověřená (zatím) není, anse.webkit.studio ano.
+// Až se anse.cz ověří, stačí přepsat RESEND_FROM v Netlify — kód se nemění.
+const DEFAULT_FROM = "Anse <zpravy@anse.webkit.studio>";
 const SEND_TIMEOUT_MS = 4000;
 
 export interface NotifMailData {

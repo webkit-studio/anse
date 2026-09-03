@@ -309,14 +309,27 @@ export function PhaseBadge({ phase, role }: { phase: OrderPhase; role: Role }) {
 
 // --- Switch (nastavení) -------------------------------------------------------
 
+/**
+ * Přepínač zap/vyp.
+ *
+ * Knoflík je SKUTEČNÝ element, ne ::after — díky tomu má pseudoprvek volný
+ * na zvětšení klikací plochy na 44 px, aniž by se do toho pletlo polstrování
+ * a background-clip. Dřív to bylo obráceně a stačilo někde napsat `background`
+ * zkratkou, aby ze zapnutého přepínače byla zelená koule.
+ *
+ * Rozměr si komponenta drží sama (flex: none + pevná šířka), takže ji
+ * nerozmáčkne žádný flex ani grid rodič.
+ */
 export function Switch({
   checked,
   onChange,
   label,
+  disabled,
 }: {
   checked: boolean;
   onChange: (next: boolean) => void;
   label: string;
+  disabled?: boolean;
 }) {
   return (
     <button
@@ -325,8 +338,11 @@ export function Switch({
       aria-checked={checked}
       aria-label={label}
       className="switch"
+      disabled={disabled}
       onClick={() => onChange(!checked)}
-    />
+    >
+      <span className="switch-knob" aria-hidden="true" />
+    </button>
   );
 }
 

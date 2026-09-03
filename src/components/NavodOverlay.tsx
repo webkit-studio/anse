@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Icon } from "./Icon";
 import { Button, Spinner } from "./ui";
 import mapa from "../navody-mapa.json";
 
@@ -145,7 +146,21 @@ export function NavodOverlay({
   const [manifest, setManifest] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [jumpTo, setJumpTo] = useState<string | null>(null);
+  const [zoom, setZoom] = useState<string | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+
+  // Escape zavře nejdřív zvětšený výkres, teprve pak celý návod — jinak by
+  // technik jedním stiskem vyskočil až do formuláře.
+  useEffect(() => {
+    if (!zoom) return undefined;
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      e.stopPropagation();
+      setZoom(null);
+    }
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  }, [zoom]);
 
   const products = useMemo(() => {
     const all = index.data?.produkty ?? [];
@@ -315,14 +330,27 @@ export function NavodOverlay({
                             {s.varianta && <span className="badge tone-wait">Varianta {s.varianta}</span>}
                           </div>
                         )}
+                        {/* Výkres se na telefonu nedá přečíst v šířce sloupce —
+                            ťuknutím se otevře přes celou obrazovku, kde jde
+                            přiblížit i listovat mezi výkresy. */}
                         {s.obrazky.map((img) => (
-                          <img
+                          <button
+                            type="button"
                             key={img}
-                            className="navod-img"
-                            src={`/navody/${current!.slug}/${img}`}
-                            alt={rawTitle || s.h1 || "Výkres"}
-                            loading="lazy"
-                          />
+                            className="navod-img-btn"
+                            aria-label={`Zvětšit výkres — ${rawTitle || s.h1 || "výkres"}`}
+                            onClick={() => setZoom(`/navody/${current!.slug}/${img}`)}
+                          >
+                            <img
+                              className="navod-img"
+                              src={`/navody/${current!.slug}/${img}`}
+                              alt={rawTitle || s.h1 || "Výkres"}
+                              loading="lazy"
+                            />
+                            <span className="navod-img-lupa" aria-hidden="true">
+                              <Icon name="lupa" size={16} />
+                            </span>
+                          </button>
                         ))}
                         {notes.map((n, i) => (
                           <p key={i} className="muted t-body-s" style={{ margin: "6px 0 0" }}>
@@ -338,6 +366,30 @@ export function NavodOverlay({
           </>
         )}
       </div>
+
+      {zoom && (
+        <div
+          className="navod-zoom"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Zvětšený výkres"
+          onClick={() => setZoom(null)}
+        >
+          <button
+            type="button"
+            className="lightbox-btn navod-zoom-close"
+            onClick={() => setZoom(null)}
+            aria-label="Zavřít výkres"
+          >
+            ✕
+          </button>
+          {/* Plocha se posouvá a jde v ní štípnout dvěma prsty — výkres má kóty,
+              které se ve sloupci na telefonu přečíst nedají. */}
+          <div className="navod-zoom-plocha" onClick={(e) => e.stopPropagation()}>
+            <img src={zoom} alt="Zvětšený výkres" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

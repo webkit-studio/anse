@@ -33,6 +33,7 @@ export type IconName =
   | "obalka"
   | "mapa"
   | "hotovo"
+  | "lupa"
   | "obnovit"
   | "kos";
 
@@ -42,6 +43,13 @@ const STAR_PATH =
 const PATHS: Record<IconName, JSX.Element> = {
   // fajfka — potvrzení akce (zkopírováno)
   hotovo: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  lupa: (
+    <>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M15.8 15.8L21 21" />
+      <path d="M11 8.5v5M8.5 11h5" />
+    </>
+  ),
   // obálka — napsat e-mail
   obalka: (
     <>

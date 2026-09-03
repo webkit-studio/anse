@@ -355,11 +355,17 @@ export function KonfiguratorForm({
           );
         })}
 
+        {/* Dodavatelé mají vlastní pole pro poznámku (SUYS „Poznámka pozice"),
+            které jde do jejich konfigurátoru. Tahle je naše — proto se jmenuje
+            jinak, ať technik nehádá, do které psát. */}
         <section className="form-group">
           <h2 className="form-group-title" id="f-note-label">
-            Poznámka
+            Interní poznámka
           </h2>
           <div className="field">
+            <p className="field-help" style={{ marginTop: 0 }}>
+              Vidí ji kancelář a je na montážním listu. Dodavateli se neposílá.
+            </p>
             <Textarea
               id="f-note"
               aria-labelledby="f-note-label"
@@ -368,7 +374,7 @@ export function KonfiguratorForm({
                 setNote(e.target.value);
                 setDirtySinceServer(true);
               }}
-              placeholder="Cokoli k této položce…"
+              placeholder="Cokoli k této položce pro kancelář…"
             />
           </div>
         </section>
