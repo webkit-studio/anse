@@ -210,6 +210,65 @@ describe("mapy výrobků", () => {
     expect(data[kody.indexOf("Pozice")]).toBe("Obývák 1");
   });
 
+  it("co technik vyplnil v masce, dopočet nepřepíše", () => {
+    const katalog = JSON.parse(
+      readFileSync(root("podklady/data/jack-west/produkty-davka-2.json"), "utf8"),
+    ) as JwCatalog;
+    const pd = loadJackWest(katalog).find((p) => p.kod === "PD")!;
+    const mapa = jwCsvMapaZKonfiguratoru(pd);
+    // Konfigurátor vykresluje i Počet, Pozici, Poznámku a Metráž — jsou to
+    // pole masky. Vlastní výpočet je jen náhrada, když je technik nevyplnil.
+    const csv = jwCsv(mapa, hlavicka, [
+      {
+        pole: {
+          Sirka: { kod: "1000", popisek: "1000" },
+          Vyska: { kod: "1000", popisek: "1000" },
+          Pocet: { kod: "3", popisek: "3" },
+          Pozice: { kod: "okno vlevo od dveří", popisek: "okno vlevo od dveří" },
+          Poznamka: { kod: "montáž až po malování", popisek: "montáž až po malování" },
+          Metraz_ks: { kod: "2,5", popisek: "2,5" },
+        },
+        pozice: "Obývák 1",
+        poznamka: "zaměřeno přes parapet",
+      },
+    ]);
+    const radky = csv
+      .replace(/^\ufeff/, "")
+      .trimEnd()
+      .split("\r\n");
+    const kody = radky[2]!.split(";");
+    const data = radky[3]!.split(";");
+    expect(data[kody.indexOf("Pocet")]).toBe("3");
+    expect(data[kody.indexOf("Pozice")]).toBe("okno vlevo od dveří");
+    expect(data[kody.indexOf("Metraz_ks")]).toBe("2,5");
+    // Poznámka je na dvou místech (maska + vestavěná u položky) — obě do souboru.
+    expect(data[kody.indexOf("Poznamka")]).toBe("montáž až po malování · zaměřeno přes parapet");
+  });
+
+  it("nevyplněná pole masky dopočet doplní", () => {
+    const katalog = JSON.parse(
+      readFileSync(root("podklady/data/jack-west/produkty-davka-2.json"), "utf8"),
+    ) as JwCatalog;
+    const pd = loadJackWest(katalog).find((p) => p.kod === "PD")!;
+    const csv = jwCsv(jwCsvMapaZKonfiguratoru(pd), hlavicka, [
+      {
+        pole: { Sirka: { kod: "1200", popisek: "1200" }, Vyska: { kod: "1200", popisek: "1200" } },
+        pozice: "Ložnice 2",
+        poznamka: "",
+      },
+    ]);
+    const radky = csv
+      .replace(/^\ufeff/, "")
+      .trimEnd()
+      .split("\r\n");
+    const kody = radky[2]!.split(";");
+    const data = radky[3]!.split(";");
+    expect(data[kody.indexOf("Pocet")]).toBe("1");
+    expect(data[kody.indexOf("Pozice")]).toBe("Ložnice 2");
+    expect(data[kody.indexOf("Metraz_ks")]).toBe("1,44");
+    expect(data[kody.indexOf("Poznamka")]).toBe("");
+  });
+
   it("SEL-15 je vedená jako neověřená, dokud nepřijde vzor od výrobce", () => {
     expect(JW_CSV_MAPY.ESD!.overeno).toBe(true);
     expect(JW_CSV_MAPY["SEL-15"]!.overeno).toBe(false);

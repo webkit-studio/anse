@@ -141,21 +141,43 @@ function bunka(hodnota: string): string {
   return /[;"]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
+/** Spojení dvou textů do jedné buňky — prázdné části se vynechají. */
+function spoj(a: string, b: string): string {
+  return [a.trim(), b.trim()].filter(Boolean).join(" · ");
+}
+
 function hodnotaSloupce(s: JwCsvSloupec, p: JwCsvPolozka, mapa: JwCsvMapa): string {
-  if (s.dopocet === "pocet") return "1";
-  if (s.dopocet === "pozice") return p.pozice || s.vychozi;
-  if (s.dopocet === "poznamka") return p.poznamka || s.vychozi;
-  if (s.dopocet === "plocha") {
-    const r = mapa.rozmer;
-    const m2 = r ? plocha(p.pole[r.sirka]?.kod ?? "", p.pole[r.vyska]?.kod ?? "") : "";
-    return m2 || s.vychozi;
+  const ulozena = s.klic ? p.pole[s.klic] : undefined;
+  const kod = ulozena?.kod ?? "";
+
+  // Co technik vyplnil, má přednost před dopočtem. U výrobků z konfigurátoru
+  // se totiž Počet, Označení pozice, Poznámka i Metráž vyplňují ve formuláři
+  // jako každé jiné pole masky — přepsat je vlastním výpočtem by zahodilo
+  // přesně tu informaci, kterou technik zadal ručně.
+  if (kod !== "") {
+    const prevod = s.hodnoty?.[kod];
+    const hodnota = prevod ?? (s.zdroj === "popisek" ? ulozena!.popisek || kod : kod);
+    // Poznámku má konfigurátor v masce a my navíc vestavěnou u položky —
+    // do souboru patří obě, dodavatel nemá kde přijít o půlku informace.
+    return s.dopocet === "poznamka" ? spoj(hodnota, p.poznamka) : hodnota;
   }
 
-  const hodnota = s.klic ? p.pole[s.klic] : undefined;
-  if (!hodnota || hodnota.kod === "") return s.vychozi;
-  const prevod = s.hodnoty?.[hodnota.kod];
-  if (prevod !== undefined) return prevod;
-  return s.zdroj === "popisek" ? hodnota.popisek || hodnota.kod : hodnota.kod;
+  switch (s.dopocet) {
+    case "pocet":
+      // Množství u položek nevedeme: jedna položka zaměření je jeden kus.
+      return "1";
+    case "pozice":
+      return p.pozice || s.vychozi;
+    case "poznamka":
+      return p.poznamka || s.vychozi;
+    case "plocha": {
+      const r = mapa.rozmer;
+      const m2 = r ? plocha(p.pole[r.sirka]?.kod ?? "", p.pole[r.vyska]?.kod ?? "") : "";
+      return m2 || s.vychozi;
+    }
+    default:
+      return s.vychozi;
+  }
 }
 
 /** Hotový obsah souboru: hlavička dodavatele + jedna položka na řádek. */
