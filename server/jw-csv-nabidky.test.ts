@@ -56,6 +56,11 @@ describe("jwCsvNabidky", () => {
     ).toEqual([]);
   });
 
+  it("vlastní název od kanceláře má přednost před názvem z katalogu", () => {
+    const [n] = jwCsvNabidky([polozka({ subcategory_custom_name: "ESD 25 — naše žaluzie" })]);
+    expect(n!.nazev).toBe("ESD 25 — naše žaluzie");
+  });
+
   it("SEL-15 je nabídnutá, ale vedená jako neověřená", () => {
     const [n] = jwCsvNabidky([
       polozka({ subcategory_id: "sub-sel", subcategory_code: "SEL-15", subcategory_name: null }),

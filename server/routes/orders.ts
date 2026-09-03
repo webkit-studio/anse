@@ -11,7 +11,7 @@ import {
   type Role,
 } from "../../shared/types";
 import { sql } from "../db";
-import { jwCsvNabidky } from "../export/jw-csv";
+import { jwCsvNabidky, type JwCsvPolozkaRadek } from "../export/jw-csv";
 import { ApiError, json } from "../http";
 import { getKonfigProduct } from "../konfigurator";
 import { appOrigin, notify } from "../notify";
@@ -353,7 +353,7 @@ export const orderRoutes: Route[] = [
       ),
       // Které výrobky zakázky umí portál dodavatele načíst ze souboru — počítá
       // server, klient jen vykreslí tlačítka (nesmí nabídnout, co portál odmítne).
-      jw_csv: jwCsvNabidky(items as never),
+      jw_csv: jwCsvNabidky(items as unknown as JwCsvPolozkaRadek[]),
       blocking,
     });
   }),

@@ -170,16 +170,18 @@ export interface JwCsvNabidka {
  * bez importu se vypisují taky — kancelář musí vědět, co v portálu ještě
  * přepsat ručně, a ne to zjistit až podle chybějící položky v objednávce.
  */
-export function jwCsvNabidky(
-  items: {
-    subcategory_id: string | null;
-    subcategory_name: string | null;
-    subcategory_code: string | null;
-    subcategory_manufacturer: string | null;
-    subcategory_konfig_key: string | null;
-    kind: string;
-  }[],
-): JwCsvNabidka[] {
+export interface JwCsvPolozkaRadek {
+  subcategory_id: string | null;
+  subcategory_name: string | null;
+  /** Vlastní název od kanceláře — má přednost, stejně jako všude jinde v detailu. */
+  subcategory_custom_name?: string | null;
+  subcategory_code: string | null;
+  subcategory_manufacturer: string | null;
+  subcategory_konfig_key: string | null;
+  kind: string;
+}
+
+export function jwCsvNabidky(items: JwCsvPolozkaRadek[]): JwCsvNabidka[] {
   const dle = new Map<string, JwCsvNabidka>();
   for (const i of items) {
     if (i.kind !== "config" || !i.subcategory_id) continue;
@@ -202,7 +204,7 @@ export function jwCsvNabidky(
 
     dle.set(i.subcategory_id, {
       subcategory_id: i.subcategory_id,
-      nazev: i.subcategory_name ?? product?.nazev ?? zkratka,
+      nazev: i.subcategory_custom_name || i.subcategory_name || product?.nazev || zkratka,
       zkratka,
       csv: !!mapa,
       overeno: mapa?.overeno ?? false,
