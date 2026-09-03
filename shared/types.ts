@@ -302,12 +302,27 @@ export interface ItemRow {
   photos: ItemPhoto[];
 }
 
+/** Výrobek Jack Westu v zakázce a jak se dá objednat. */
+export interface JwCsvNabidka {
+  subcategory_id: string;
+  nazev: string;
+  /** Zkratka výrobku v portálu dodavatele. */
+  zkratka: string;
+  /** false = tenhle výrobek portál ze souboru nenačte, přepisuje se ručně. */
+  csv: boolean;
+  /** false = sloupce jsou odvozené, ne z exportu portálu — první import prověřit. */
+  overeno: boolean;
+  pocet: number;
+}
+
 export interface OrderDetail {
   order: OrderRow;
   rooms: RoomRow[];
   items: ItemRow[];
   photos: ItemPhoto[];
   definitions: Record<string, { version: number; definition: FormDefinition }>;
+  /** Výrobky Jack Westu v zakázce a jestli je portál načte ze souboru. */
+  jw_csv: JwCsvNabidka[];
   /** Co chybí k odeslání do další fáze — počítá server, UI to jen vypíše. */
   blocking: string[];
 }

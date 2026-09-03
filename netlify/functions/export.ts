@@ -1,5 +1,6 @@
 import { activeUser, readSessionCookie, verifySessionToken } from "../../server/auth";
 import { buildDodavatelXml } from "../../server/export/dodavatel-xml";
+import { buildJwCsv } from "../../server/export/jw-csv";
 import { buildMontazniListPdf } from "../../server/export/montazni-list-pdf";
 import { errorResponse, json } from "../../server/http";
 
@@ -39,6 +40,23 @@ export default async (req: Request): Promise<Response> => {
       return new Response(body, {
         headers: {
           "content-type": "application/xml; charset=utf-8",
+          "content-disposition": `attachment; filename="${filename}"`,
+          "cache-control": "no-store",
+        },
+      });
+    }
+
+    const csv = /\/export\/jw-csv\/([0-9a-f-]{36})\/([0-9a-f-]{36})\/?$/.exec(
+      new URL(req.url).pathname,
+    );
+    if (csv) {
+      if (user.role !== "kancelar") {
+        return json({ error: "Objednávku k dodavateli posílá kancelář." }, { status: 403 });
+      }
+      const { csv: body, filename } = await buildJwCsv(csv[1]!, csv[2]!);
+      return new Response(body, {
+        headers: {
+          "content-type": "text/csv; charset=utf-8",
           "content-disposition": `attachment; filename="${filename}"`,
           "cache-control": "no-store",
         },

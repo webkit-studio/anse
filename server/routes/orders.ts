@@ -11,6 +11,7 @@ import {
   type Role,
 } from "../../shared/types";
 import { sql } from "../db";
+import { jwCsvNabidky } from "../export/jw-csv";
 import { ApiError, json } from "../http";
 import { getKonfigProduct } from "../konfigurator";
 import { appOrigin, notify } from "../notify";
@@ -293,7 +294,9 @@ export const orderRoutes: Route[] = [
       select i.id, i.order_id, i.room_id, i.kind, i.product_type_id, i.subcategory_id,
              i.form_definition_id, i.konfig_key, i.params, i.note, i.defect_note, i.position, i.updated_at,
              pt.name as product_type_name, pt.custom_name as product_type_custom_name,
-             s.name as subcategory_name, s.custom_name as subcategory_custom_name
+             s.name as subcategory_name, s.custom_name as subcategory_custom_name,
+             s.code as subcategory_code, s.manufacturer as subcategory_manufacturer,
+             s.konfig_key as subcategory_konfig_key
       from items i
       join product_types pt on pt.id = i.product_type_id
       left join subcategories s on s.id = i.subcategory_id
@@ -348,6 +351,9 @@ export const orderRoutes: Route[] = [
       definitions: Object.fromEntries(
         defs.map((d) => [d.id, { version: d.version, definition: d.definition }]),
       ),
+      // Které výrobky zakázky umí portál dodavatele načíst ze souboru — počítá
+      // server, klient jen vykreslí tlačítka (nesmí nabídnout, co portál odmítne).
+      jw_csv: jwCsvNabidky(items as never),
       blocking,
     });
   }),

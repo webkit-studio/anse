@@ -75,6 +75,13 @@ uživatelem, port 5433, DB `anse` — connection string
   na obou stranách (server nevěří klientovi). Seed je zakládá **neaktivní**,
   zapíná je kancelář v Nastavení → Produkty. Repo je veřejné — podklady NESMÍ
   obsahovat ceny, marže ani jiná obchodní data dodavatelů.
+- **Objednávka do portálu Jack Westu** (`shared/jw-csv.ts`): kancelář stáhne
+  v detailu zakázky CSV a naimportuje ho v portálu místo ručního přepisování.
+  Jeden soubor = jeden výrobek (každý má jinou masku), tvar souboru drží vzor
+  od výrobce v `podklady/data/jack-west/csv-import/` a test ho skládá znovu
+  a porovnává. Import má JW zapnutý jen u ESD, PD, SEL-13 a SEL-15
+  (`JW_CSV_VYROBKY`) — jinde se tlačítko nenabízí. Podrobně
+  `docs/jackwest-import-csv.md`.
 - **Návody** (`navody/`): montážní podklady z veřejného webu výrobce, servírují
   se staticky na `/navody/*` (vite plugin je kopíruje do dist; Netlify soubor
   vyhraje nad SPA fallbackem). Párování podkategorie → slug drží

@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { ItemRow, OrderPhase } from "@shared/types";
+import type { ItemRow, JwCsvNabidka, OrderPhase } from "@shared/types";
 import { PHASE_FLOW, PHASE_LABELS } from "@shared/types";
 import { czDate, items as czItems, money } from "@shared/format";
 import { missingForPdf } from "@shared/print";
@@ -44,6 +44,67 @@ async function download(url: string, toast: (t: string) => void) {
   URL.revokeObjectURL(link.href);
 }
 
+
+/**
+ * Podklady pro dodavatele. Portál Jack Westu umí objednávku načíst ze souboru:
+ * kancelář založí poptávku, dá „Import CSV" a položky se nasypou samy. Soubor
+ * je vždy na JEDEN výrobek — každý má v portálu jinou masku — takže se stahuje
+ * po výrobcích. Co jde stáhnout, rozhoduje server.
+ */
+function ExportyDodavateli({
+  orderId,
+  nabidky,
+  toast,
+}: {
+  orderId: string;
+  nabidky: JwCsvNabidka[];
+  toast: (t: string) => void;
+}) {
+  return (
+    <div style={{ display: "grid", gap: 8 }}>
+      <h3 className="card-section-title" style={{ margin: "4px 0 0" }}>
+        Podklady pro dodavatele
+      </h3>
+
+      {nabidky.map((n) =>
+        n.csv ? (
+          <div key={n.subcategory_id} style={{ display: "grid", gap: 4 }}>
+            {/* Zkratka místo celého názvu: přesně ji kancelář vidí v portálu
+                ve sloupci Výrobek, takže se soubor pozná i bez čtení názvu —
+                a popisek se vejde na jeden řádek. Počet je pod tlačítkem. */}
+            <Button
+              variant="secondary"
+              title={n.nazev}
+              onClick={() => void download(`/export/jw-csv/${orderId}/${n.subcategory_id}`, toast)}
+            >
+              CSV pro Jack West · {n.zkratka}
+            </Button>
+            <p className="field-help">
+              {czItems(n.pocet)} v souboru.{" "}
+              {n.overeno
+                ? "Sloupce sedí na vzor od výrobce."
+                : `Sloupce pro ${n.zkratka} nemáme potvrzené vzorem od výrobce — portál po importu nabídne opravu hodnot, první objednávku projdi, než ji odešleš.`}
+            </p>
+          </div>
+        ) : (
+          // Výrobek bez importu se musí vypsat jménem, jinak kancelář zjistí až
+          // u dodavatele, že jí v objednávce chybí položky.
+          <p className="field-help" key={n.subcategory_id}>
+            {n.nazev} ({czItems(n.pocet)}) — import CSV u tohoto výrobku Jack West nemá, přepiš ho
+            v portálu ručně.
+          </p>
+        ),
+      )}
+
+      <Button
+        variant="secondary"
+        onClick={() => void download(`/export/dodavatel-xml/${orderId}`, toast)}
+      >
+        Export XML pro dodavatele
+      </Button>
+    </div>
+  );
+}
 
 /**
  * Rozbalený detail položky pro kancelář. Objednává se ručním přepisem do
@@ -543,20 +604,13 @@ export default function ZakazkaDetailOfficePage() {
                   </p>
                 )}
 
-                <div style={{ display: "grid", gap: 8 }}>
-                  <Button
-                    variant="secondary"
-                    onClick={() => void download(`/export/dodavatel-xml/${orderId}`, toast)}
-                  >
-                    Export XML pro dodavatele
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => toast("Import z Nevy zatím není napojený — ceny zadej ručně.")}
-                  >
-                    Import z Nevy
-                  </Button>
-                </div>
+                <ExportyDodavateli orderId={orderId} nabidky={d?.jw_csv ?? []} toast={toast} />
+                <Button
+                  variant="ghost"
+                  onClick={() => toast("Import z Nevy zatím není napojený — ceny zadej ručně.")}
+                >
+                  Import z Nevy
+                </Button>
               </>
             )}
 
@@ -575,6 +629,9 @@ export default function ZakazkaDetailOfficePage() {
                 <p className="muted t-body-s">
                   Montuje technik. Po podpisu se zakázka posune k fakturaci.
                 </p>
+                {/* Fáze jdou jen dopředu: kdyby import u dodavatele nevyšel,
+                    tady se soubor dá stáhnout znovu. */}
+                <ExportyDodavateli orderId={orderId} nabidky={d?.jw_csv ?? []} toast={toast} />
               </>
             )}
 

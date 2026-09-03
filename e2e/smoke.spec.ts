@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 // Smoke celé linky: kontakt → zakázka → údaje zákazníka → položka → cena práce
@@ -113,6 +114,27 @@ test.describe("kancelář (desktop)", () => {
   test("nacenění → objednáno", async ({ page }) => {
     await login(page, "999999");
     await page.goto(orderUrl);
+
+    // Objednávka k dodavateli: portál JW ji načte ze souboru. Kontroluje se
+    // celý řetěz — tlačítko, routa, sestavení souboru — ne jen že něco spadlo.
+    const [soubor] = await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("button", { name: /CSV pro Jack West/ }).click(),
+    ]);
+    expect(soubor.suggestedFilename()).toMatch(/^jackwest-SEL-15-.*\.csv$/);
+    const csv = readFileSync(await soubor.path(), "utf8");
+    const radky = csv
+      .replace(/^\ufeff/, "")
+      .trimEnd()
+      .split("\r\n");
+    expect(csv.startsWith("\ufeff")).toBe(true);
+    expect(radky[2]).toMatch(/^Vase_znacka;Pozadovany_Datum;Komentar;Vyrobek;/);
+    const kody = radky[2]!.split(";");
+    const data = radky[3]!.split(";");
+    expect(data[kody.indexOf("Vyrobek")]).toBe("SEL-15");
+    expect(data[kody.indexOf("Sirka")]).toBe("900");
+    expect(data[kody.indexOf("Vyska")]).toBe("1400");
+    expect(data[kody.indexOf("Pozice")]).toBe("Kuchyně 1");
 
     // panel fáze: cena zakázky + termín dodání, teprve pak Objednáno
     await expect(page.getByRole("button", { name: "Objednáno" })).toBeDisabled();
