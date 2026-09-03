@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { DODAVATELE, dodavatelZKlice } from "@shared/dodavatele";
 import { NOTIF_EVENTS, ROLE_LABELS, displayName, type Role } from "@shared/types";
 import { ago } from "@shared/format";
 import { api } from "../api/client";
@@ -98,19 +99,25 @@ function Produkty() {
                 <span className="settings-orig">
                   {s.name} · {s.field_count ?? 0} polí
                   {s.konfig_key ? " · z podkladů dodavatele" : ""}
-                  {navodySlugsFor(s).length > 0 && (
-                    <>
-                      {" · "}
-                      <a
-                        href={`https://www.jackwest.cz/produkt/${navodySlugsFor(s)[0]}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ color: "inherit" }}
-                      >
-                        stránka výrobce ↗
-                      </a>
-                    </>
-                  )}
+                  {/* Odkaz na výrobce se skládá z dodavatele v konfig_key, ne
+                      natvrdo z Jack Westu — SUYS ani Neva by ho jinak neměly.
+                      Když známe slug návodu, míří rovnou na produkt. */}
+                  {(() => {
+                    const dod = dodavatelZKlice(s.konfig_key);
+                    const slug = navodySlugsFor(s)[0];
+                    if (!dod && !slug) return null;
+                    const href = slug
+                      ? `${DODAVATELE.jackwest.web}/produkt/${slug}`
+                      : dod!.web;
+                    return (
+                      <>
+                        {" · "}
+                        <a href={href} target="_blank" rel="noreferrer" style={{ color: "inherit" }}>
+                          {dod ? `${dod.nazev} ↗` : "stránka výrobce ↗"}
+                        </a>
+                      </>
+                    );
+                  })()}
                 </span>
               </div>
               <div className="settings-col">

@@ -126,7 +126,8 @@ Pravidlo je vždy **naměřený stav po nastavení jedné hodnoty**, ne odvozen�
 3. **Ceny** — nesbíraly se.
 4. **Markovy výjimky** — které z 42 nových produktů a 3 typů SUYS v aplikaci nebudou. U staré dávky to je v `meta.appExclusions`, u nové to teprve vznikne.
 5. **Výchozí hodnoty za vyřazená pole** — 17 polí je u staré dávky JW povinných, ale uživateli se nezobrazí. Musí je určit Marek.
-6. **Neva** — třetí dodavatel, pole hotová, závislosti chybí.
+6. **Neva** — třetí dodavatel; pole a číselníky napojené, závislosti chybí
+   (podklad je nezměřil). Produkty se zakládají neaktivní jako u ostatních.
 7. **Popisky u 95 polí JW** — 71 z nich jsou skryté technické inputy, zbylých 24 má aspoň smysluplný kód (Klika, Brzda, Profil, Madlo, Aretace).
 
 ---

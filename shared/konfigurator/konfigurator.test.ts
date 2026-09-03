@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { evaluateKonfig, validateKonfig } from "./evaluate";
 import { evaluateDerivedLimits, validateSuysDimensions } from "./limits";
-import { loadJackWest, loadSuys } from "./load";
+import { konfigKey, loadJackWest, loadNeva, loadSuys } from "./load";
 import type { JwCatalog, SuysCatalog } from "./types";
 
 // Testy běží nad OSTRÝMI podklady — když spadnou, rozbila to transformace
@@ -166,5 +166,74 @@ describe("vyhodnocovač — naměřené scénáře SUYS", () => {
       const res = evaluateDerivedLimits(lock, state).find((l) => l.limitCode === "CURTAIN_MAX_HEIGHT")!;
       expect(res.value).toBe(Math.min(Number(va[1]), Number(vb[1])));
     }
+  });
+});
+
+// Neva je třetí dodavatel a jediný BEZ naměřených závislostí — podklad z Infor
+// CPQ vypsal pole a číselníky, ne pravidla. Formulář se proto chová jako plochý
+// seznam. Kdyby někdo pravidla později doplnil, tenhle test upadne a připomene,
+// že se má upravit i dokumentace.
+describe("Neva — pole bez pravidel", () => {
+  const katalog = {
+    source: "test",
+    generated: "2026-09-03",
+    products: [
+      {
+        code: "VENKOVNI_ZALUZIE",
+        name: "Venkovní žaluzie",
+        fields: [
+          {
+            code: "ZAL_sirka_IN",
+            label: "Šířka",
+            section: "Základní údaje",
+            input: "number" as const,
+            required: true,
+            min: 400,
+            max: 5500,
+            options: [],
+            tbd: false,
+          },
+          {
+            code: "SP_barva_RAL_IN",
+            label: "RAL",
+            section: "Spodní profil",
+            input: "text" as const,
+            required: false,
+            min: null,
+            max: null,
+            options: [],
+            tbd: true,
+          },
+        ],
+      },
+    ],
+  };
+
+  it("z podkladu vznikne produkt s klíčem neva:*", () => {
+    const [p] = loadNeva(katalog);
+    expect(p).toBeDefined();
+    expect(konfigKey(p!.dodavatel, p!.kod)).toBe("neva:VENKOVNI_ZALUZIE");
+    expect(p!.rules).toEqual([]);
+    expect(p!.fields).toHaveLength(2);
+  });
+
+  it("rozměr si nese limity, ať se dá validovat", () => {
+    const [p] = loadNeva(katalog);
+    const sirka = p!.fields.find((f) => f.code === "ZAL_sirka_IN")!;
+    expect(sirka.input).toBe("number");
+    expect([sirka.min, sirka.max]).toEqual([400, 5500]);
+    expect(sirka.required).toBe(true);
+  });
+
+  it("pole bez číselníku není povinné — RAL kód se píše ručně", () => {
+    const [p] = loadNeva(katalog);
+    const ral = p!.fields.find((f) => f.code === "SP_barva_RAL_IN")!;
+    expect(ral.options).toEqual([]);
+    expect(ral.required).toBe(false);
+  });
+
+  it("všechna pole jsou vidět a odemčená — pravidla nejsou", () => {
+    const [p] = loadNeva(katalog);
+    expect(p!.fields.every((f) => f.defaultVisible && !f.defaultLocked)).toBe(true);
   });
 });

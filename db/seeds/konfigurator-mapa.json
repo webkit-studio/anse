@@ -1,11 +1,31 @@
 {
-  "_komentar": "Mapování naměřených produktů dodavatelů na katalog aplikace. skupiny = default podle JW skupiny, vyjimky = per zkratka. Podkategorie z konfigurátoru se zakládají NEAKTIVNÍ — zapíná je kancelář v Nastavení → Produkty.",
+  "_komentar": "Mapování naměřených produktů dodavatelů na katalog aplikace. skupiny = default podle JW skupiny, vyjimky = per zkratka. Podkategorie z konfigurátoru se zakládají NEAKTIVNÍ — zapíná je kancelář v Nastavení → Produkty. Neva nemá zkratky skupin jako JW, mapuje se celým názvem.",
   "noveTypy": [
-    { "code": "DVERNI-SIT", "name": "Dveřní a posuvné sítě", "sort": 7 },
-    { "code": "VERT-ZALUZIE", "name": "Vertikální žaluzie", "sort": 8 },
-    { "code": "LATKOVA-ROLETKA", "name": "Látkové roletky", "sort": 9 },
-    { "code": "GARAZ", "name": "Garážové rolety a vrata", "sort": 10 },
-    { "code": "NAHRADNI-DILY", "name": "Náhradní díly", "sort": 11 }
+    {
+      "code": "DVERNI-SIT",
+      "name": "Dveřní a posuvné sítě",
+      "sort": 7
+    },
+    {
+      "code": "VERT-ZALUZIE",
+      "name": "Vertikální žaluzie",
+      "sort": 8
+    },
+    {
+      "code": "LATKOVA-ROLETKA",
+      "name": "Látkové roletky",
+      "sort": 9
+    },
+    {
+      "code": "GARAZ",
+      "name": "Garážové rolety a vrata",
+      "sort": 10
+    },
+    {
+      "code": "NAHRADNI-DILY",
+      "name": "Náhradní díly",
+      "sort": 11
+    }
   ],
   "skupiny": {
     "OS": "OKENNI-SIT",
@@ -19,7 +39,8 @@
     "RS": "OKENNI-SIT",
     "ND": "NAHRADNI-DILY",
     "PS": "NAHRADNI-DILY",
-    "SC": "SCREEN"
+    "SC": "SCREEN",
+    "Venkovní žaluzie": "VENK-ZALUZIE"
   },
   "vyjimky": {
     "SR-DV": "DVERNI-SIT",

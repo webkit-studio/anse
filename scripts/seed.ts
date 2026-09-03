@@ -9,7 +9,13 @@ import { sslFor } from "../server/db";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { loadAll, type JwCatalog, type SuysCatalog } from "../shared/konfigurator";
+import { DODAVATELE } from "../shared/dodavatele";
+import {
+  loadAll,
+  type JwCatalog,
+  type NevaCatalog,
+  type SuysCatalog,
+} from "../shared/konfigurator";
 import { loadEnv, requireEnv } from "./lib/env";
 import { loadAndValidate } from "./validate-definitions";
 
@@ -182,7 +188,8 @@ async function seedKonfigurator() {
   };
   const jw = (await read("podklady/data/jack-west/produkty-davka-2.json")) as JwCatalog;
   const suys = (await read("podklady/data/suys/produkty.json")) as SuysCatalog;
-  const products = loadAll(jw, suys);
+  const neva = (await read("podklady/data/neva/produkty.json")) as NevaCatalog;
+  const products = loadAll(jw, suys, neva);
 
   for (const t of mapa.noveTypy) {
     await sql`
@@ -204,13 +211,15 @@ async function seedKonfigurator() {
     const typeId = typeIds.get(typeCode);
     if (!typeId) throw new Error(`Konfigurátor: typ ${typeCode} pro ${p.kod} v DB není.`);
 
-    const name = p.dodavatel === "jackwest" ? `Jack West · ${p.nazev}` : `SUYS · ${p.nazev}`;
+    // Název i značka dodavatele jdou ze sdílené mapy — dřív to byl ternární
+    // výraz, který uměl jen dva dodavatele a ukládal SUYS s překlepem „susy".
+    const name = `${DODAVATELE[p.dodavatel].nazev} · ${p.nazev}`;
     const [row] = await sql`
       insert into subcategories (product_type_id, code, name, manufacturer, active, sort, konfig_key)
-      values (${typeId}, ${p.kod}, ${name},
-              ${p.dodavatel === "jackwest" ? "jackwest" : "susy"}, false, 100, ${key})
+      values (${typeId}, ${p.kod}, ${name}, ${p.dodavatel}, false, 100, ${key})
       on conflict (product_type_id, code) do update
-        set name = excluded.name, konfig_key = excluded.konfig_key
+        set name = excluded.name, manufacturer = excluded.manufacturer,
+            konfig_key = excluded.konfig_key
       returning (xmax = 0) as inserted
     `;
     if (row?.inserted) created += 1;

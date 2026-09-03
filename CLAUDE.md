@@ -67,7 +67,9 @@ uživatelem, port 5433, DB `anse` — connection string
   ne kopie textu.
 - Co brání posunu dál, počítá server (`blockingFor()`); UI to jen vypisuje.
 - **Konfigurátor** (`shared/konfigurator/`, čistý modul): produkty se schématem
-  naměřeným z konfigurátorů dodavatelů (`podklady/data/*`). Podkategorie
+  naměřeným z konfigurátorů dodavatelů (`podklady/data/*`). Dodavatelé a jejich
+  weby žijí v `shared/dodavatele.ts`; Neva je napojená bez pravidel závislostí
+  (podklad je nezměřil), takže se její formulář chová jako plochý seznam. Podkategorie
   s `konfig_key` nemá definici v DB — klient stahuje schéma přes
   `GET /api/konfigurator/:key`, vyhodnocení pravidel i validace běží identicky
   na obou stranách (server nevěří klientovi). Seed je zakládá **neaktivní**,

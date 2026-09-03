@@ -31,7 +31,11 @@ Katalog Jack Westu je tím pokrytý celý: 52 z 52 produktů poptávkového form
 - **Dávka 1 Jack Westu** (10 produktů z 11. 8. 2026, 384 polí, 186 pravidel) — soubor `anse-produkty.json` zatím není v repu, je potřeba ho dohledat a přiložit jako `data/jack-west/produkty-davka-1.json`.
 - **Obsah vzorkovníků a skladových karet** — u polí je jen příznak `hasSampleBook` / `hasStockCard`. Katalog látek (801 karet) a 949 obrázků vzorků zatím nezpracované.
 - **Ceny** — nesbíraly se.
-- **Neva** (třetí dodavatel) — pole hotová, závislosti chybí.
+- **Neva** (třetí dodavatel) — `data/neva/produkty.json`, 3 typy venkovních
+  žaluzií / 104 polí. Na rozdíl od JW a SUYS **bez naměřených závislostí** —
+  podklad z Infor CPQ vypsal pole a číselníky, ne pravidla. Formulář se proto
+  chová jako plochý seznam. Katalog vyrábí `scripts/neva-z-podkladu.ts`
+  z dodaného markdownu; až přijdou naměřená pravidla, doplní se do loaderu.
 - **Seznam vyřazených polí** — co v aplikaci nebude, určuje Marek.
 
 ## Pozor: dva různé modely

@@ -5,6 +5,8 @@ import type {
   KonfigField,
   KonfigProduct,
   KonfigRule,
+  NevaCatalog,
+  NevaProduct,
   SuysCatalog,
   SuysProduct,
 } from "./types";
@@ -208,9 +210,48 @@ export function loadSuys(raw: SuysCatalog): KonfigProduct[] {
 }
 
 /** Oba katalogy do jedné mapy `dodavatel:kod` → produkt. */
-export function loadAll(jw: JwCatalog, suys: SuysCatalog): Map<string, KonfigProduct> {
+/**
+ * Neva: pole a číselníky bez pravidel — podklad je závislosti neměřil. Formulář
+ * se proto chová jako plochý seznam: nic se neschovává ani nezamyká. Select
+ * bez číselníku (paleta RAL) propadne na volný text, do kterého technik napíše
+ * kód RAL; to je použitelnější než zamčené pole s „doplní se".
+ */
+export function loadNeva(cat: NevaCatalog): KonfigProduct[] {
+  return cat.products.map((p: NevaProduct) => ({
+    dodavatel: "neva" as const,
+    kod: p.code,
+    nazev: decap(p.name),
+    skupina: "Venkovní žaluzie",
+    sections: [...new Set(p.fields.map((f) => f.section))],
+    fields: p.fields.map((f) => ({
+      code: f.code,
+      label: decap(f.label),
+      section: f.section,
+      input: f.input,
+      required: f.required,
+      defaultValue: "",
+      defaultVisible: true,
+      defaultLocked: false,
+      min: f.min,
+      max: f.max,
+      maxLength: null,
+      options: f.options.map((o) => ({ value: o.value, label: decap(o.label) })),
+      hasSampleBook: false,
+      hasStockCard: false,
+    })),
+    rules: [] as KonfigRule[],
+    latentTargets: [],
+  }));
+}
+
+export function loadAll(
+  jw: JwCatalog,
+  suys: SuysCatalog,
+  neva?: NevaCatalog,
+): Map<string, KonfigProduct> {
   const map = new Map<string, KonfigProduct>();
-  for (const p of [...loadJackWest(jw), ...loadSuys(suys)]) {
+  const vse = [...loadJackWest(jw), ...loadSuys(suys), ...(neva ? loadNeva(neva) : [])];
+  for (const p of vse) {
     map.set(konfigKey(p.dodavatel, p.kod), p);
   }
   return map;

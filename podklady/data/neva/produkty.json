@@ -1,0 +1,2880 @@
+{
+  "source": "Infor CPQ (cpqks.eu1.inforcloudsuite.com) — podklad z 11. 8. 2026",
+  "generated": "2026-09-03",
+  "products": [
+    {
+      "code": "FASADNI_SYSTEM",
+      "name": "Fasádní systém",
+      "fields": [
+        {
+          "code": "ZAL_typ_IN",
+          "label": "Typ žaluzie",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "Z90",
+              "label": "Z90"
+            },
+            {
+              "value": "S90",
+              "label": "S90"
+            },
+            {
+              "value": "Z70",
+              "label": "Z70"
+            },
+            {
+              "value": "C80",
+              "label": "C80"
+            },
+            {
+              "value": "C65",
+              "label": "C65"
+            },
+            {
+              "value": "F80",
+              "label": "F80"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_system_IN",
+          "label": "Typ systému",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "jednoduchý",
+              "label": "jednoduchý"
+            },
+            {
+              "value": "sestava",
+              "label": "sestava"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_pokrocile_volby_IN",
+          "label": "Zobrazit pokročilé volby",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "Yes",
+              "label": "Yes"
+            },
+            {
+              "value": "No",
+              "label": "No"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "PAK_barva_lam_IN",
+          "label": "Barva lamel",
+          "section": "Lamely",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "010",
+              "label": "010"
+            },
+            {
+              "value": "071",
+              "label": "071"
+            },
+            {
+              "value": "110",
+              "label": "110"
+            },
+            {
+              "value": "130",
+              "label": "130"
+            },
+            {
+              "value": "140",
+              "label": "140"
+            },
+            {
+              "value": "140H",
+              "label": "140H"
+            },
+            {
+              "value": "240",
+              "label": "240"
+            },
+            {
+              "value": "266",
+              "label": "266"
+            },
+            {
+              "value": "330",
+              "label": "330"
+            },
+            {
+              "value": "716",
+              "label": "716"
+            },
+            {
+              "value": "721",
+              "label": "721"
+            },
+            {
+              "value": "722",
+              "label": "722"
+            },
+            {
+              "value": "735",
+              "label": "735"
+            },
+            {
+              "value": "737",
+              "label": "737"
+            },
+            {
+              "value": "739",
+              "label": "739"
+            },
+            {
+              "value": "780",
+              "label": "780"
+            },
+            {
+              "value": "905",
+              "label": "905"
+            },
+            {
+              "value": "907",
+              "label": "907"
+            },
+            {
+              "value": "908",
+              "label": "908"
+            },
+            {
+              "value": "910",
+              "label": "910"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SP_barva_IN",
+          "label": "Barva spodního profilu",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SP_barva_RAL_uprava_IN",
+          "label": "Povrchová úprava",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_barva_prislusenstvi_IN",
+          "label": "Barva příslušenství",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "šedá",
+              "label": "šedá"
+            },
+            {
+              "value": "černá",
+              "label": "černá"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_sestava_IN",
+          "label": "Počet žaluzií na jeden pohon",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "PAK_oboustranne_cepovani_IN",
+          "label": "Oboustranné čepování",
+          "section": "Lamely",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_pracovni_poloha_IN",
+          "label": "Pracovní poloha",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_zkracovac_IN",
+          "label": "Dělené naklápění lamel",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "PAK_nestandardni_naklapeni_IN",
+          "label": "Naklápění lamel na 104°",
+          "section": "Lamely",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_sirka_IN",
+          "label": "Šířka",
+          "section": "Základní údaje",
+          "input": "number",
+          "required": true,
+          "min": 400,
+          "max": 3950,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_vyska_IN",
+          "label": "Výška",
+          "section": "Základní údaje",
+          "input": "number",
+          "required": true,
+          "min": 500,
+          "max": 4000,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_horni_vyska_nula_IN",
+          "label": "Horní výška v 0",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_typ_IN",
+          "label": "Ovládání",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez ovládání",
+              "label": "bez ovládání"
+            },
+            {
+              "value": "motor Elero",
+              "label": "motor Elero"
+            },
+            {
+              "value": "motor Geiger",
+              "label": "motor Geiger"
+            },
+            {
+              "value": "motor Somfy",
+              "label": "motor Somfy"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_typ_IN",
+          "label": "Typ motoru",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "WT",
+              "label": "WT"
+            },
+            {
+              "value": "WT Protect",
+              "label": "WT Protect"
+            },
+            {
+              "value": "J4S IO Protect",
+              "label": "J4S IO Protect"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_pozice_IN",
+          "label": "Pozice motoru",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "standard",
+              "label": "standard"
+            },
+            {
+              "value": "vlevo",
+              "label": "vlevo"
+            },
+            {
+              "value": "vpravo",
+              "label": "vpravo"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_kabel_delka_IN",
+          "label": "Délka kabelu",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "standard",
+              "label": "standard"
+            },
+            {
+              "value": "0,9 m",
+              "label": "0,9 m"
+            },
+            {
+              "value": "3 m",
+              "label": "3 m"
+            },
+            {
+              "value": "10 m",
+              "label": "10 m"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_hirschmann_typ_IN",
+          "label": "Hirschmann konektor",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "standard STAK 3",
+              "label": "standard STAK 3"
+            },
+            {
+              "value": "šroubovací STAK 3",
+              "label": "šroubovací STAK 3"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_typ_L_IN",
+          "label": "Typ VP (levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "H",
+              "label": "H"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_pocet_L_IN",
+          "label": "Počet (levá)",
+          "section": "Vodicí profily",
+          "input": "number",
+          "required": true,
+          "min": 0,
+          "max": 1,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "VP_typ_P_IN",
+          "label": "Typ VP (pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "H",
+              "label": "H"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_pocet_P_IN",
+          "label": "Počet (pravá)",
+          "section": "Vodicí profily",
+          "input": "number",
+          "required": true,
+          "min": 0,
+          "max": 1,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "HP_potisk_IN",
+          "label": "Potisk HP",
+          "section": "Horní profil",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "KP_typ_IN",
+          "label": "Typ plechu",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "typ 6",
+              "label": "typ 6"
+            },
+            {
+              "value": "typ 7",
+              "label": "typ 7"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_delka_IN",
+          "label": "Délka plechu",
+          "section": "Krycí plech",
+          "input": "number",
+          "required": true,
+          "min": 1150,
+          "max": 4000,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "KP_barva_IN",
+          "label": "Barva plechu",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_barva_RAL_uprava_IN",
+          "label": "Povrchová úprava plechu",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_barva_oboustrana_IN",
+          "label": "Oboustranné lakování",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ATYP",
+          "label": "Atypická úprava",
+          "section": "Ostatní",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "Pozadavek_kontrola",
+          "label": "Požadavek na kontrolu výrobcem",
+          "section": "Ostatní",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        }
+      ]
+    },
+    {
+      "code": "SAMONOSNY_SYSTEM",
+      "name": "Samonosný systém",
+      "fields": [
+        {
+          "code": "ZAL_system_IN",
+          "label": "Typ systému",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "STF bez krytu",
+              "label": "STF bez krytu"
+            },
+            {
+              "value": "STF s ISO-KASTLem",
+              "label": "STF s ISO-KASTLem"
+            },
+            {
+              "value": "STF s plechem",
+              "label": "STF s plechem"
+            },
+            {
+              "value": "STL standard",
+              "label": "STL standard"
+            },
+            {
+              "value": "STL zesílený",
+              "label": "STL zesílený"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_typ_IN",
+          "label": "Typ žaluzie",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "Z90",
+              "label": "Z90"
+            },
+            {
+              "value": "S90",
+              "label": "S90"
+            },
+            {
+              "value": "Z70",
+              "label": "Z70"
+            },
+            {
+              "value": "C80",
+              "label": "C80"
+            },
+            {
+              "value": "C65",
+              "label": "C65"
+            },
+            {
+              "value": "F80",
+              "label": "F80"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_pokrocile_volby_IN",
+          "label": "Zobrazit pokročilé volby",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "Yes",
+              "label": "Yes"
+            },
+            {
+              "value": "No",
+              "label": "No"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "PAK_barva_lam_IN",
+          "label": "Barva lamel",
+          "section": "Lamely",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "010",
+              "label": "010"
+            },
+            {
+              "value": "071",
+              "label": "071"
+            },
+            {
+              "value": "110",
+              "label": "110"
+            },
+            {
+              "value": "130",
+              "label": "130"
+            },
+            {
+              "value": "140",
+              "label": "140"
+            },
+            {
+              "value": "140H",
+              "label": "140H"
+            },
+            {
+              "value": "240",
+              "label": "240"
+            },
+            {
+              "value": "266",
+              "label": "266"
+            },
+            {
+              "value": "330",
+              "label": "330"
+            },
+            {
+              "value": "716",
+              "label": "716"
+            },
+            {
+              "value": "721",
+              "label": "721"
+            },
+            {
+              "value": "722",
+              "label": "722"
+            },
+            {
+              "value": "735",
+              "label": "735"
+            },
+            {
+              "value": "737",
+              "label": "737"
+            },
+            {
+              "value": "739",
+              "label": "739"
+            },
+            {
+              "value": "780",
+              "label": "780"
+            },
+            {
+              "value": "905",
+              "label": "905"
+            },
+            {
+              "value": "907",
+              "label": "907"
+            },
+            {
+              "value": "908",
+              "label": "908"
+            },
+            {
+              "value": "910",
+              "label": "910"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SP_barva_IN",
+          "label": "Barva spodního profilu",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SP_barva_RAL_IN",
+          "label": "RAL",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": true
+        },
+        {
+          "code": "SP_barva_RAL_uprava_IN",
+          "label": "Povrchová úprava",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            },
+            {
+              "value": "jemná struktura",
+              "label": "jemná struktura"
+            },
+            {
+              "value": "matná",
+              "label": "matná"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_barva_prislusenstvi_IN",
+          "label": "Barva příslušenství",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "šedá",
+              "label": "šedá"
+            },
+            {
+              "value": "černá",
+              "label": "černá"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_sirka_IN",
+          "label": "Šířka",
+          "section": "Základní údaje",
+          "input": "number",
+          "required": true,
+          "min": 600,
+          "max": 4000,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_vyska_svetla_IN",
+          "label": "Světlá výška",
+          "section": "Základní údaje",
+          "input": "number",
+          "required": true,
+          "min": 450,
+          "max": 5000,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_horni_vyska_nula_IN",
+          "label": "Horní výška v 0",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_typ_IN",
+          "label": "Ovládání",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez ovládání",
+              "label": "bez ovládání"
+            },
+            {
+              "value": "motor Elero",
+              "label": "motor Elero"
+            },
+            {
+              "value": "motor Geiger",
+              "label": "motor Geiger"
+            },
+            {
+              "value": "motor Somfy",
+              "label": "motor Somfy"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_typ_IN",
+          "label": "Typ motoru",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "JA Soft",
+              "label": "JA Soft"
+            },
+            {
+              "value": "JA Comfort",
+              "label": "JA Comfort"
+            },
+            {
+              "value": "JA Comfort-868",
+              "label": "JA Comfort-868"
+            },
+            {
+              "value": "JAR",
+              "label": "JAR"
+            },
+            {
+              "value": "JA Comfort SMI",
+              "label": "JA Comfort SMI"
+            },
+            {
+              "value": "JA Soft DC, 12V",
+              "label": "JA Soft DC, 12V"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_pozice_IN",
+          "label": "Pozice motoru",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "standard",
+              "label": "standard"
+            },
+            {
+              "value": "vlevo",
+              "label": "vlevo"
+            },
+            {
+              "value": "vpravo",
+              "label": "vpravo"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "STF_VP_typ_IN",
+          "label": "Typ VP",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "STF 1",
+              "label": "STF 1"
+            },
+            {
+              "value": "STF 2",
+              "label": "STF 2"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "STF_VP_barva_IN",
+          "label": "Barva VP",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "STF_VP_barva_RAL_IN",
+          "label": "RAL (VP)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": true
+        },
+        {
+          "code": "STF_VP_barva_RAL_uprava_IN",
+          "label": "Povrchová úprava (VP)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            },
+            {
+              "value": "jemná struktura",
+              "label": "jemná struktura"
+            },
+            {
+              "value": "matná",
+              "label": "matná"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "STF_VP_seriznout_IN",
+          "label": "Seříznout pod úhlem 4°",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "STF_VP_zmena_delky_IN",
+          "label": "Změna délky VP",
+          "section": "Vodicí profily",
+          "input": "number",
+          "required": true,
+          "min": 0,
+          "max": 6000,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "STF_VP_kotevni_mat_IN",
+          "label": "Kotevní materiál",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SIT_vyber_IN",
+          "label": "Síť",
+          "section": "Síť",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_typ_IN",
+          "label": "Typ plechu",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "typ F11",
+              "label": "typ F11"
+            },
+            {
+              "value": "typ F21",
+              "label": "typ F21"
+            },
+            {
+              "value": "typ F30",
+              "label": "typ F30"
+            },
+            {
+              "value": "typ F31",
+              "label": "typ F31"
+            },
+            {
+              "value": "typ F32",
+              "label": "typ F32"
+            },
+            {
+              "value": "typ F33",
+              "label": "typ F33"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_rozmer_A_IN",
+          "label": "A",
+          "section": "Krycí plech",
+          "input": "number",
+          "required": true,
+          "min": 160,
+          "max": 400,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "KP_rozmer_B_IN",
+          "label": "B",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "139",
+              "label": "139"
+            },
+            {
+              "value": "159",
+              "label": "159"
+            },
+            {
+              "value": "179",
+              "label": "179"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_rozmer_C_IN",
+          "label": "C",
+          "section": "Krycí plech",
+          "input": "number",
+          "required": true,
+          "min": 230,
+          "max": 230,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "KP_rozmer_E_IN",
+          "label": "E",
+          "section": "Krycí plech",
+          "input": "number",
+          "required": true,
+          "min": 12,
+          "max": 60,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "KP_barva_IN",
+          "label": "Barva plechu",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_barva_RAL_IN",
+          "label": "RAL (plech)",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": true
+        },
+        {
+          "code": "KP_barva_RAL_uprava_IN",
+          "label": "Povrchová úprava (plech)",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            },
+            {
+              "value": "jemná struktura",
+              "label": "jemná struktura"
+            },
+            {
+              "value": "matná",
+              "label": "matná"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_barva_oboustrana_IN",
+          "label": "Oboustranné lakování",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_pruchod_kabel_IN",
+          "label": "Průchod pro kabel",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez",
+              "label": "bez"
+            },
+            {
+              "value": "bok vlevo",
+              "label": "bok vlevo"
+            },
+            {
+              "value": "bok vpravo",
+              "label": "bok vpravo"
+            },
+            {
+              "value": "střed",
+              "label": "střed"
+            },
+            {
+              "value": "vlevo",
+              "label": "vlevo"
+            },
+            {
+              "value": "vpravo",
+              "label": "vpravo"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "KP_izolace_A_XPS_IN",
+          "label": "Izolace XPS na A",
+          "section": "Krycí plech",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "HP_potisk_IN",
+          "label": "Potisk HP",
+          "section": "Horní profil",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ATYP",
+          "label": "Atypická úprava",
+          "section": "Ostatní",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "Pozadavek_kontrola",
+          "label": "Požadavek na kontrolu výrobcem",
+          "section": "Ostatní",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        }
+      ]
+    },
+    {
+      "code": "VENKOVNI_ZALUZIE",
+      "name": "Venkovní žaluzie",
+      "fields": [
+        {
+          "code": "ZAL_typ_IN",
+          "label": "Typ žaluzie",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "Z90",
+              "label": "Z90"
+            },
+            {
+              "value": "S90",
+              "label": "S90"
+            },
+            {
+              "value": "Z70",
+              "label": "Z70"
+            },
+            {
+              "value": "C80",
+              "label": "C80"
+            },
+            {
+              "value": "C65",
+              "label": "C65"
+            },
+            {
+              "value": "F80",
+              "label": "F80"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_pokrocile_volby_IN",
+          "label": "Zobrazit pokročilé volby",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "Yes",
+              "label": "Yes"
+            },
+            {
+              "value": "No",
+              "label": "No"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "PAK_barva_lam_IN",
+          "label": "Barva lamel",
+          "section": "Lamely",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "010",
+              "label": "010"
+            },
+            {
+              "value": "071",
+              "label": "071"
+            },
+            {
+              "value": "110",
+              "label": "110"
+            },
+            {
+              "value": "130",
+              "label": "130"
+            },
+            {
+              "value": "140",
+              "label": "140"
+            },
+            {
+              "value": "140H",
+              "label": "140H"
+            },
+            {
+              "value": "240",
+              "label": "240"
+            },
+            {
+              "value": "266",
+              "label": "266"
+            },
+            {
+              "value": "330",
+              "label": "330"
+            },
+            {
+              "value": "716",
+              "label": "716"
+            },
+            {
+              "value": "721",
+              "label": "721"
+            },
+            {
+              "value": "722",
+              "label": "722"
+            },
+            {
+              "value": "735",
+              "label": "735"
+            },
+            {
+              "value": "737",
+              "label": "737"
+            },
+            {
+              "value": "739",
+              "label": "739"
+            },
+            {
+              "value": "780",
+              "label": "780"
+            },
+            {
+              "value": "905",
+              "label": "905"
+            },
+            {
+              "value": "907",
+              "label": "907"
+            },
+            {
+              "value": "908",
+              "label": "908"
+            },
+            {
+              "value": "910",
+              "label": "910"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SP_barva_IN",
+          "label": "Barva spodního profilu",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "SP_barva_RAL_IN",
+          "label": "RAL",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": true
+        },
+        {
+          "code": "SP_barva_RAL_uprava_IN",
+          "label": "Povrchová úprava",
+          "section": "Spodní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            },
+            {
+              "value": "jemná struktura",
+              "label": "jemná struktura"
+            },
+            {
+              "value": "matná",
+              "label": "matná"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_barva_prislusenstvi_IN",
+          "label": "Barva příslušenství",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "šedá",
+              "label": "šedá"
+            },
+            {
+              "value": "černá",
+              "label": "černá"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "HP_typ_IN",
+          "label": "Horní profil",
+          "section": "Horní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pozink",
+              "label": "pozink"
+            },
+            {
+              "value": "hliník",
+              "label": "hliník"
+            },
+            {
+              "value": "lakovaný hliník",
+              "label": "lakovaný hliník"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_sestava_IN",
+          "label": "Sestava žaluzií na jeden pohon",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_zadat_svetlou_vysku_IN",
+          "label": "Vrtat vodicí profily dle světlé výšky",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_sirka_IN",
+          "label": "Šířka",
+          "section": "Základní údaje",
+          "input": "number",
+          "required": true,
+          "min": 400,
+          "max": 5500,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_vyska_IN",
+          "label": "Výška",
+          "section": "Základní údaje",
+          "input": "number",
+          "required": true,
+          "min": 500,
+          "max": 6000,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ZAL_horni_vyska_nula_IN",
+          "label": "Horní výška v 0",
+          "section": "Základní údaje",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_typ_IN",
+          "label": "Ovládání",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez ovládání",
+              "label": "bez ovládání"
+            },
+            {
+              "value": "klika L",
+              "label": "klika L"
+            },
+            {
+              "value": "klika P",
+              "label": "klika P"
+            },
+            {
+              "value": "motor Elero",
+              "label": "motor Elero"
+            },
+            {
+              "value": "motor Geiger",
+              "label": "motor Geiger"
+            },
+            {
+              "value": "motor Kaiser",
+              "label": "motor Kaiser"
+            },
+            {
+              "value": "motor Somfy",
+              "label": "motor Somfy"
+            },
+            {
+              "value": "šňůra int L",
+              "label": "šňůra int L"
+            },
+            {
+              "value": "šňůra int P",
+              "label": "šňůra int P"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_typ_IN",
+          "label": "Typ motoru",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "WT",
+              "label": "WT"
+            },
+            {
+              "value": "WT Protect",
+              "label": "WT Protect"
+            },
+            {
+              "value": "J4S IO Protect",
+              "label": "J4S IO Protect"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "OVL_motor_pozice_IN",
+          "label": "Pozice motoru",
+          "section": "Ovládání",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "standard",
+              "label": "standard"
+            },
+            {
+              "value": "vlevo",
+              "label": "vlevo"
+            },
+            {
+              "value": "vpravo",
+              "label": "vpravo"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_typ_L_IN",
+          "label": "Typ VP (levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "S",
+              "label": "S"
+            },
+            {
+              "value": "SDV",
+              "label": "SDV"
+            },
+            {
+              "value": "SDV2",
+              "label": "SDV2"
+            },
+            {
+              "value": "O",
+              "label": "O"
+            },
+            {
+              "value": "H",
+              "label": "H"
+            },
+            {
+              "value": "HDV",
+              "label": "HDV"
+            },
+            {
+              "value": "Z",
+              "label": "Z"
+            },
+            {
+              "value": "STF 1",
+              "label": "STF 1"
+            },
+            {
+              "value": "STF 2",
+              "label": "STF 2"
+            },
+            {
+              "value": "STL",
+              "label": "STL"
+            },
+            {
+              "value": "STL DV",
+              "label": "STL DV"
+            },
+            {
+              "value": "roh 90°",
+              "label": "roh 90°"
+            },
+            {
+              "value": "lanko",
+              "label": "lanko"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_pocet_L_IN",
+          "label": "Počet (levá)",
+          "section": "Vodicí profily",
+          "input": "number",
+          "required": true,
+          "min": 0,
+          "max": 1,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "VP_barva_L_IN",
+          "label": "Barva VP (levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_barva_RAL_L_IN",
+          "label": "RAL (VP levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": true
+        },
+        {
+          "code": "VP_barva_RAL_uprava_L_IN",
+          "label": "Povrchová úprava (VP levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            },
+            {
+              "value": "jemná struktura",
+              "label": "jemná struktura"
+            },
+            {
+              "value": "matná",
+              "label": "matná"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_DRZ_typ_L_IN",
+          "label": "Typ držáku (levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "A 55-73",
+              "label": "A 55-73"
+            },
+            {
+              "value": "B 73-103",
+              "label": "B 73-103"
+            },
+            {
+              "value": "C 103-155",
+              "label": "C 103-155"
+            },
+            {
+              "value": "TA 50-68",
+              "label": "TA 50-68"
+            },
+            {
+              "value": "TB 68-108",
+              "label": "TB 68-108"
+            },
+            {
+              "value": "TC 104-170",
+              "label": "TC 104-170"
+            },
+            {
+              "value": "TD 170-300",
+              "label": "TD 170-300"
+            },
+            {
+              "value": "bez držáku",
+              "label": "bez držáku"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_kotevni_mat_L_IN",
+          "label": "Kotevní materiál (levá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez",
+              "label": "bez"
+            },
+            {
+              "value": "A2",
+              "label": "A2"
+            },
+            {
+              "value": "C2",
+              "label": "C2"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_typ_P_IN",
+          "label": "Typ VP (pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "S",
+              "label": "S"
+            },
+            {
+              "value": "SDV",
+              "label": "SDV"
+            },
+            {
+              "value": "SDV2",
+              "label": "SDV2"
+            },
+            {
+              "value": "O",
+              "label": "O"
+            },
+            {
+              "value": "H",
+              "label": "H"
+            },
+            {
+              "value": "HDV",
+              "label": "HDV"
+            },
+            {
+              "value": "Z",
+              "label": "Z"
+            },
+            {
+              "value": "STF 1",
+              "label": "STF 1"
+            },
+            {
+              "value": "STF 2",
+              "label": "STF 2"
+            },
+            {
+              "value": "STL",
+              "label": "STL"
+            },
+            {
+              "value": "STL DV",
+              "label": "STL DV"
+            },
+            {
+              "value": "roh 90°",
+              "label": "roh 90°"
+            },
+            {
+              "value": "lanko",
+              "label": "lanko"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_pocet_P_IN",
+          "label": "Počet (pravá)",
+          "section": "Vodicí profily",
+          "input": "number",
+          "required": true,
+          "min": 0,
+          "max": 1,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "VP_barva_P_IN",
+          "label": "Barva VP (pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "RAL",
+              "label": "RAL"
+            },
+            {
+              "value": "VSR071",
+              "label": "VSR071"
+            },
+            {
+              "value": "VSR110",
+              "label": "VSR110"
+            },
+            {
+              "value": "VSR240",
+              "label": "VSR240"
+            },
+            {
+              "value": "VSR780",
+              "label": "VSR780"
+            },
+            {
+              "value": "SW203G",
+              "label": "SW203G"
+            },
+            {
+              "value": "DB703",
+              "label": "DB703"
+            },
+            {
+              "value": "YW359F",
+              "label": "YW359F"
+            },
+            {
+              "value": "January2",
+              "label": "January2"
+            },
+            {
+              "value": "Anodic Natura",
+              "label": "Anodic Natura"
+            },
+            {
+              "value": "atyp",
+              "label": "atyp"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_barva_RAL_P_IN",
+          "label": "RAL (VP pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": true
+        },
+        {
+          "code": "VP_barva_RAL_uprava_P_IN",
+          "label": "Povrchová úprava (VP pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "pololesk",
+              "label": "pololesk"
+            },
+            {
+              "value": "jemná struktura",
+              "label": "jemná struktura"
+            },
+            {
+              "value": "matná",
+              "label": "matná"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_DRZ_typ_P_IN",
+          "label": "Typ držáku (pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "A 55-73",
+              "label": "A 55-73"
+            },
+            {
+              "value": "B 73-103",
+              "label": "B 73-103"
+            },
+            {
+              "value": "C 103-155",
+              "label": "C 103-155"
+            },
+            {
+              "value": "TA 50-68",
+              "label": "TA 50-68"
+            },
+            {
+              "value": "TB 68-108",
+              "label": "TB 68-108"
+            },
+            {
+              "value": "TC 104-170",
+              "label": "TC 104-170"
+            },
+            {
+              "value": "TD 170-300",
+              "label": "TD 170-300"
+            },
+            {
+              "value": "bez držáku",
+              "label": "bez držáku"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "VP_kotevni_mat_P_IN",
+          "label": "Kotevní materiál (pravá)",
+          "section": "Vodicí profily",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez",
+              "label": "bez"
+            },
+            {
+              "value": "A2",
+              "label": "A2"
+            },
+            {
+              "value": "C2",
+              "label": "C2"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "HP_DRZ_typ_IN",
+          "label": "Typ držáku HP",
+          "section": "Horní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "č.1",
+              "label": "č.1"
+            },
+            {
+              "value": "č.R1",
+              "label": "č.R1"
+            },
+            {
+              "value": "č.2 + č.1",
+              "label": "č.2 + č.1"
+            },
+            {
+              "value": "č.2 + R1",
+              "label": "č.2 + R1"
+            },
+            {
+              "value": "č.3 + č.1",
+              "label": "č.3 + č.1"
+            },
+            {
+              "value": "č.3 + R1",
+              "label": "č.3 + R1"
+            },
+            {
+              "value": "č.4 + č.1",
+              "label": "č.4 + č.1"
+            },
+            {
+              "value": "č.4 + R1",
+              "label": "č.4 + R1"
+            },
+            {
+              "value": "č.5 + č.1",
+              "label": "č.5 + č.1"
+            },
+            {
+              "value": "č.5 + R1",
+              "label": "č.5 + R1"
+            },
+            {
+              "value": "č.33 + č.1",
+              "label": "č.33 + č.1"
+            },
+            {
+              "value": "č.33 + R1",
+              "label": "č.33 + R1"
+            },
+            {
+              "value": "č.13 + č.1",
+              "label": "č.13 + č.1"
+            },
+            {
+              "value": "č.13 + R1",
+              "label": "č.13 + R1"
+            },
+            {
+              "value": "č.14 + č.1",
+              "label": "č.14 + č.1"
+            },
+            {
+              "value": "č.14 + R1",
+              "label": "č.14 + R1"
+            },
+            {
+              "value": "č.3LP + R1",
+              "label": "č.3LP + R1"
+            },
+            {
+              "value": "držák CH",
+              "label": "držák CH"
+            },
+            {
+              "value": "č.36 + R1",
+              "label": "č.36 + R1"
+            },
+            {
+              "value": "bez držáku",
+              "label": "bez držáku"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "HP_DRZ_prodlouzeni_IN",
+          "label": "Prodloužení držáku",
+          "section": "Horní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "a (140-180)",
+              "label": "a (140-180)"
+            },
+            {
+              "value": "b (181-230)",
+              "label": "b (181-230)"
+            },
+            {
+              "value": "c (231-280)",
+              "label": "c (231-280)"
+            },
+            {
+              "value": "d (281-330)",
+              "label": "d (281-330)"
+            },
+            {
+              "value": "e (331-380)",
+              "label": "e (331-380)"
+            },
+            {
+              "value": "f (381-430)",
+              "label": "f (381-430)"
+            },
+            {
+              "value": "g (431-480)",
+              "label": "g (431-480)"
+            },
+            {
+              "value": "h (481-530)",
+              "label": "h (481-530)"
+            },
+            {
+              "value": "bez prodloužení",
+              "label": "bez prodloužení"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "HP_DRZ_kotevni_mat_IN",
+          "label": "Kotevní mat. HP",
+          "section": "Horní profil",
+          "input": "select",
+          "required": true,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "bez",
+              "label": "bez"
+            },
+            {
+              "value": "A1",
+              "label": "A1"
+            },
+            {
+              "value": "C1",
+              "label": "C1"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "HP_potisk_IN",
+          "label": "Potisk HP",
+          "section": "Horní profil",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [],
+          "tbd": false
+        },
+        {
+          "code": "ATYP",
+          "label": "Atypická úprava",
+          "section": "Ostatní",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        },
+        {
+          "code": "Pozadavek_kontrola",
+          "label": "Požadavek na kontrolu výrobcem",
+          "section": "Ostatní",
+          "input": "select",
+          "required": false,
+          "min": null,
+          "max": null,
+          "options": [
+            {
+              "value": "ano",
+              "label": "ano"
+            },
+            {
+              "value": "ne",
+              "label": "ne"
+            }
+          ],
+          "tbd": false
+        }
+      ]
+    }
+  ]
+}

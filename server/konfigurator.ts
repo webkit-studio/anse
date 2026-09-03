@@ -1,9 +1,11 @@
 import jwRaw from "../podklady/data/jack-west/produkty-davka-2.json";
+import nevaRaw from "../podklady/data/neva/produkty.json";
 import suysRaw from "../podklady/data/suys/produkty.json";
 import {
   loadAll,
   type JwCatalog,
   type KonfigProduct,
+  type NevaCatalog,
   type SuysCatalog,
 } from "../shared/konfigurator";
 
@@ -15,7 +17,11 @@ let cache: Map<string, KonfigProduct> | undefined;
 
 export function konfigProducts(): Map<string, KonfigProduct> {
   if (!cache) {
-    cache = loadAll(jwRaw as unknown as JwCatalog, suysRaw as unknown as SuysCatalog);
+    cache = loadAll(
+      jwRaw as unknown as JwCatalog,
+      suysRaw as unknown as SuysCatalog,
+      nevaRaw as unknown as NevaCatalog,
+    );
   }
   return cache;
 }

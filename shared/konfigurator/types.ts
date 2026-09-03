@@ -151,7 +151,37 @@ export type SuysDerivedLimits = Record<
 
 // === Normalizovaný vnitřní tvar ============================================
 
-export type Dodavatel = "jackwest" | "suys";
+export type Dodavatel = "jackwest" | "suys" | "neva";
+
+/**
+ * Neva. Na rozdíl od Jack Westu a SUYS jde o výpis polí a číselníků z Infor CPQ,
+ * BEZ naměřených závislostí — proto tu nejsou pravidla ani limity odvozené
+ * z jiných polí. Katalog vyrábí scripts/neva-z-podkladu.ts.
+ */
+export interface NevaCatalog {
+  source: string;
+  generated: string;
+  products: NevaProduct[];
+}
+
+export interface NevaProduct {
+  code: string;
+  name: string;
+  fields: NevaField[];
+}
+
+export interface NevaField {
+  code: string;
+  label: string;
+  section: string;
+  input: "select" | "text" | "number";
+  required: boolean;
+  min: number | null;
+  max: number | null;
+  options: { value: string; label: string }[];
+  /** Číselník je v podkladu jen popsaný (paleta RAL), ne vypsaný. */
+  tbd: boolean;
+}
 
 export interface KonfigOption {
   value: string;
