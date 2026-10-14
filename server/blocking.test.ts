@@ -3,7 +3,7 @@ import { BLOKACE_PATRI, ORDER_PHASES, blokaceProRoli } from "../shared/types";
 import { blockingFor } from "./routes/orders";
 
 const full = {
-  assignee_id: "11111111-1111-1111-1111-111111111111",
+  assignee_ids: ["11111111-1111-1111-1111-111111111111"],
   customer_name: "Novák Jan",
   customer_phone: "606 111 222",
   customer_email: "novak@example.cz",
@@ -23,7 +23,7 @@ describe("blokující kroky", () => {
   });
 
   it("nepřidělená zakázka nejde poslat dál — nikdo by ji v terénu neviděl", () => {
-    expect(blockingFor("k_zamereni", { ...full, assignee_id: null }, 3, false)).toEqual([
+    expect(blockingFor("k_zamereni", { ...full, assignee_ids: [] }, 3, false)).toEqual([
       "Přidělit technika",
     ]);
   });
@@ -71,7 +71,7 @@ describe("blokující kroky", () => {
 describe("blokace mají všechny určeného vlastníka", () => {
   it("žádný řetězec z blockingFor nechybí v BLOKACE_PATRI", () => {
     const prazdna = {
-      assignee_id: null,
+      assignee_ids: [],
       customer_name: "",
       customer_phone: "",
       customer_email: "",

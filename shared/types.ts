@@ -171,9 +171,10 @@ export interface ContactRow {
   place: string;
   /** „● Ozvat se" — zhasne založením zakázky, ručně jde přepnout zpět. */
   fresh: boolean;
-  /** Kdo se má ozvat — ať Jakub nevolá na kontakty, které si bere Marek. */
-  assigned_to: string | null;
-  assignee_name?: string | null;
+  /** Kdo se má ozvat — klidně víc lidí, když jdou měřit spolu. */
+  assignee_ids: string[];
+  /** Jména ve stejném pořadí jako assignee_ids. */
+  assignee_names: string[];
   cancelled: boolean;
   cancelled_reason: string;
   created_at: string;
@@ -207,8 +208,9 @@ export interface OrderRow {
   contact_name: string;
   contact_phone: string;
   phase: OrderPhase;
-  assignee_id: string | null;
-  assignee_name: string | null;
+  /** Přidělení technici — zakázku vidí a edituje každý z nich. */
+  assignee_ids: string[];
+  assignee_names: string[];
 
   /** Údaje zákazníka (blokující krok technika u první položky). */
   customer_name: string;
@@ -250,8 +252,9 @@ export interface OrderListRow {
   customer_name: string;
   phase: OrderPhase;
   addr_montaz: string;
-  assignee_id: string | null;
-  assignee_name: string | null;
+  /** Přidělení technici — zakázku vidí a edituje každý z nich. */
+  assignee_ids: string[];
+  assignee_names: string[];
   item_count: number;
   price_customer?: string;
   term_dodani: string | null;
@@ -269,10 +272,31 @@ export interface RoomRow {
 
 export type ItemKind = "config" | "oprava";
 
+export type PhotoKind = "klient" | "zamereni" | "zavada" | "realizace";
+
+export const PHOTO_KIND_LABELS: Record<PhotoKind, string> = {
+  klient: "Od zákazníka",
+  zamereni: "Zaměření",
+  zavada: "Závady",
+  realizace: "Po montáži",
+};
+
+/** Fotka v galerii — bez dat, obrázek se stahuje z /api/photos/:id/img. */
+export interface GalleryPhoto {
+  id: string;
+  kind: PhotoKind;
+  order_id: string | null;
+  item_id: string | null;
+  /** K čemu fotka patří (položka · místnost) — prázdné u fotek k celé zakázce. */
+  popis: string;
+  author_name: string;
+  created_at: string;
+}
+
 export interface ItemPhoto {
   id: string;
   item_id: string | null;
-  kind: "zamereni" | "zavada" | "realizace";
+  kind: PhotoKind;
   data: string;
   created_at: string;
 }
@@ -364,6 +388,7 @@ export function displayName(t: { name: string; custom_name: string }): string {
 export type NotifEvent =
   | "termin_dodani"
   | "novy_kontakt"
+  | "nova_zakazka"
   | "zakazka_zrusena"
   | "nove_zamereni"
   | "namontovano"
@@ -396,6 +421,14 @@ export const NOTIF_EVENTS: NotifEventMeta[] = [
     label: "Přidělený kontakt",
     trigger: "Kontakt přidělen uživateli",
     template: "{jméno} — kontakt přidělený tobě. Ozvi se.",
+    emailDefault: true,
+  },
+  {
+    event: "nova_zakazka",
+    to: "technik",
+    label: "Přidělená zakázka",
+    trigger: "Kancelář přidá technika k zakázce",
+    template: "{zakázka} — zakázka přidělená tobě.",
     emailDefault: true,
   },
   {

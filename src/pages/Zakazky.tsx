@@ -119,7 +119,7 @@ export default function ZakazkyPage() {
                   <td className="num col-secondary">{money(o.price_customer)}</td>
                   <td className="col-secondary">{czDateShort(o.term_dodani)}</td>
                   <td className="col-secondary">{czDateShort(o.term_montaz)}</td>
-                  <td className="cell-muted">{o.assignee_name ?? "—"}</td>
+                  <td className="cell-muted">{o.assignee_names.join(", ") || "—"}</td>
                   <td className="cell-muted col-secondary">{ago(o.updated_at)}</td>
                 </tr>
               ))}

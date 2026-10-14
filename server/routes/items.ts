@@ -72,16 +72,20 @@ function isForeignKeyViolation(err: unknown): boolean {
 /** Technik smí sahat jen na svoje zakázky — cizí pro něj neexistují. */
 async function assertOwnOrder(ctx: Ctx, orderId: string): Promise<void> {
   if (ctx.user.role !== "technik") return;
-  const [o] = await sql()`select assignee_id from orders where id = ${orderId}`.catch(() => []);
-  if (!o || o.assignee_id !== ctx.user.id) throw new ApiError(404, "Zakázka nenalezena.");
+  const [o] = await sql()`select assignee_ids from orders where id = ${orderId}`.catch(() => []);
+  if (!o || !(o.assignee_ids as string[]).includes(ctx.user.id)) {
+    throw new ApiError(404, "Zakázka nenalezena.");
+  }
 }
 
 async function assertOwnItem(ctx: Ctx, itemId: string): Promise<void> {
   if (ctx.user.role !== "technik") return;
   const [row] = await sql()`
-    select o.assignee_id from items i join orders o on o.id = i.order_id where i.id = ${itemId}
+    select o.assignee_ids from items i join orders o on o.id = i.order_id where i.id = ${itemId}
   `.catch(() => []);
-  if (!row || row.assignee_id !== ctx.user.id) throw new ApiError(404, "Položka nenalezena.");
+  if (!row || !(row.assignee_ids as string[]).includes(ctx.user.id)) {
+    throw new ApiError(404, "Položka nenalezena.");
+  }
 }
 
 /** Místnost: id (existující) nebo name (najít/založit). */

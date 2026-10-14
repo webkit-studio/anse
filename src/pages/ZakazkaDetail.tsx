@@ -9,6 +9,7 @@ import { useInvalidateOrder, useMe, useOrder } from "../api/hooks";
 import { DateSheet } from "../components/DateSheet";
 import { Icon } from "../components/Icon";
 import { ProductIcon } from "../components/ProductIcon";
+import { Galerie } from "../components/Galerie";
 import { TechDetail } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
@@ -506,6 +507,8 @@ export default function ZakazkaDetailPage() {
               <ToneBadge tone="done">Podepsáno {czDateShort(order.signed_at)}</ToneBadge>
             </div>
           )}
+
+          <Galerie contactId={order.contact_id} orderId={order.id} />
 
           {["k_zamereni", "k_naceneni"].includes(order.phase) && (
             <CancelBlock

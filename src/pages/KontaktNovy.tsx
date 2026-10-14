@@ -5,12 +5,14 @@ import { api } from "../api/client";
 import { useInvalidateContacts } from "../api/hooks";
 import { TechDetail } from "../components/Shell";
 import { PhoneInput } from "../components/PhoneInput";
+import { PhotoPicker, type PendingPhoto } from "../components/PhotoPicker";
 import { useToast } from "../components/Toast";
 import { Button, Field, TextInput } from "../components/ui";
 
 /**
  * Nový kontakt: jméno NEBO telefon, nic víc — musí se stihnout během telefonátu.
- * Zbytek se doplní v detailu, až bude čas.
+ * Zbytek se doplní v detailu, až bude čas. Fotky od zákazníka (pošle je rovnou
+ * s poptávkou) jsou nepovinné a nahrají se ke kontaktu po uložení.
  */
 export default function KontaktNovyPage() {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function KontaktNovyPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [place, setPlace] = useState("");
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -36,8 +39,26 @@ export default function KontaktNovyPage() {
         method: "POST",
         body: { name, phone, place },
       });
+      // Kontakt už existuje — nepovedená fotka ho nesmí shodit, jen se nahlásí.
+      let failed = 0;
+      for (const p of photos) {
+        try {
+          await api("/api/photos", {
+            method: "POST",
+            body: { contact_id: contact.id, kind: "klient", data: p.data },
+          });
+        } catch {
+          failed++;
+        }
+      }
       await invalidate();
-      toast("Kontakt uložený");
+      const nenahrano =
+        failed === 1
+          ? "1 fotka se nenahrála"
+          : failed < 5
+            ? `${failed} fotky se nenahrály`
+            : `${failed} fotek se nenahrálo`;
+      toast(failed ? `Kontakt uložený, ${nenahrano} — přidej je v detailu` : "Kontakt uložený");
       navigate(`/kontakty/${contact.id}`, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Kontakt se nepodařilo uložit.");
@@ -51,7 +72,7 @@ export default function KontaktNovyPage() {
       backLabel="Kontakty"
       footer={
         <Button variant="primary" onClick={save} disabled={busy}>
-          {busy ? "Ukládám…" : "Založit kontakt"}
+          {busy ? (photos.length ? "Ukládám fotky…" : "Ukládám…") : "Založit kontakt"}
         </Button>
       }
     >
@@ -94,6 +115,13 @@ export default function KontaktNovyPage() {
             placeholder="Ostrava-Poruba"
           />
         </Field>
+        <PhotoPicker
+          label="Fotky od zákazníka (nepovinné)"
+          kind="klient"
+          camera={false}
+          pending={photos}
+          onPendingChange={setPhotos}
+        />
         {error && (
           <p className="field-msg field-msg-error" role="alert">
             {error}

@@ -11,6 +11,7 @@ import {
   useUsersForPicker,
 } from "../api/hooks";
 import { DateSheet, isoDay } from "../components/DateSheet";
+import { Galerie } from "../components/Galerie";
 import { Icon } from "../components/Icon";
 import { TechDetailFramed } from "../components/Shell";
 import { useToast } from "../components/Toast";
@@ -18,8 +19,8 @@ import {
   Button,
   CancelBlock,
   ErrorBanner,
+  MultiSelectSheet,
   PhaseBadge,
-  SelectSheet,
   SkeletonList,
   Textarea,
   ValueRow,
@@ -137,15 +138,12 @@ export default function KontaktDetailPage() {
           <section className="card card-pad">
             <div className="value-rows">
               <ValueRow label="Ozve se" value="">
-                <SelectSheet
+                <MultiSelectSheet
                   id="c-assignee"
-                  value={contact.assigned_to ?? ""}
-                  placeholder="— nikdo —"
-                  options={[
-                    { value: "", label: "— nikdo —" },
-                    ...(users.data?.users ?? []).map((u) => ({ value: u.id, label: u.name })),
-                  ]}
-                  onChange={(v) => void patch({ assigned_to: (v || null) as never })}
+                  title="Kdo se ozve"
+                  value={contact.assignee_ids}
+                  options={(users.data?.users ?? []).map((u) => ({ value: u.id, label: u.name }))}
+                  onChange={(ids) => void patch({ assignee_ids: ids })}
                 />
               </ValueRow>
               <ValueRow
@@ -197,6 +195,8 @@ export default function KontaktDetailPage() {
               </div>
             </section>
           )}
+
+          <Galerie contactId={contact.id} />
 
           <section>
             <h2 className="card-section-title">Poznámky</h2>

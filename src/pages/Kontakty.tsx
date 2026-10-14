@@ -11,6 +11,7 @@ import {
   Button,
   Chips,
   EmptyState,
+  MultiSelectSheet,
   NativeSelect,
   SkeletonList,
   Textarea,
@@ -139,8 +140,8 @@ function ContactRowCard({
           {contact.fresh && (
             <span className="card-badges">
               <ToneBadge tone="todo">Ozvat se</ToneBadge>
-              {contact.assignee_name && (
-                <span className="muted t-caption">{contact.assignee_name}</span>
+              {contact.assignee_names.length > 0 && (
+                <span className="muted t-caption">{contact.assignee_names.join(", ")}</span>
               )}
             </span>
           )}
@@ -260,21 +261,15 @@ export default function KontaktyPage() {
                   <td>{c.phone || <span className="cell-muted">—</span>}</td>
                   <td>{c.place || <span className="cell-muted">—</span>}</td>
                   <td onClick={(e) => e.stopPropagation()}>
-                    <NativeSelect
-                      value={c.assigned_to ?? ""}
-                      placeholder="— nikdo —"
-                      aria-label={`Ozve se — ${c.name || c.phone}`}
-                      onChange={(e) => void patch(c.id, { assigned_to: e.target.value || null })}
-                    >
-                      <option value="">— nikdo —</option>
-                      {(users.data?.users ?? [])
+                    <MultiSelectSheet
+                      id={`c-assignee-${c.id}`}
+                      title={`Kdo se ozve — ${c.name || c.phone}`}
+                      value={c.assignee_ids}
+                      options={(users.data?.users ?? [])
                         .filter((u) => u.active)
-                        .map((u) => (
-                          <option key={u.id} value={u.id}>
-                            {u.name}
-                          </option>
-                        ))}
-                    </NativeSelect>
+                        .map((u) => ({ value: u.id, label: u.name }))}
+                      onChange={(ids) => void patch(c.id, { assignee_ids: ids })}
+                    />
                   </td>
                   <td>
                     {c.fresh ? (

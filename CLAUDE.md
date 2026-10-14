@@ -61,8 +61,18 @@ uživatelem, port 5433, DB `anse` — connection string
   každá role vidí svoje „na tahu".
 - Zakázka **vždy patří kontaktu**; kontakt je databáze čísel s příznakem
   `fresh` („ozvat se", rozsvícení vyžaduje poznámku proč) a přidělením
-  `assigned_to` (technik vidí v odznaku/Dnes jen svoje). Technik-zakladatel
-  se přiděluje sám; kancelář přiděluje vědomě (default nikdo).
+  `assignee_ids` — **klidně víc lidí** (jdou měřit spolu; technik vidí
+  v odznaku/Dnes jen svoje). Technik-zakladatel se přiděluje sám; kancelář
+  přiděluje vědomě (default nikdo). Zakázka má taky `assignee_ids`, při založení
+  je převezme z kontaktu; vidí a edituje ji každý přidělený, odškrtnutý ji
+  ztratí. Notifikaci dostanou jen nově přidaní (`novy_kontakt`, `nova_zakazka`).
+  Staré sloupce `contacts.assigned_to` / `orders.assignee_id` jsou zastaralé
+  (migrace 013), kód je nečte — smazat další migrací.
+- **Galerie** (`src/components/Galerie.tsx`): fotka patří buď kontaktu
+  (`kind = klient`, od zákazníka — jde přidat už při založení kontaktu), nebo
+  zakázce (zaměření, závada, realizace). Výpis `GET /api/photos?contact_id|order_id`
+  posílá jen popisy, obrázek jde z `/api/photos/:id/img` (cache napořád) —
+  base64 se do výpisů neposílá kvůli limitu velikosti odpovědi funkce.
 - Fakturační adresa je příznak `addr_fakt_same` (odvozuje se z montážní),
   ne kopie textu.
 - Co brání posunu dál, počítá server (`blockingFor()`); UI to jen vypisuje.

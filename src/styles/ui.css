@@ -487,6 +487,14 @@ input[type="date"] {
   border-bottom-color: transparent;
 }
 
+/* zaškrtnutí ve vícenásobném výběru — pevná šířka, ať jména nelítají */
+.sheet-check {
+  flex: none;
+  width: 24px;
+  font-weight: 700;
+  color: var(--c-green-deep);
+}
+
 .sheet-empty {
   padding: var(--sp-4);
   color: var(--c-text-muted);
@@ -2305,6 +2313,26 @@ input[type="date"] {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* uložená fotka jako tlačítko — otevře prohlížeč, obrázek vyplní celý slot */
+.photo-open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.galerie {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+/* v kanceláři je karta široká — víc menších náhledů místo tří obřích */
+.galerie .photo-grid {
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
 }
 
 .photo-add {

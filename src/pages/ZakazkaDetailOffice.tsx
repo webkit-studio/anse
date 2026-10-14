@@ -7,6 +7,7 @@ import { missingForPdf } from "@shared/print";
 import { api, isConflict } from "../api/client";
 import { useInvalidateOrder, useOrder, useUsers } from "../api/hooks";
 import { MiniCalendar } from "../components/DateSheet";
+import { Galerie } from "../components/Galerie";
 import { Icon } from "../components/Icon";
 import { PhotoLightbox } from "../components/PhotoLightbox";
 import { OfficeShell } from "../components/Shell";
@@ -17,6 +18,7 @@ import {
   ConfirmButton,
   ErrorBanner,
   Field,
+  MultiSelectSheet,
   NativeSelect,
   PhaseBadge,
   SkeletonList,
@@ -388,20 +390,16 @@ export default function ZakazkaDetailOfficePage() {
                   onSave={(v) => patch({ price_montage: v })}
                 />
                 <ValueRow label="Technik" value="">
-                  <NativeSelect
-                    value={order.assignee_id ?? ""}
+                  <MultiSelectSheet
+                    id="o-assignee"
+                    title="Technici zakázky"
                     placeholder="Nepřidělen"
-                    aria-label="Technik"
-                    onChange={(e) => void patch({ assignee_id: e.target.value || null })}
-                  >
-                    {(users.data?.users ?? [])
+                    value={order.assignee_ids}
+                    options={(users.data?.users ?? [])
                       .filter((u) => u.active)
-                      .map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.name}
-                        </option>
-                      ))}
-                  </NativeSelect>
+                      .map((u) => ({ value: u.id, label: u.name }))}
+                    onChange={(ids) => void patch({ assignee_ids: ids })}
+                  />
                 </ValueRow>
               </div>
             </section>
@@ -479,25 +477,7 @@ export default function ZakazkaDetailOfficePage() {
               {d.items.length === 0 && <p className="muted t-body-s">Zatím žádné položky.</p>}
             </section>
 
-            {(d.photos.length > 0 || d.items.some((i) => i.photos.length > 0)) && (
-              <section>
-                <h2 className="card-section-title">Fotky</h2>
-                <div className="photo-grid" style={{ gridTemplateColumns: "repeat(6, 1fr)" }}>
-                  {fotky.map((p, i) => (
-                    <button
-                      type="button"
-                      className="photo-slot"
-                      key={p.id}
-                      title={p.popis}
-                      aria-label={`Otevřít fotku — ${p.popis}`}
-                      onClick={() => setFoto(i)}
-                    >
-                      <img src={p.data} alt={p.popis} />
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
+            <Galerie contactId={order.contact_id} orderId={order.id} />
           </div>
 
           {/* --- panel aktuální fáze --------------------------------------- */}

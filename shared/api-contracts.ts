@@ -29,6 +29,12 @@ export const loginBody = z.object({
 
 // === kontakty ==============================================================
 
+/** Přidělení víc lidem (Kuba s Markem jdou spolu) — bez duplicit. */
+const assigneeIds = z
+  .array(z.string().uuid())
+  .max(20)
+  .transform((ids) => [...new Set(ids)]);
+
 /** Jméno NEBO telefon — musí se stihnout během telefonátu. */
 export const contactCreateBody = z
   .object({
@@ -46,7 +52,7 @@ export const contactUpdateBody = z.object({
   phone: trimmed.optional(),
   place: trimmed.optional(),
   fresh: z.boolean().optional(),
-  assigned_to: z.string().uuid().nullable().optional(),
+  assignee_ids: assigneeIds.optional(),
 });
 
 export const contactNoteBody = z.object({
@@ -64,7 +70,8 @@ export const orderCreateBody = z.object({
   contact_id: z.string().uuid(),
   measured_at: dateString,
   measured_time: timeString,
-  assignee_id: z.string().uuid().nullable().optional(),
+  /** Jen kancelář; bez něj se převezme přidělení kontaktu. */
+  assignee_ids: assigneeIds.optional(),
 });
 
 export const orderUpdateBody = z.object({
@@ -90,7 +97,7 @@ export const orderUpdateBody = z.object({
   term_dodani: dateString,
   invoice_no: trimmed.optional(),
   order_no: trimmed.optional(),
-  assignee_id: z.string().uuid().nullable().optional(),
+  assignee_ids: assigneeIds.optional(),
 
   expected_updated_at: z.string().min(1),
 });
@@ -155,12 +162,23 @@ const dataUrlImage = z
   .max(1_400_000, "Fotka je příliš velká.")
   .regex(/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/, "Neplatný formát obrázku.");
 
-export const photoCreateBody = z.object({
-  order_id: z.string().uuid(),
-  item_id: z.string().uuid().nullable().optional(),
-  kind: z.enum(["zamereni", "zavada", "realizace"]),
-  data: dataUrlImage,
-});
+/** Fotka patří zakázce (zaměření, závada, realizace), nebo kontaktu (od zákazníka). */
+export const photoCreateBody = z
+  .object({
+    order_id: z.string().uuid().optional(),
+    contact_id: z.string().uuid().optional(),
+    item_id: z.string().uuid().nullable().optional(),
+    kind: z.enum(["klient", "zamereni", "zavada", "realizace"]),
+    data: dataUrlImage,
+  })
+  .refine((b) => !b.order_id !== !b.contact_id, {
+    message: "Fotka patří buď zakázce, nebo kontaktu.",
+    path: ["order_id"],
+  })
+  .refine((b) => (b.kind === "klient") === !!b.contact_id, {
+    message: "Fotky od zákazníka patří ke kontaktu, ostatní k zakázce.",
+    path: ["kind"],
+  });
 
 export const signatureBody = z.object({
   data: z

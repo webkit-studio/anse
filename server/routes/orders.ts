@@ -10,6 +10,7 @@ import {
   type OrderPhase,
   type Role,
 } from "../../shared/types";
+import { assertAssignable, assigneeNamesCol, newlyAdded } from "../assignees";
 import { sql } from "../db";
 import { jwCsvNabidky, type JwCsvPolozkaRadek } from "../export/jw-csv";
 import { ApiError, json } from "../http";
@@ -24,12 +25,16 @@ const OFFICE_ONLY_FIELDS = [
   "term_dodani",
   "invoice_no",
   "order_no",
-  "assignee_id",
+  "assignee_ids",
 ] as const;
 
 function orderCols(db: ReturnType<typeof sql>, role: Role) {
   return db.unsafe(`
-    o.id, o.contact_id, o.phase, o.assignee_id,
+    o.id, o.contact_id, o.phase, o.assignee_ids,
+    array(
+      select u.name from unnest(o.assignee_ids) with ordinality a(id, n)
+      join users u on u.id = a.id order by a.n
+    ) as assignee_names,
     o.customer_name, o.customer_phone, o.customer_email,
     o.addr_montaz, o.addr_fakt, o.addr_fakt_same, o.ico, o.dic,
     ${role === "kancelar" ? "o.price_customer," : ""}
@@ -63,7 +68,7 @@ function orderLabel(row: { customer_name?: string; contact_name?: string; addr_m
 export function blockingFor(
   phase: OrderPhase,
   o: {
-    assignee_id: string | null;
+    assignee_ids: string[];
     customer_name: string;
     customer_phone: string;
     customer_email: string;
@@ -80,7 +85,7 @@ export function blockingFor(
   const missing: string[] = [];
   if (phase === "k_zamereni") {
     // Bez technika zakázku nikdo v terénu neuvidí — kancelář musí přidělit.
-    if (!o.assignee_id) missing.push("Přidělit technika");
+    if (o.assignee_ids.length === 0) missing.push("Přidělit technika");
     if (!o.customer_name.trim() || !o.customer_phone.trim() || !o.customer_email.trim() || !o.addr_montaz.trim()) {
       missing.push("Údaje zákazníka");
     }
@@ -104,15 +109,13 @@ async function loadOrderFor(ctx: Ctx, id: string) {
   const db = sql();
   const [order] = await db`
     select ${orderCols(db, ctx.user.role)}, c.name as contact_name, c.phone as contact_phone,
-           u.name as assignee_name,
            (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
     from orders o
     join contacts c on c.id = o.contact_id
-    left join users u on u.id = o.assignee_id
     where o.id = ${id}
   `.catch(invalidUuidAsMissing);
   if (!order) throw new ApiError(404, "Zakázka nenalezena.");
-  if (ctx.user.role === "technik" && order.assignee_id !== ctx.user.id) {
+  if (ctx.user.role === "technik" && !(order.assignee_ids as string[]).includes(ctx.user.id)) {
     throw new ApiError(404, "Zakázka nenalezena.");
   }
   return order;
@@ -133,8 +136,8 @@ export const orderRoutes: Route[] = [
       for (const r of counts) phaseCounts[r.phase as OrderPhase] = r.n;
 
       const queues = await db`
-        select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_id, o.price_customer,
-               u.name as assignee_name, c.name as contact_name, o.customer_name,
+        select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids, o.price_customer,
+               ${assigneeNamesCol(db, "o")}, c.name as contact_name, o.customer_name,
                to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
                to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
                o.updated_at,
@@ -143,7 +146,6 @@ export const orderRoutes: Route[] = [
                (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
         from orders o
         join contacts c on c.id = o.contact_id
-        left join users u on u.id = o.assignee_id
         where o.phase in ('k_zamereni', 'k_naceneni', 'k_montazi', 'k_fakturaci')
         order by o.updated_at asc
         limit 200
@@ -160,7 +162,7 @@ export const orderRoutes: Route[] = [
     const db = sql();
     const mine = ctx.user.role === "technik";
     const orders = await db`
-      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_id, u.name as assignee_name,
+      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids, ${assigneeNamesCol(db, "o")},
              c.name as contact_name, o.customer_name,
              to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
              to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
@@ -169,22 +171,21 @@ export const orderRoutes: Route[] = [
              (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
       from orders o
       join contacts c on c.id = o.contact_id
-      left join users u on u.id = o.assignee_id
       where o.phase in ('k_zamereni', 'k_montazi')
-        and (${!mine} or o.assignee_id = ${ctx.user.id})
+        and (${!mine} or ${ctx.user.id} = any(o.assignee_ids))
       order by coalesce(o.term_montaz, o.measured_at, current_date), o.created_at
     `;
     const contacts = await db`
-      select c.id, c.name, c.phone, c.place, c.fresh, c.assigned_to, c.cancelled,
-             c.cancelled_reason, c.created_at, c.updated_at, au.name as assignee_name
-      from contacts c left join users au on au.id = c.assigned_to
-      where c.fresh and not c.cancelled and (${!mine} or c.assigned_to = ${ctx.user.id})
+      select c.id, c.name, c.phone, c.place, c.fresh, c.assignee_ids, c.cancelled,
+             c.cancelled_reason, c.created_at, c.updated_at, ${assigneeNamesCol(db, "c")}
+      from contacts c
+      where c.fresh and not c.cancelled and (${!mine} or ${ctx.user.id} = any(c.assignee_ids))
       order by c.created_at desc limit 20
     `;
     const [waiting] = await db`
       select count(*)::int as n from orders
       where phase in ('k_naceneni', 'k_fakturaci')
-        and (${!mine} or assignee_id = ${ctx.user.id})
+        and (${!mine} or ${ctx.user.id} = any(assignee_ids))
     `;
 
     return json({
@@ -217,7 +218,7 @@ export const orderRoutes: Route[] = [
           : [filter as OrderPhase];
 
     const rows = await db`
-      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_id, u.name as assignee_name,
+      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids, ${assigneeNamesCol(db, "o")},
              c.name as contact_name, o.customer_name,
              ${ctx.user.role === "kancelar" ? db`o.price_customer,` : db``}
              to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
@@ -227,8 +228,7 @@ export const orderRoutes: Route[] = [
              (select s.signed_at from signatures s where s.order_id = o.id) as signed_at
       from orders o
       join contacts c on c.id = o.contact_id
-      left join users u on u.id = o.assignee_id
-      where (${!mine} or o.assignee_id = ${ctx.user.id})
+      where (${!mine} or ${ctx.user.id} = any(o.assignee_ids))
         and (${phases}::text[] is null or o.phase = any(${phases}))
         and (
           ${q} = '' or
@@ -247,15 +247,26 @@ export const orderRoutes: Route[] = [
     const db = sql();
     const body = await parseBody(req, orderCreateBody);
 
-    // Technik si zakázku bere na sebe. Kancelář musí přidělit vědomě —
-    // default je prázdno (klidně sama sobě, ale žádné tiché autopřidělení).
-    const assignee = ctx.user.role === "technik" ? ctx.user.id : (body.assignee_id ?? null);
+    if (ctx.user.role === "technik" && body.assignee_ids !== undefined) {
+      throw new ApiError(403, "Technika přiděluje kancelář.");
+    }
+    if (body.assignee_ids) await assertAssignable(db, body.assignee_ids);
 
     const id = await db.begin(async (tx) => {
       const [contact] = await tx`
-        select id, name, phone, place from contacts where id = ${body.contact_id} and not cancelled
+        select id, name, phone, place, assignee_ids from contacts
+        where id = ${body.contact_id} and not cancelled
       `;
       if (!contact) throw new ApiError(404, "Kontakt nenalezen.");
+
+      // Zakázka přebírá přidělení kontaktu — když se Kuba s Markem domluvili,
+      // že jdou měřit spolu, vidí zakázku oba. Technik-zakladatel je v ní vždy.
+      // Kancelář nepřiděluje nikoho navíc; prázdný kontakt = prázdná zakázka.
+      const fromContact = (body.assignee_ids ?? (contact.assignee_ids as string[])) as string[];
+      const assignees =
+        ctx.user.role === "technik"
+          ? [ctx.user.id, ...fromContact.filter((u) => u !== ctx.user.id)]
+          : fromContact;
 
       // Fakturační údaje se předvyplní z poslední zakázky kontaktu
       // (SVJ a stavební firmy mají pořád stejné IČO/DIČ i fakturační adresu).
@@ -266,9 +277,9 @@ export const orderRoutes: Route[] = [
       `;
 
       const [o] = await tx`
-        insert into orders (contact_id, assignee_id, phase, measured_at, measured_time, created_by,
+        insert into orders (contact_id, assignee_ids, phase, measured_at, measured_time, created_by,
                             customer_name, customer_phone, customer_email, addr_fakt, ico, dic)
-        values (${contact.id}, ${assignee}, 'k_zamereni', ${body.measured_at ?? null},
+        values (${contact.id}, ${assignees}::uuid[], 'k_zamereni', ${body.measured_at ?? null},
                 ${body.measured_time ?? null}, ${ctx.user.id},
                 ${prev?.customer_name ?? contact.name ?? ""}, ${prev?.customer_phone ?? contact.phone ?? ""},
                 ${prev?.customer_email ?? ""}, ${prev?.addr_fakt ?? ""},
@@ -361,13 +372,13 @@ export const orderRoutes: Route[] = [
   makeRoute("PATCH", "/api/orders/:id", async (req, ctx, params) => {
     const db = sql();
     const body = await parseBody(req, orderUpdateBody);
-    await loadOrderFor(ctx, params.id!);
+    const before = await loadOrderFor(ctx, params.id!);
 
     if (ctx.user.role !== "kancelar" && OFFICE_ONLY_FIELDS.some((k) => body[k] !== undefined)) {
       throw new ApiError(403, "Tyto údaje může měnit jen kancelář.");
     }
 
-    const patch: Record<string, string | boolean | null> = {};
+    const patch: Record<string, string | string[] | boolean | null> = {};
     for (const key of [
       "customer_name",
       "customer_phone",
@@ -383,8 +394,9 @@ export const orderRoutes: Route[] = [
       "term_montaz",
       ...OFFICE_ONLY_FIELDS,
     ] as const) {
-      if (body[key] !== undefined) patch[key] = body[key] as string | null;
+      if (body[key] !== undefined) patch[key] = body[key] as string | string[] | null;
     }
+    if (body.assignee_ids !== undefined) await assertAssignable(db, body.assignee_ids);
     if (body.addr_fakt_same !== undefined) patch.addr_fakt_same = body.addr_fakt_same;
     if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
 
@@ -397,6 +409,23 @@ export const orderRoutes: Route[] = [
       const [exists] = await db`select 1 from orders where id = ${params.id!}`;
       if (!exists) throw new ApiError(404, "Zakázka nenalezena.");
       throw new ApiError(409, "Zakázku mezitím upravil někdo jiný. Načti ji prosím znovu.");
+    }
+
+    // Nově přidělený technik se to musí dozvědět — jinak zakázku jen tiše
+    // najde v seznamu.
+    if (body.assignee_ids !== undefined) {
+      const added = newlyAdded(before.assignee_ids as string[], body.assignee_ids);
+      if (added.length > 0) {
+        await notify({
+          event: "nova_zakazka",
+          subject: orderLabel(before),
+          vars: {},
+          orderId: params.id!,
+          actorId: ctx.user.id,
+          userIds: added,
+          url: `${appOrigin(req)}/zakazky/${params.id!}`,
+        });
+      }
     }
     return json({ order: updated });
   }),
@@ -469,7 +498,7 @@ export const orderRoutes: Route[] = [
     if (to !== "zruseno") {
       // Kancelář kontroluje i cenu zakázky, kterou technikův pohled nezná.
       const [full] = await db`
-        select assignee_id, customer_name, customer_phone, customer_email, addr_montaz,
+        select assignee_ids, customer_name, customer_phone, customer_email, addr_montaz,
                price_montage, price_customer, invoice_no,
                to_char(term_dodani, 'YYYY-MM-DD') as term_dodani,
                to_char(term_montaz, 'YYYY-MM-DD') as term_montaz
@@ -507,7 +536,7 @@ export const orderRoutes: Route[] = [
       addr_montaz: order.addr_montaz,
     });
     const url = `${appOrigin(req)}/zakazky/${params.id!}`;
-    const assignee = order.assignee_id ? [order.assignee_id as string] : [];
+    const assignee = order.assignee_ids as string[];
 
     if (to === "k_naceneni") {
       await notify({

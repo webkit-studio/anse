@@ -328,14 +328,17 @@ export async function buildMontazniListPdf(
            s.data as signature_png, s.signer_name,
            to_char(s.signed_at at time zone 'Europe/Prague', 'YYYY-MM-DD') as signed_date,
            c.name as contact_name,
-           a.name as assignee_name,
+           -- víc techniků: jména všech, kontakt na prvního (vedoucího party)
+           (select string_agg(u2.name, ', ' order by x.n)
+              from unnest(o.assignee_ids) with ordinality x(id, n)
+              join users u2 on u2.id = x.id) as assignee_name,
            a.phone as assignee_phone,
            a.email as assignee_email,
            u.name as created_by_name
     from orders o
     join contacts c on c.id = o.contact_id
     join users u on u.id = o.created_by
-    left join users a on a.id = o.assignee_id
+    left join users a on a.id = o.assignee_ids[1]
     left join signatures s on s.order_id = o.id
     where o.id = ${orderId}
   `) as unknown as [PdfOrder | undefined];

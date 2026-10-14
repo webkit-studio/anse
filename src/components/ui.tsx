@@ -253,6 +253,134 @@ export function SelectSheet({
   );
 }
 
+// --- MultiSelectSheet: víc lidí najednou (přidělení) -----------------------
+
+/**
+ * Zaškrtávací sheet. Změny se drží v sheetu a uloží se jednou při zavření —
+ * jedno uložení = jedna dávka notifikací, ne zpráva za každé ťuknutí.
+ */
+export function MultiSelectSheet({
+  id,
+  value,
+  options,
+  placeholder = "— nikdo —",
+  title = "Vyber",
+  disabled,
+  onChange,
+}: {
+  id: string;
+  value: string[];
+  options: SheetOption[];
+  placeholder?: string;
+  title?: string;
+  disabled?: boolean;
+  onChange: (value: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<string[]>(value);
+  const titleId = useId();
+
+  // Vybraní, kteří už v nabídce nejsou (deaktivovaný uživatel), zůstávají vidět.
+  const labelOf = (v: string) => options.find((o) => o.value === v)?.label ?? "neznámý";
+  const summary = value.map(labelOf).join(", ");
+  const allOptions = [
+    ...options,
+    ...draft.filter((v) => !options.some((o) => o.value === v)).map((v) => ({ value: v, label: labelOf(v) })),
+  ];
+
+  useEffect(() => {
+    if (!open) return undefined;
+    setDraft(value);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+    // value se čte jen při otevření — během výběru platí rozpracovaný draft
+  }, [open]);
+
+  function close() {
+    setOpen(false);
+    const same = draft.length === value.length && draft.every((v) => value.includes(v));
+    if (!same) onChange(draft);
+  }
+
+  function toggle(v: string) {
+    setDraft((d) => (d.includes(v) ? d.filter((x) => x !== v) : [...d, v]));
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        id={id}
+        className={`select-sheet-trigger ${value.length ? "" : "select-empty"}`}
+        disabled={disabled}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
+      >
+        <span className="select-sheet-value">{summary || placeholder}</span>
+        <span aria-hidden="true" className="select-sheet-caret">
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div
+          className="sheet-backdrop"
+          onClick={(e) => {
+            e.stopPropagation();
+            close();
+          }}
+        >
+          <div
+            className="sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sheet-head">
+              <span id={titleId} className="sheet-title">
+                {title}
+              </span>
+              <button type="button" className="sheet-close" onClick={close} aria-label="Zavřít">
+                ✕
+              </button>
+            </div>
+            <div className="sheet-options">
+              {allOptions.map((o) => {
+                const on = draft.includes(o.value);
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    role="checkbox"
+                    aria-checked={on}
+                    className={`sheet-option ${on ? "sheet-option-selected" : ""}`}
+                    onClick={() => toggle(o.value)}
+                  >
+                    <span className="sheet-check" aria-hidden="true">
+                      {on ? "✓" : ""}
+                    </span>
+                    {o.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="sheet-foot">
+              <Button variant="primary" onClick={close}>
+                {draft.length === 0 ? "Nikoho nepřidělovat" : `Hotovo (${draft.length})`}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // --- Chips -------------------------------------------------------------------
 
 export interface ChipOption<T extends string> {

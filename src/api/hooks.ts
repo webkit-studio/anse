@@ -8,6 +8,7 @@ import type { KonfigProduct } from "@shared/konfigurator";
 import type {
   ContactDetail,
   ContactRow,
+  GalleryPhoto,
   ItemRow,
   NotificationRow,
   NotifPref,
@@ -97,10 +98,28 @@ export function useContact(id: string) {
   });
 }
 
+// --- galerie fotek ------------------------------------------------------------
+
+/** Galerie kontaktu nebo zakázky — jen popisy, obrázky jdou z /api/photos/:id/img. */
+export function usePhotos(scope: { contactId: string } | { orderId: string }) {
+  const [key, id] = "orderId" in scope ? ["order_id", scope.orderId] : ["contact_id", scope.contactId];
+  return useQuery({
+    queryKey: ["photos", key, id],
+    queryFn: () => api<{ photos: GalleryPhoto[] }>(`/api/photos?${key}=${id}`),
+    staleTime: 10_000,
+  });
+}
+
+export function useInvalidatePhotos() {
+  const qc = useQueryClient();
+  return () => qc.invalidateQueries({ queryKey: ["photos"] });
+}
+
 export function useInvalidateContacts() {
   const qc = useQueryClient();
   return async (id?: string) => {
     void qc.invalidateQueries({ queryKey: ["contacts"] });
+    void qc.invalidateQueries({ queryKey: ["photos"] });
     void qc.invalidateQueries({ queryKey: ["today"] });
     void qc.invalidateQueries({ queryKey: ["overview"] });
     if (id) await qc.invalidateQueries({ queryKey: ["contact", id] });
@@ -165,6 +184,7 @@ export function useInvalidateOrder() {
     void qc.invalidateQueries({ queryKey: ["today"] });
     void qc.invalidateQueries({ queryKey: ["overview"] });
     void qc.invalidateQueries({ queryKey: ["notifications"] });
+    void qc.invalidateQueries({ queryKey: ["photos"] });
     await qc.invalidateQueries({ queryKey: ["order", id] });
   };
 }
