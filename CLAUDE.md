@@ -158,6 +158,9 @@ Katalog má dvě úrovně: **produkt** (Okenní síť) → **podkategorie**
   na schválení; rozhodnutí zadavatele „vše rovnou na produkci“). Po pushi
   ověřit, že se nová verze opravdu servíruje — asset v `/` obsahuje nový kód
   a `/api/me` vrací 401, ne 5xx; deploy bez kontroly není hotový.
+  Záložky otevřené přes nasazení běží starý kód proti novému API — lišta
+  „Je tu nová verze" (`src/components/NovaVerze.tsx`) je vyzve k obnovení.
+  Změna tvaru API proto dorazí ke všem až po jejich kliknutí.
   Malé commity s popisem česky nebo anglicky, konzistentně.
 - **Migrace + seed běží v Netlify buildu** (idempotentní) — úprava JSON definice
   → push → deploy = nová verze v DB. První seed: nastav `SEED_ADMIN_CODE`

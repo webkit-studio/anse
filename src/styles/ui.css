@@ -2624,6 +2624,31 @@ input[type="date"] {
   font-weight: 600;
 }
 
+/* lišta „nová verze" — nad vším kromě toastů, nahoře, ať nepřekryje patičku s akcí */
+.nova-verze {
+  position: fixed;
+  top: max(var(--sp-2), env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  width: min(calc(100% - 2 * var(--sp-4)), 480px);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px 10px 10px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+
+.nova-verze .btn {
+  margin-left: auto;
+  flex: none;
+}
+
 /* čtyři fronty vedle sebe */
 .queues {
   display: grid;
