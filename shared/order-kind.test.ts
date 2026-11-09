@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { orderCreateBody, orderUpdateBody } from "./api-contracts";
 import { oznaceniTypuProPdf } from "./print";
-import { ORDER_KINDS, ORDER_KIND_LABELS } from "./types";
+import { ORDER_KINDS, ORDER_KIND_LABELS, ORDER_PHASES, typJdeZmenit } from "./types";
 
 // S03 #4: typ zakázky Nová / Oprava. Server klientovi nevěří — typ se
 // revaliduje kontraktem i check constraintem v DB (migrace 016).
@@ -33,6 +33,11 @@ describe("typ zakázky", () => {
 
   it("každý typ má český popisek", () => {
     for (const k of ORDER_KINDS) expect(ORDER_KIND_LABELS[k]).toMatch(/^[A-ZÁ-Ž]/);
+  });
+
+  it("typ jde přepnout, dokud zakázka žije — hotová a zrušená ho drží", () => {
+    const zamcene = ORDER_PHASES.filter((p) => !typJdeZmenit(p));
+    expect(zamcene).toEqual(["hotovo", "zruseno"]);
   });
 
   it("montážní list označí jen opravu — nová zůstává bez značky", () => {

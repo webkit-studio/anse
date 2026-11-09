@@ -416,6 +416,20 @@ test("typ zakázky server revaliduje a cizí zakázku technik nepřepne", async 
     data: { kind: "nova", expected_updated_at: ciziDetail.order.updated_at },
   });
   expect(prepnuti.status()).toBe(404);
+
+  // Zrušená zakázka typ drží — ani kancelář ho nepřepne (nejdřív obnovit).
+  await request.post("/api/login", { data: { code: "999999" } });
+  const zruseni = await request.post(`/api/orders/${cizi.id}/phase`, {
+    data: { to: "zruseno", expected: "k_zamereni", reason: "E2E zákazník nechce" },
+  });
+  expect(zruseni.ok()).toBe(true);
+  const zrusena = (await (await request.get(`/api/orders/${cizi.id}`)).json()) as {
+    order: { updated_at: string };
+  };
+  const pozde = await request.patch(`/api/orders/${cizi.id}`, {
+    data: { kind: "nova", expected_updated_at: zrusena.order.updated_at },
+  });
+  expect(pozde.status()).toBe(400);
 });
 
 test.describe("kancelář: opravy (desktop)", () => {

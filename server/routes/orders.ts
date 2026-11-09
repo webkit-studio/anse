@@ -8,6 +8,7 @@ import {
   ORDER_PHASES,
   PHASE_LABELS,
   canTransition,
+  typJdeZmenit,
   type OrderPhase,
   type Role,
 } from "../../shared/types";
@@ -401,6 +402,13 @@ export const orderRoutes: Route[] = [
 
     if (ctx.user.role !== "kancelar" && OFFICE_ONLY_FIELDS.some((k) => body[k] !== undefined)) {
       throw new ApiError(403, "Tyto údaje může měnit jen kancelář.");
+    }
+    if (
+      body.kind !== undefined &&
+      body.kind !== before.kind &&
+      !typJdeZmenit(before.phase as OrderPhase)
+    ) {
+      throw new ApiError(400, "Typ hotové nebo zrušené zakázky už nejde změnit.");
     }
 
     const patch: Record<string, string | string[] | boolean | null> = {};

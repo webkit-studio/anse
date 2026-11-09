@@ -1,7 +1,13 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ItemRow, JwCsvNabidka, OrderKind, OrderPhase } from "@shared/types";
-import { ORDER_KINDS, ORDER_KIND_LABELS, PHASE_FLOW, PHASE_LABELS } from "@shared/types";
+import {
+  ORDER_KIND_LABELS,
+  ORDER_KIND_OPTIONS,
+  PHASE_FLOW,
+  PHASE_LABELS,
+  typJdeZmenit,
+} from "@shared/types";
 import { czDate, items as czItems, money } from "@shared/format";
 import { missingForPdf } from "@shared/print";
 import { api, isConflict } from "../api/client";
@@ -225,6 +231,7 @@ export default function ZakazkaDetailOfficePage() {
   const [loaded, setLoaded] = useState(false);
   const [foto, setFoto] = useState<number | null>(null);
   const [otevrenaPolozka, setOtevrenaPolozka] = useState<string | null>(null);
+  const [typUklada, setTypUklada] = useState<OrderKind | null>(null);
 
   useEffect(() => {
     if (!order || loaded) return;
@@ -249,6 +256,18 @@ export default function ZakazkaDetailOfficePage() {
       } else {
         toast(err instanceof Error ? err.message : "Nepodařilo se uložit.");
       }
+    }
+  }
+
+  /** Přepnutí typu: chip se přepne hned, další klepnutí čekají na uložení
+   *  (jinak by druhé poslalo starý čas úpravy a dostalo falešné 409). */
+  async function prepniTyp(k: OrderKind) {
+    if (!order || typUklada || k === order.kind) return;
+    setTypUklada(k);
+    try {
+      await patch({ kind: k });
+    } finally {
+      setTypUklada(null);
     }
   }
 
@@ -408,16 +427,18 @@ export default function ZakazkaDetailOfficePage() {
                   placeholder="zadá technik"
                   onSave={(v) => patch({ price_montage: v })}
                 />
-                <ValueRow label="Typ" row="typ" value="">
-                  <Chips
-                    options={ORDER_KINDS.map((k) => ({ value: k, label: ORDER_KIND_LABELS[k] }))}
-                    value={order.kind}
-                    scroll={false}
-                    onChange={(k: OrderKind) => {
-                      if (k !== order.kind) void patch({ kind: k });
-                    }}
-                  />
-                </ValueRow>
+                {typJdeZmenit(order.phase) ? (
+                  <ValueRow label="Typ" row="typ" value="">
+                    <Chips
+                      options={ORDER_KIND_OPTIONS}
+                      value={typUklada ?? order.kind}
+                      scroll={false}
+                      onChange={(k: OrderKind) => void prepniTyp(k)}
+                    />
+                  </ValueRow>
+                ) : (
+                  <ValueRow label="Typ" row="typ" value={ORDER_KIND_LABELS[order.kind]} copy={false} />
+                )}
                 <ValueRow label="Technik" value="">
                   <MultiSelectSheet
                     id="o-assignee"

@@ -117,7 +117,13 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   const item = mode === "edit" ? d?.items.find((i) => i.id === itemId) : undefined;
   // Zakázka typu Oprava = skoro vždy opravové položky. Formulář rovnou
   // nabídne Opravu a ušetří klepnutí; přepnout na Zaměření jde pořád.
-  const kind: Kind = kindPick ?? (d?.order.kind === "oprava" ? "oprava" : "config");
+  // Výchozí typ se bere z prvního načtení zakázky a pak drží — kdyby někdo
+  // mezitím přepnul typ zakázky, rozpracovaný formulář pod rukama nepřeskočí.
+  const vychoziTyp = useRef<Kind | null>(null);
+  if (vychoziTyp.current === null && d) {
+    vychoziTyp.current = d.order.kind === "oprava" ? "oprava" : "config";
+  }
+  const kind: Kind = kindPick ?? vychoziTyp.current ?? "config";
 
   // Údaje zákazníka tu ZÁMĚRNĚ nic neblokují. Technik měří hned, jak vejde do
   // domu, a jméno s e-mailem dopisuje, až na ně přijde řeč — chybí jen k tomu,
@@ -252,24 +258,30 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   if (mode === "new" && (!product || (activeKind === "config" && !sub))) {
     return (
       <TechDetailFramed back={`/zakazky/${orderId}`} backLabel="Zakázka">
-        <h1 className="t-title" style={{ margin: "4px 0 0" }}>
-          {activeKind === "config" ? "Co zaměřujeme" : "Co opravujeme"}
-        </h1>
-        <Chips options={KINDS} value={kind} onChange={(k) => {
-          setKindPick(k);
-          setProductId(null);
-          setSubId(null);
-        }} />
+        {/* Dokud se nenačte zakázka, není jasné, co nabídnout (oprava/zaměření). */}
+        {!d && <Spinner />}
+        {d && (
+          <>
+            <h1 className="t-title" style={{ margin: "4px 0 0" }}>
+              {activeKind === "config" ? "Co zaměřujeme" : "Co opravujeme"}
+            </h1>
+            <Chips options={KINDS} value={kind} onChange={(k) => {
+              setKindPick(k);
+              setProductId(null);
+              setSubId(null);
+            }} />
+          </>
+        )}
 
-        {activeKind === "oprava" && (
+        {d && activeKind === "oprava" && (
           <p className="muted t-body-s" style={{ margin: 0 }}>
             Vyber produkt, vyfoť závadu a popiš ji.
           </p>
         )}
 
-        {types.isPending && <Spinner />}
+        {d && types.isPending && <Spinner />}
 
-        {!product && (
+        {d && !product && (
           <div className="product-grid">
             {productTypes.map((p) => (
               <button

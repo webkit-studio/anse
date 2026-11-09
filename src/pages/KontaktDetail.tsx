@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ContactRow, OrderKind } from "@shared/types";
-import { ORDER_KINDS, ORDER_KIND_LABELS } from "@shared/types";
+import { ORDER_KIND_OPTIONS } from "@shared/types";
 import { ago, czDateShort } from "@shared/format";
 import { api } from "../api/client";
 import {
@@ -261,7 +261,7 @@ export default function KontaktDetailPage() {
             <div className="kind-pick">
               <span className="field-label">Typ zakázky</span>
               <Chips
-                options={ORDER_KINDS.map((k) => ({ value: k, label: ORDER_KIND_LABELS[k] }))}
+                options={ORDER_KIND_OPTIONS}
                 value={kind}
                 onChange={setKind}
                 scroll={false}

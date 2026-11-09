@@ -223,6 +223,18 @@ export const ORDER_KIND_LABELS: Record<OrderKind, string> = {
   oprava: "Oprava",
 };
 
+/** Volby pro přepínač typu (chipy Nová / Oprava). */
+export const ORDER_KIND_OPTIONS = ORDER_KINDS.map((k) => ({ value: k, label: ORDER_KIND_LABELS[k] }));
+
+/**
+ * Typ jde přepnout, dokud zakázka žije. U hotové je montážní list venku,
+ * zrušená se nejdřív obnoví (vrátí se do fáze, kde typ zase jde měnit).
+ * Hlídá server; UI v těchto fázích typ jen ukazuje.
+ */
+export function typJdeZmenit(phase: OrderPhase): boolean {
+  return phase !== "hotovo" && phase !== "zruseno";
+}
+
 export interface OrderRow {
   id: string;
   contact_id: string;
