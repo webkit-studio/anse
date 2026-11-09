@@ -8,6 +8,7 @@ import {
   ORDER_PHASES,
   PHASE_LABELS,
   canTransition,
+  typJdeZmenit,
   type OrderPhase,
   type Role,
 } from "../../shared/types";
@@ -37,7 +38,7 @@ const OFFICE_ONLY_FIELDS = [
 
 function orderCols(db: Pick<ReturnType<typeof sql>, "unsafe">, role: Role) {
   return db.unsafe(`
-    o.id, o.contact_id, o.phase, o.assignee_ids,
+    o.id, o.contact_id, o.phase, o.kind, o.assignee_ids,
     array(
       select u.name from unnest(o.assignee_ids) with ordinality a(id, n)
       join users u on u.id = a.id order by a.n
@@ -149,7 +150,7 @@ export const orderRoutes: Route[] = [
       for (const r of counts) phaseCounts[r.phase as OrderPhase] = r.n;
 
       const queues = await db`
-        select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids, o.price_customer,
+        select o.id, o.contact_id, o.phase, o.kind, o.addr_montaz, o.assignee_ids, o.price_customer,
                ${assigneeNamesCol(db, "o")}, c.name as contact_name, o.customer_name,
                to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
                to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
@@ -175,7 +176,7 @@ export const orderRoutes: Route[] = [
     const db = sql();
     const mine = ctx.user.role === "technik";
     const orders = await db`
-      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids, ${assigneeNamesCol(db, "o")},
+      select o.id, o.contact_id, o.phase, o.kind, o.addr_montaz, o.assignee_ids, ${assigneeNamesCol(db, "o")},
              c.name as contact_name, o.customer_name,
              to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
              to_char(o.term_montaz, 'YYYY-MM-DD') as term_montaz,
@@ -219,19 +220,22 @@ export const orderRoutes: Route[] = [
     if (
       filter !== "vse" &&
       filter !== "archiv" &&
+      filter !== "opravy" &&
       !ORDER_PHASES.includes(filter as OrderPhase)
     ) {
       throw new ApiError(400, "Neznámý filtr.");
     }
+    // „Opravy" jdou napříč fázemi — kancelář si je vytáhne jedním chipem.
+    const kind = filter === "opravy" ? "oprava" : null;
     const phases =
-      filter === "vse"
+      filter === "vse" || filter === "opravy"
         ? null
         : filter === "archiv"
           ? ARCHIVE_PHASES
           : [filter as OrderPhase];
 
     const rows = await db`
-      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids, ${assigneeNamesCol(db, "o")},
+      select o.id, o.contact_id, o.phase, o.kind, o.addr_montaz, o.assignee_ids, ${assigneeNamesCol(db, "o")},
              c.name as contact_name, o.customer_name,
              ${ctx.user.role === "kancelar" ? db`o.price_customer,` : db``}
              to_char(o.term_dodani, 'YYYY-MM-DD') as term_dodani,
@@ -243,6 +247,7 @@ export const orderRoutes: Route[] = [
       join contacts c on c.id = o.contact_id
       where (${!mine} or ${ctx.user.id} = any(o.assignee_ids))
         and (${phases}::text[] is null or o.phase = any(${phases}))
+        and (${kind}::text is null or o.kind = ${kind})
         and (
           ${q} = '' or
           unaccent_cz(c.name) like '%' || unaccent_cz(${q}) || '%' or
@@ -290,9 +295,9 @@ export const orderRoutes: Route[] = [
       `;
 
       const [o] = await tx`
-        insert into orders (contact_id, assignee_ids, phase, measured_at, measured_time, created_by,
+        insert into orders (contact_id, kind, assignee_ids, phase, measured_at, measured_time, created_by,
                             customer_name, customer_phone, customer_email, addr_fakt, ico, dic)
-        values (${contact.id}, ${assignees}::uuid[], 'k_zamereni', ${body.measured_at ?? null},
+        values (${contact.id}, ${body.kind}, ${assignees}::uuid[], 'k_zamereni', ${body.measured_at ?? null},
                 ${body.measured_time ?? null}, ${ctx.user.id},
                 ${prev?.customer_name ?? contact.name ?? ""}, ${prev?.customer_phone ?? contact.phone ?? ""},
                 ${prev?.customer_email ?? ""}, ${prev?.addr_fakt ?? ""},
@@ -398,6 +403,13 @@ export const orderRoutes: Route[] = [
     if (ctx.user.role !== "kancelar" && OFFICE_ONLY_FIELDS.some((k) => body[k] !== undefined)) {
       throw new ApiError(403, "Tyto údaje může měnit jen kancelář.");
     }
+    if (
+      body.kind !== undefined &&
+      body.kind !== before.kind &&
+      !typJdeZmenit(before.phase as OrderPhase)
+    ) {
+      throw new ApiError(400, "Typ hotové nebo zrušené zakázky už nejde změnit.");
+    }
 
     const patch: Record<string, string | string[] | boolean | null> = {};
     for (const key of [
@@ -413,6 +425,9 @@ export const orderRoutes: Route[] = [
       "measured_at",
       "measured_time",
       "term_montaz",
+      // Typ smí přepnout i přidělený technik — on u zákazníka vidí, jestli jde
+      // o opravu. Cizí zakázku technik nenačte (loadOrderFor), takže na ni nedosáhne.
+      "kind",
       ...OFFICE_ONLY_FIELDS,
     ] as const) {
       if (body[key] !== undefined) patch[key] = body[key] as string | string[] | null;

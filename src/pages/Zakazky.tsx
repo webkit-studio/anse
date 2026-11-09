@@ -5,7 +5,7 @@ import { PHASE_LABELS } from "@shared/types";
 import { ago, czDateShort, money } from "@shared/format";
 import { useMe, useOrders } from "../api/hooks";
 import { OfficeShell, TechScreen, useOfficeView } from "../components/Shell";
-import { Chips, EmptyState, PhaseBadge, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
+import { Chips, EmptyState, KindBadge, PhaseBadge, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
 
 const TECH_FILTERS = [
   { value: "vse", label: "Vše" },
@@ -22,9 +22,11 @@ const OFFICE_FILTERS = [
   { value: "k_fakturaci", label: "K fakturaci" },
   { value: "hotovo", label: "Hotovo" },
   { value: "zruseno", label: "Zrušené" },
+  // Napříč fázemi — kancelář si vytáhne všechny opravy jedním klepnutím.
+  { value: "opravy", label: "Opravy" },
 ] as const;
 
-type Filter = OrderPhase | "vse" | "archiv";
+type Filter = OrderPhase | "vse" | "archiv" | "opravy";
 
 function OrderCard({ order }: { order: OrderListRow }) {
   const me = useMe();
@@ -35,6 +37,7 @@ function OrderCard({ order }: { order: OrderListRow }) {
         <span className="card-main">
           <span className="card-badges">
             <PhaseBadge phase={order.phase} role={me.data?.role ?? "technik"} />
+            <KindBadge kind={order.kind} />
             {order.signed_at && <ToneBadge tone="done">Podepsáno</ToneBadge>}
           </span>
           <span className="card-title">{who}</span>
@@ -113,7 +116,10 @@ export default function ZakazkyPage() {
                   <td className="cell-strong">{o.customer_name?.trim() || o.contact_name}</td>
                   <td className="cell-muted">{o.addr_montaz || "—"}</td>
                   <td>
-                    <PhaseBadge phase={o.phase} role="kancelar" />
+                    <span className="cell-badges">
+                      <PhaseBadge phase={o.phase} role="kancelar" />
+                      <KindBadge kind={o.kind} />
+                    </span>
                   </td>
                   <td className="num">{o.item_count}</td>
                   <td className="num col-secondary">{money(o.price_customer)}</td>
@@ -127,8 +133,12 @@ export default function ZakazkyPage() {
           </table>
         </div>
         {rows.length === 0 && !orders.isPending && (
-          <EmptyState title="Žádné zakázky">
-            <p>Zakázka vzniká vždy z kontaktu — zadáním termínu zaměření.</p>
+          <EmptyState title={filter === "opravy" ? "Žádné opravy" : "Žádné zakázky"}>
+            <p>
+              {filter === "opravy"
+                ? "Opravu označíš při založení zakázky z kontaktu, nebo v detailu zakázky."
+                : "Zakázka vzniká vždy z kontaktu — zadáním termínu zaměření."}
+            </p>
           </EmptyState>
         )}
       </OfficeShell>

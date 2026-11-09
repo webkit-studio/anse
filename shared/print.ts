@@ -1,4 +1,5 @@
 import type { FormDefinition, Params } from "./form-schema";
+import type { OrderKind } from "./types";
 
 // Mapování položek na řádky montážního listu (sloupce dle papírového vzoru:
 // stínění · barva · šířka · výška · kusů · strana · ovládání · poznámky).
@@ -153,4 +154,13 @@ export function missingForPdf(order: PdfReadinessInput): string[] {
   if (!order.invoice_no.trim()) missing.push("číslo faktury");
   if (!order.signed) missing.push("podpis zákazníka");
   return missing;
+}
+
+/**
+ * Značka typu na montážním listu. Oprava dostane výrazný rámeček pod
+ * titulkem, ať technik i zákazník hned vidí, o co jde. Nová zakázka je běžný
+ * případ a nic navíc nemá — stejně jako odznak v aplikaci.
+ */
+export function oznaceniTypuProPdf(kind: OrderKind | null | undefined): string | null {
+  return kind === "oprava" ? "OPRAVA" : null;
 }

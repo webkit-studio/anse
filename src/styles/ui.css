@@ -768,6 +768,14 @@ input[type="date"] {
   border-color: #f2e0bd;
 }
 
+/* Typ zakázky „Oprava" — info modrá, ať se nesplete s tóny fází. Kontrast
+   textu #135ba1 na #e8f1fb je 6,1 : 1 (AA). */
+.badge-oprava {
+  background: var(--c-info-soft);
+  color: var(--c-info);
+  border-color: var(--c-info-br);
+}
+
 /* === SKELETON + prázdné stavy =========================================== */
 
 .skeleton {
@@ -1124,6 +1132,14 @@ input[type="date"] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* víc odznaků v buňce tabulky (fáze + typ) */
+.cell-badges {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .card-badges {
@@ -2733,6 +2749,18 @@ input[type="date"] {
   font-weight: 600;
 }
 
+/* odznak typu (Oprava) nad jménem — jen když je co ukázat */
+.badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.queue-card .badges-row {
+  margin-bottom: 6px;
+}
+
 /* pás fází s počty */
 .phase-strip {
   display: flex;
@@ -3095,10 +3123,18 @@ input[type="date"] {
   color: var(--c-text-muted);
 }
 
-.time-block {
+.time-block,
+.kind-pick {
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+}
+
+/* Typ zakázky nad termínem — linka ho odděluje od rychlých voleb data,
+   ať dvě řady chipů nesplynou v jednu skupinu. */
+.kind-pick {
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--c-hairline);
 }
 
 .time-exact {

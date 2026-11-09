@@ -209,12 +209,39 @@ export interface ContactDetail {
 
 // === zakázky ===============================================================
 
+/**
+ * Typ zakázky. Nová dostane zaměření a objednávku, oprava řeší závadu na tom,
+ * co už u zákazníka visí. Odznak má jen oprava — nová je běžný případ
+ * a další odznak by byl jen šum.
+ */
+export type OrderKind = "nova" | "oprava";
+
+export const ORDER_KINDS = ["nova", "oprava"] as const satisfies readonly OrderKind[];
+
+export const ORDER_KIND_LABELS: Record<OrderKind, string> = {
+  nova: "Nová",
+  oprava: "Oprava",
+};
+
+/** Volby pro přepínač typu (chipy Nová / Oprava). */
+export const ORDER_KIND_OPTIONS = ORDER_KINDS.map((k) => ({ value: k, label: ORDER_KIND_LABELS[k] }));
+
+/**
+ * Typ jde přepnout, dokud zakázka žije. U hotové je montážní list venku,
+ * zrušená se nejdřív obnoví (vrátí se do fáze, kde typ zase jde měnit).
+ * Hlídá server; UI v těchto fázích typ jen ukazuje.
+ */
+export function typJdeZmenit(phase: OrderPhase): boolean {
+  return phase !== "hotovo" && phase !== "zruseno";
+}
+
 export interface OrderRow {
   id: string;
   contact_id: string;
   contact_name: string;
   contact_phone: string;
   phase: OrderPhase;
+  kind: OrderKind;
   /** Přidělení technici — zakázku vidí a edituje každý z nich. */
   assignee_ids: string[];
   assignee_names: string[];
@@ -258,6 +285,7 @@ export interface OrderListRow {
   /** Jméno zákazníka na zakázce; dokud ho technik nevyplní, zůstává prázdné. */
   customer_name: string;
   phase: OrderPhase;
+  kind: OrderKind;
   addr_montaz: string;
   /** Přidělení technici — zakázku vidí a edituje každý z nich. */
   assignee_ids: string[];

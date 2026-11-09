@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { FormDefinition } from "@shared/form-schema";
-import type { ItemRow, OrderDetail } from "@shared/types";
-import { blokaceProRoli } from "@shared/types";
+import type { ItemRow, OrderDetail, OrderKind } from "@shared/types";
+import { ORDER_KIND_LABELS, ORDER_KIND_OPTIONS, blokaceProRoli, typJdeZmenit } from "@shared/types";
 import { dodaniPoMontazi } from "@shared/dodani";
 import { czDate, czDateShort, items as czItems, money } from "@shared/format";
 import { api } from "../api/client";
@@ -16,7 +16,9 @@ import { useToast } from "../components/Toast";
 import {
   Button,
   CancelBlock,
+  Chips,
   ErrorBanner,
+  KindBadge,
   PhaseBadge,
   SkeletonList,
   ToneBadge,
@@ -117,6 +119,7 @@ export default function ZakazkaDetailPage() {
   const [montazOpen, setMontazOpen] = useState(false);
   const [zamereniOpen, setZamereniOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [typUklada, setTypUklada] = useState<OrderKind | null>(null);
 
   const role = me.data?.role ?? "technik";
   const d = detail.data;
@@ -139,6 +142,21 @@ export default function ZakazkaDetailPage() {
       toast(hlaska);
     } catch (err) {
       toast(err instanceof Error ? err.message : "Nepodařilo se uložit.");
+    }
+  }
+
+  /**
+   * Přepnutí typu. Chip se přepne hned a další klepnutí se ignorují, dokud
+   * uložení neskončí — jinak by druhé klepnutí poslalo starý čas úpravy a
+   * dostalo falešné „upravil někdo jiný".
+   */
+  async function prepniTyp(k: OrderKind) {
+    if (!order || typUklada || k === order.kind) return;
+    setTypUklada(k);
+    try {
+      await patch({ kind: k }, `Typ: ${ORDER_KIND_LABELS[k]}`);
+    } finally {
+      setTypUklada(null);
     }
   }
 
@@ -301,6 +319,11 @@ export default function ZakazkaDetailPage() {
       {d && order && (
         <>
           <div>
+            {order.kind === "oprava" && (
+              <div className="badges-row" style={{ margin: "4px 0 6px" }}>
+                <KindBadge kind={order.kind} />
+              </div>
+            )}
             <h1 className="t-title" style={{ margin: "4px 0 2px" }}>
               {order.customer_name?.trim() || order.contact_name}
             </h1>
@@ -398,6 +421,19 @@ export default function ZakazkaDetailPage() {
           <section className="card card-pad">
             <h2 className="card-section-title card-section-title-inline">Zakázka</h2>
             <div className="value-rows">
+              {/* Typ přepne i technik — u zákazníka často pozná, že jde o opravu. */}
+              {typJdeZmenit(order.phase) ? (
+                <ValueRow label="Typ" row="typ" value="">
+                  <Chips
+                    options={ORDER_KIND_OPTIONS}
+                    value={typUklada ?? order.kind}
+                    scroll={false}
+                    onChange={(k: OrderKind) => void prepniTyp(k)}
+                  />
+                </ValueRow>
+              ) : (
+                <ValueRow label="Typ" row="typ" value={ORDER_KIND_LABELS[order.kind]} copy={false} />
+              )}
               <ValueRow
                 label="Zaměření"
                 kind="datum"

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { czDate } from "@shared/format";
 import { Button } from "./ui";
 
@@ -122,6 +122,7 @@ export function DateSheet({
   warnText,
   withTime = false,
   confirmLabel,
+  lead,
   onClose,
   onPick,
 }: {
@@ -133,6 +134,8 @@ export function DateSheet({
   warnText?: string;
   withTime?: boolean;
   confirmLabel: string;
+  /** Volba nad kalendářem, která k termínu patří (typ zakázky při založení). */
+  lead?: ReactNode;
   onClose: () => void;
   onPick: (iso: string, time: string | null) => void;
 }) {
@@ -183,6 +186,8 @@ export function DateSheet({
         </div>
 
         <div className="sheet-scroll">
+          {lead}
+
           {quick.length > 0 && (
             <div className="chips">
               {quick.map((q) => (

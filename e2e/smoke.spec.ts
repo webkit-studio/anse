@@ -19,7 +19,9 @@ async function pickSheet(page: Page, triggerId: string, index = 0) {
 async function login(page: Page, code: string) {
   await page.goto("/login");
   await page.getByLabel("Přihlašovací kód").fill(code);
-  await expect(page).toHaveURL(/\/(?!login)/);
+  // Čeká na odchod z /login. Dřívější /\/(?!login)/ sedělo i na „http://…/login"
+  // (lomítka ve schématu), takže helper vracel dřív, než přihlášení doběhlo.
+  await expect(page).not.toHaveURL(/\/login(\?|$)/);
 }
 
 let orderUrl = "";
@@ -318,5 +320,143 @@ test.describe("kancelář: fakturace (desktop)", () => {
     const download = page.waitForEvent("download");
     await page.getByRole("button", { name: "Stáhnout montážní list" }).click();
     expect((await download).suggestedFilename()).toMatch(/\.pdf$/);
+  });
+});
+
+// --- S03 #4: typ zakázky Nová / Oprava ---------------------------------------
+// Oprava se volí jedním klepnutím při založení a odznak „Oprava" pak nese
+// všude, kde se zakázka vypisuje. Nová zakázka odznak nemá (méně šumu).
+
+const OPRAVA = `E2E Oprava ${SUFFIX}`;
+let opravaUrl = "";
+let opravaKontakt = "";
+
+test("technik založí opravu jedním klepnutím → odznak v detailu, seznamu, na Dnes i u kontaktu", async ({
+  page,
+}) => {
+  // Přihlášení přes API sdílí cookie se stránkou — kontakt se založí hned.
+  await page.request.post("/api/login", { data: { code: "111111" } });
+  const kontakt = (await (
+    await page.request.post("/api/contacts", {
+      data: { name: OPRAVA, phone: "608 333 444", place: "Kolín" },
+    })
+  ).json()) as { contact: { id: string } };
+  opravaKontakt = kontakt.contact.id;
+
+  // Volba typu sedí v sheetu s termínem zaměření, výchozí je Nová.
+  await page.goto(`/kontakty/${opravaKontakt}`);
+  await page.getByRole("button", { name: "Zaměřit", exact: true }).click();
+  const sheet = page.locator(".sheet");
+  await expect(sheet.getByRole("button", { name: "Nová" })).toHaveAttribute("aria-pressed", "true");
+  await sheet.getByRole("button", { name: "Oprava" }).click();
+  await sheet.getByRole("button", { name: "Zaměřit" }).click();
+  await expect(page).toHaveURL(/\/zakazky\/[0-9a-f-]{36}$/);
+  opravaUrl = page.url();
+
+  // detail technika: odznak u jména a přepínač typu
+  await expect(page.locator(".badge-oprava")).toHaveText("Oprava");
+  const typ = page.locator('[data-row="typ"]');
+  await expect(typ.locator(".chip", { hasText: "Oprava" })).toHaveAttribute("aria-pressed", "true");
+
+  // „Přidat položku" u opravy rovnou nabízí typ Oprava (o klepnutí méně)
+  await page.getByRole("button", { name: "Přidat první položku" }).click();
+  await expect(page.getByRole("heading", { name: "Co opravujeme" })).toBeVisible();
+  await expect(page.locator(".chip", { hasText: "Oprava" })).toHaveAttribute("aria-pressed", "true");
+
+  // seznam zakázek a Dnes
+  await page.goto("/zakazky");
+  await expect(page.locator(".card", { hasText: OPRAVA }).locator(".badge-oprava")).toBeVisible();
+  await page.goto("/");
+  await expect(page.locator(".card", { hasText: OPRAVA }).locator(".badge-oprava")).toBeVisible();
+
+  // historie kontaktu
+  await page.goto(`/kontakty/${opravaKontakt}`);
+  const historie = page.locator("section", {
+    has: page.getByRole("heading", { name: "Zakázky kontaktu" }),
+  });
+  await expect(historie.locator(".badge-oprava")).toHaveCount(1);
+
+  // Přidělený technik typ přepne sám — nová odznak ztratí, oprava ho vrátí.
+  await page.goto(opravaUrl);
+  await typ.locator(".chip", { hasText: "Nová" }).click();
+  await expect(page.locator(".badge-oprava")).toHaveCount(0);
+  await expect(typ.locator(".chip", { hasText: "Nová" })).toHaveAttribute("aria-pressed", "true");
+  await typ.locator(".chip", { hasText: "Oprava" }).click();
+  await expect(page.locator(".badge-oprava")).toHaveText("Oprava");
+});
+
+test("typ zakázky server revaliduje a cizí zakázku technik nepřepne", async ({ request }) => {
+  // neznámý typ neprojde
+  await request.post("/api/login", { data: { code: "111111" } });
+  const id = opravaUrl.split("/").pop()!;
+  const { order } = (await (await request.get(`/api/orders/${id}`)).json()) as {
+    order: { kind: string; updated_at: string };
+  };
+  expect(order.kind).toBe("oprava");
+  const spatne = await request.patch(`/api/orders/${id}`, {
+    data: { kind: "servis", expected_updated_at: order.updated_at },
+  });
+  expect(spatne.status()).toBe(400);
+
+  // kancelář založí zakázku bez přidělení (default nikdo) — technik na ni nedosáhne
+  await request.post("/api/login", { data: { code: "999999" } });
+  const kontakt = (await (
+    await request.post("/api/contacts", { data: { name: `E2E Cizí ${SUFFIX}` } })
+  ).json()) as { contact: { id: string } };
+  const cizi = (await (
+    await request.post("/api/orders", { data: { contact_id: kontakt.contact.id, kind: "oprava" } })
+  ).json()) as { id: string };
+  const ciziDetail = (await (await request.get(`/api/orders/${cizi.id}`)).json()) as {
+    order: { kind: string; updated_at: string };
+  };
+  expect(ciziDetail.order.kind).toBe("oprava");
+
+  await request.post("/api/login", { data: { code: "111111" } });
+  const prepnuti = await request.patch(`/api/orders/${cizi.id}`, {
+    data: { kind: "nova", expected_updated_at: ciziDetail.order.updated_at },
+  });
+  expect(prepnuti.status()).toBe(404);
+
+  // Zrušená zakázka typ drží — ani kancelář ho nepřepne (nejdřív obnovit).
+  await request.post("/api/login", { data: { code: "999999" } });
+  const zruseni = await request.post(`/api/orders/${cizi.id}/phase`, {
+    data: { to: "zruseno", expected: "k_zamereni", reason: "E2E zákazník nechce" },
+  });
+  expect(zruseni.ok()).toBe(true);
+  const zrusena = (await (await request.get(`/api/orders/${cizi.id}`)).json()) as {
+    order: { updated_at: string };
+  };
+  const pozde = await request.patch(`/api/orders/${cizi.id}`, {
+    data: { kind: "nova", expected_updated_at: zrusena.order.updated_at },
+  });
+  expect(pozde.status()).toBe(400);
+});
+
+test.describe("kancelář: opravy (desktop)", () => {
+  test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
+
+  test("oprava má odznak v tabulce, filtru Opravy i v detailu", async ({ page }) => {
+    await login(page, "999999");
+    await page.goto("/zakazky");
+    const radek = page.locator("tr.row-link", { hasText: OPRAVA });
+    await expect(radek.locator(".badge-oprava")).toBeVisible();
+
+    // Filtr Opravy jde napříč fázemi a novou zakázku nepustí.
+    await page.getByRole("button", { name: "Opravy", exact: true }).click();
+    await expect(page).toHaveURL(/faze=opravy/);
+    await expect(radek).toBeVisible();
+    await expect(page.locator("tr.row-link", { hasText: CONTACT })).toHaveCount(0);
+
+    // detail kanceláře: odznak u fáze a přepínač typu
+    await radek.click();
+    await expect(page).toHaveURL(opravaUrl);
+    await expect(page.locator(".badge-oprava")).toHaveText("Oprava");
+    await expect(
+      page.locator('[data-row="typ"] .chip', { hasText: "Oprava" }),
+    ).toHaveAttribute("aria-pressed", "true");
+
+    // i z kanceláře „Přidat položku" rovnou nabídne opravu
+    await page.getByRole("link", { name: /Přidat položku/ }).click();
+    await expect(page.getByRole("heading", { name: "Co opravujeme" })).toBeVisible();
   });
 });

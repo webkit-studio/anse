@@ -4,7 +4,7 @@ import { czDateShort } from "@shared/format";
 import { osloveni } from "@shared/vocative";
 import { useMe, useToday } from "../api/hooks";
 import { TechScreen } from "../components/Shell";
-import { EmptyState, PhaseBadge, Queue, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
+import { EmptyState, KindBadge, PhaseBadge, Queue, SkeletonList, ToneBadge, useDelayed } from "../components/ui";
 
 function czToday(now: Date): string {
   const days = ["neděle", "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota"];
@@ -24,6 +24,7 @@ function OrderCard({ order, urgent }: { order: OrderListRow; urgent?: string }) 
         <span className="card-main">
           <span className="card-badges">
             <PhaseBadge phase={order.phase} role={me.data?.role ?? "technik"} />
+            <KindBadge kind={order.kind} />
             {urgent && <span className="badge badge-warn">{urgent}</span>}
           </span>
           <span className="card-title">{who}</span>

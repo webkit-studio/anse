@@ -4,7 +4,7 @@ import { PHASE_FLOW, PHASE_LABELS } from "@shared/types";
 import { czDateShort, days, money } from "@shared/format";
 import { useOverview } from "../api/hooks";
 import { OfficeShell } from "../components/Shell";
-import { EmptyState, SkeletonList, useDelayed } from "../components/ui";
+import { EmptyState, KindBadge, SkeletonList, useDelayed } from "../components/ui";
 
 const QUEUES: { phase: OrderPhase; title: string }[] = [
   { phase: "k_zamereni", title: "K zaměření" },
@@ -20,6 +20,11 @@ function QueueCard({ order }: { order: OrderListRow & { idle_days: number } }) {
   const stale = order.idle_days >= STALE_DAYS;
   return (
     <Link to={`/zakazky/${order.id}`} className="queue-card">
+      {order.kind === "oprava" && (
+        <span className="badges-row">
+          <KindBadge kind={order.kind} />
+        </span>
+      )}
       <span className="queue-card-title">{who}</span>
       <span className="queue-card-sub">
         <span>

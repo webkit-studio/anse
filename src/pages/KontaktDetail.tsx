@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { ContactRow } from "@shared/types";
+import type { ContactRow, OrderKind } from "@shared/types";
+import { ORDER_KIND_OPTIONS } from "@shared/types";
 import { ago, czDateShort } from "@shared/format";
 import { api } from "../api/client";
 import {
@@ -18,7 +19,9 @@ import { useToast } from "../components/Toast";
 import {
   Button,
   CancelBlock,
+  Chips,
   ErrorBanner,
+  KindBadge,
   MultiSelectSheet,
   PhaseBadge,
   SkeletonList,
@@ -40,6 +43,7 @@ export default function KontaktDetailPage() {
 
   const [note, setNote] = useState("");
   const [dateOpen, setDateOpen] = useState(false);
+  const [kind, setKind] = useState<OrderKind>("nova");
   const [busy, setBusy] = useState(false);
 
   const contact = detail.data?.contact;
@@ -68,7 +72,7 @@ export default function KontaktDetailPage() {
     try {
       const { id } = await api<{ id: string }>("/api/orders", {
         method: "POST",
-        body: { contact_id: contactId, measured_at, measured_time },
+        body: { contact_id: contactId, kind, measured_at, measured_time },
       });
       await invalidate(contactId);
       await invalidateOrder(id);
@@ -111,7 +115,15 @@ export default function KontaktDetailPage() {
       }
       footer={
         contact && (
-          <Button variant="primary" onClick={() => setDateOpen(true)} disabled={busy}>
+          <Button
+            variant="primary"
+            onClick={() => {
+              // Každé založení začíná jako nová — oprava je vědomé klepnutí.
+              setKind("nova");
+              setDateOpen(true);
+            }}
+            disabled={busy}
+          >
             {orders.length === 0 ? "Zaměřit" : "＋ Další zaměření"}
           </Button>
         )
@@ -179,6 +191,7 @@ export default function KontaktDetailPage() {
                       <span className="card-main">
                         <span className="card-badges">
                           <PhaseBadge phase={o.phase} role={me.data?.role ?? "technik"} />
+                          <KindBadge kind={o.kind} />
                         </span>
                         <span className="card-title">{o.addr_montaz || "bez adresy"}</span>
                         <span className="card-sub">
@@ -244,6 +257,17 @@ export default function KontaktDetailPage() {
           // „Zaměřit" je to, co technik opravdu dělá; zakázka ve fázi
           // k zaměření z toho vznikne sama, ale nemusí to znít jako papírování.
           confirmLabel="Zaměřit"
+          lead={
+            <div className="kind-pick">
+              <span className="field-label">Typ zakázky</span>
+              <Chips
+                options={ORDER_KIND_OPTIONS}
+                value={kind}
+                onChange={setKind}
+                scroll={false}
+              />
+            </div>
+          }
           onClose={() => setDateOpen(false)}
           onPick={(iso, time) => {
             setDateOpen(false);
