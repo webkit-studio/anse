@@ -79,6 +79,16 @@ uživatelem, port 5433, DB `anse` — connection string
   i přidělený technik, u hotové a zrušené zakázky ne (`typJdeZmenit`).
   Odznak má jen oprava (`KindBadge`, info modrá); montážní list PDF má
   rámeček OPRAVA. U opravy „Přidat položku" rovnou nabídne typ Oprava.
+- **Kalendář** (S04, migrace 017): každý uživatel má v Nastavení → Kalendář
+  osobní odkaz na odebíraný kalendář `GET /api/calendar/:token.ics` (bez
+  session, `no-store`; token 256 bitů v `users.calendar_token`, přegenerování
+  přepíše starý). Feed = zakázky, kde je uživatel v `assignee_ids` (i kancelář),
+  zaměření a montáž, **bez cen**, bez zrušených, hotové 30 dní. Neplatný token
+  = stejná 404 jako neexistující adresa; token se **nikdy neloguje**. Skládání
+  ICS je čisté v `shared/kalendar.ts` (RFC 5545, TZID Europe/Prague), routy
+  v `server/routes/calendar.ts`. U termínu v detailu je ikona „Přidat do
+  kalendáře" (`ValueRow kalendar=`, `.ics` jedné události). Technik se na
+  stránku dostane ze Zprávy → ⚙ Nastavení.
 - **Galerie** (`src/components/Galerie.tsx`): fotka patří buď kontaktu
   (`kind = klient`, od zákazníka — jde přidat už při založení kontaktu), nebo
   zakázce (zaměření, závada, realizace). Výpis `GET /api/photos?contact_id|order_id`

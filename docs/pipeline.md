@@ -124,6 +124,6 @@ S stavba · D návrh · H oprava · R revize · P výkon · L drobná úprava pr
 | S01 | Termín dodání po dodavatelích + změna s notifikací | #2 | A | – | 014 | test + e2e | hotovo |
 | S02 | Kancelář zadává položky, kdo montuje, smazat staré sloupce | #3 | A | #2 | 015 | test + e2e | hotovo |
 | S03 | Typ zakázky Nová / Oprava | #4 | A | #3 | 016 | test + e2e | hotovo |
-| S04 | Zaměření a montáže v kalendáři (ICS) | #5 | A | #4 | 017 | test + e2e | spuštěno |
+| S04 | Zaměření a montáže v kalendáři (ICS) | #5 | A | #4 | 017 | test + e2e | hotovo |
 
 Tabulka je jen snímek. Pravdu drží issue.
