@@ -74,6 +74,11 @@ uživatelem, port 5433, DB `anse` — connection string
 - Položky zadává i kancelář (stejný formulář, žádná dvojí role) — v detailu
   zakázky ve fázi K zaměření je „Přidat položku"; server omezuje jen technika
   na jeho zakázky (`assertOwnOrder`).
+- **Typ zakázky** `orders.kind` = `nova` | `oprava` (migrace 016): volí se
+  při založení (sheet „Termín zaměření", výchozí Nová), mění ho kancelář
+  i přidělený technik, u hotové a zrušené zakázky ne (`typJdeZmenit`).
+  Odznak má jen oprava (`KindBadge`, info modrá); montážní list PDF má
+  rámeček OPRAVA. U opravy „Přidat položku" rovnou nabídne typ Oprava.
 - **Galerie** (`src/components/Galerie.tsx`): fotka patří buď kontaktu
   (`kind = klient`, od zákazníka — jde přidat už při založení kontaktu), nebo
   zakázce (zaměření, závada, realizace). Výpis `GET /api/photos?contact_id|order_id`
