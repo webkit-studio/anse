@@ -336,7 +336,12 @@ export const orderRoutes: Route[] = [
       )
     `;
 
-    const dodani = await dodaniProPolozky(db, order.id as string, items as never);
+    const dodani = await dodaniProPolozky(
+      db,
+      order.id as string,
+      items as never,
+      order.term_dodani as string | null,
+    );
     const blocking = blockingFor(
       order.phase as OrderPhase,
       order as never,
@@ -462,20 +467,21 @@ export const orderRoutes: Route[] = [
       const db = sql();
 
       const result = await db.begin(async (tx) => {
+        // Optimistický zámek jako u PATCH zakázky: porovnává se čas z klienta.
         const [o] = await tx`
-          select id, phase, assignee_ids, customer_name, addr_montaz, updated_at
+          select id, phase, assignee_ids, customer_name, addr_montaz,
+                 to_char(term_dodani, 'YYYY-MM-DD') as term_dodani,
+                 exists (select 1 from order_dodani d where d.order_id = orders.id) as ma_radky,
+                 updated_at = ${body.expected_updated_at} as same
           from orders where id = ${params.id!}
           for update
         `.catch(invalidUuidAsMissing);
         if (!o) throw new ApiError(404, "Zakázka nenalezena.");
         if (o.phase !== "k_naceneni" && o.phase !== "k_montazi") {
-          throw new ApiError(409, "Termín dodání jde měnit jen při nacenění a před montáží.");
+          // 422, ne 409: klient by 409 vyložil jako „někdo to mezitím změnil".
+          throw new ApiError(422, "Termín dodání jde měnit jen při nacenění a před montáží.");
         }
-        // Optimistický zámek jako u PATCH zakázky: porovnává se čas z klienta.
-        const [same] = await tx`
-          select 1 from orders where id = ${params.id!} and updated_at = ${body.expected_updated_at}
-        `;
-        if (!same) {
+        if (!o.same) {
           throw new ApiError(409, "Zakázku mezitím upravil někdo jiný. Načti ji prosím znovu.");
         }
 
@@ -484,6 +490,11 @@ export const orderRoutes: Route[] = [
           throw new ApiError(400, "Tento dodavatel v zakázce není.");
         }
 
+        // Termín ze starého kódu (jen souhrnné pole) napřed dostanou všichni
+        // dodavatelé — jinak by změna jednoho ostatním termín „vzala".
+        if (!o.ma_radky && o.term_dodani) {
+          await nastavVsemDodavatelum(tx, params.id!, o.term_dodani as string);
+        }
         const [prev] = await tx`
           select to_char(term, 'YYYY-MM-DD') as term from order_dodani
           where order_id = ${params.id!} and dodavatel = ${body.dodavatel}
@@ -587,7 +598,12 @@ export const orderRoutes: Route[] = [
 
     const polozky = await polozkyDodavatelu(db, order.id as string);
     const items = { n: polozky.length };
-    const dodani = await dodaniProPolozky(db, order.id as string, polozky);
+    const dodani = await dodaniProPolozky(
+      db,
+      order.id as string,
+      polozky,
+      order.term_dodani as string | null,
+    );
     if (to !== "zruseno") {
       // Kancelář kontroluje i cenu zakázky, kterou technikův pohled nezná.
       const [full] = await db`

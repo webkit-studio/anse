@@ -305,6 +305,7 @@ export default function ZakazkaDetailOfficePage() {
         onConflict={() => {
           toast("Zakázku mezitím někdo změnil. Načítám znovu.");
           void detail.refetch();
+          setLoaded(false);
         }}
         onError={toast}
       />

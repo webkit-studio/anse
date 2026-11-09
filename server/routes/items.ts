@@ -3,7 +3,7 @@ import { hasBlocking, validateItem, type Issue } from "../../shared/form-engine"
 import { formDefinitionSchema, type FormDefinition, type Params } from "../../shared/form-schema";
 import { validateKonfig, validateSuysDimensions, type KonfigProduct } from "../../shared/konfigurator";
 import { sql } from "../db";
-import { syncTermDodani } from "../dodani";
+import { syncTermDodaniZamcene } from "../dodani";
 import { ApiError, json } from "../http";
 import { getKonfigProduct } from "../konfigurator";
 import { makeRoute, parseBody, type Ctx, type Route } from "../router";
@@ -191,7 +191,7 @@ export const itemRoutes: Route[] = [
         `,
       );
       // Nový dodavatel v zakázce mění nejpozdější termín dodání.
-      await syncTermDodani(db, body.order_id);
+      await syncTermDodaniZamcene(body.order_id);
       return json({ item: withNames(item) }, { status: 201 });
     } catch (err) {
       if (isForeignKeyViolation(err)) {
@@ -302,7 +302,7 @@ export const itemRoutes: Route[] = [
       .catch(() => []);
     if (!deleted) throw new ApiError(404, "Položka nenalezena.");
     // Zmizí-li ze zakázky poslední položka dodavatele, jeho termín přestane platit.
-    await syncTermDodani(db, deleted.order_id as string);
+    await syncTermDodaniZamcene(deleted.order_id as string);
     return json({ ok: true });
   }),
 ];

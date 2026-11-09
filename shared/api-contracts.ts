@@ -107,7 +107,7 @@ export const dodaniBody = z.object({
   /** Klíč výrobce z položek (jackwest, suys, neva), "" = Ostatní. */
   dodavatel: z.string().max(40),
   term: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Neplatné datum."),
-  expected_updated_at: z.string().min(1),
+  expected_updated_at: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "Neplatný čas úpravy."),
 });
 
 export const phaseBody = z.object({

@@ -7,6 +7,7 @@
 
 import type postgres from "postgres";
 import { dodaniRows, type DodaniRow } from "../shared/dodani";
+import { sql } from "./db";
 
 type Db = postgres.Sql | postgres.TransactionSql;
 
@@ -33,12 +34,18 @@ export async function dodaniProPolozky(
   db: Db,
   orderId: string,
   items: { subcategory_manufacturer?: string | null }[],
+  /** Souhrnné orders.term_dodani — pojistka pro termín zadaný starým kódem. */
+  termDodani?: string | null,
 ): Promise<DodaniRow[]> {
   const stored = await ulozeneDodani(db, orderId);
-  return dodaniRows(
-    items.map((i) => ({ subcategory_manufacturer: i.subcategory_manufacturer || "" })),
-    stored,
-  );
+  const polozky = items.map((i) => ({ subcategory_manufacturer: i.subcategory_manufacturer || "" }));
+  // Termín zadaný záložkou se starým kódem během nasazení má jen souhrnné
+  // pole, žádné řádky — platí pak pro všechny dodavatele, ať zakázka
+  // nevypadá jako „chybí termín".
+  if (stored.length === 0 && termDodani) {
+    return dodaniRows(polozky, []).map((r) => ({ ...r, term: termDodani }));
+  }
+  return dodaniRows(polozky, stored);
 }
 
 /**
@@ -59,8 +66,21 @@ export async function syncTermDodani(db: Db, orderId: string): Promise<void> {
           where i.order_id = ${orderId}
         )
     ) x
-    where o.id = ${orderId} and o.term_dodani is distinct from x.m
+    where o.id = ${orderId} and x.m is not null and o.term_dodani is distinct from x.m
   `;
+  // x.m is null (žádný řádek) = nech souhrnné pole být: mohl ho zadat starý
+  // kód bez řádků a smazat ho by znamenalo ztratit termín.
+}
+
+/**
+ * Přepočet po změně položek: zamkne řádek zakázky, ať se nepotká se
+ * souběžným zadáním termínu (max() by jinak počítal ze starého snímku).
+ */
+export async function syncTermDodaniZamcene(orderId: string): Promise<void> {
+  await sql().begin(async (tx) => {
+    await tx`select 1 from orders where id = ${orderId} for update`;
+    await syncTermDodani(tx, orderId);
+  });
 }
 
 /**
