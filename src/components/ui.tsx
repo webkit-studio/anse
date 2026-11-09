@@ -10,8 +10,8 @@ import {
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from "react";
-import type { OrderPhase, Role, Tone } from "@shared/types";
-import { phaseLabelFor, phaseTone } from "@shared/types";
+import type { OrderKind, OrderPhase, Role, Tone } from "@shared/types";
+import { ORDER_KIND_LABELS, phaseLabelFor, phaseTone } from "@shared/types";
 import { Icon, ToneGlyph } from "./Icon";
 
 // --- Button -------------------------------------------------------------
@@ -433,6 +433,21 @@ export function ToneBadge({ tone, children }: { tone: Tone; children: ReactNode 
  */
 export function PhaseBadge({ phase, role }: { phase: OrderPhase; role: Role }) {
   return <ToneBadge tone={phaseTone(phase, role)}>{phaseLabelFor(phase, role)}</ToneBadge>;
+}
+
+/**
+ * Typ zakázky. Odznak má jen oprava — nová zakázka je běžný případ a další
+ * odznak by byl jen šum. Modrá (info) se nebije s tóny fází (zelená, šedá,
+ * jantarová, červená), takže se oprava nesplete se stavem.
+ */
+export function KindBadge({ kind }: { kind: OrderKind | undefined }) {
+  if (kind !== "oprava") return null;
+  return (
+    <span className="badge badge-oprava">
+      <Icon name="oprava" size={12} />
+      {ORDER_KIND_LABELS.oprava}
+    </span>
+  );
 }
 
 // --- Switch (nastavení) -------------------------------------------------------

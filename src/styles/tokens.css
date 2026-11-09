@@ -35,6 +35,7 @@
   --c-warn-soft: #fff3dd;
   --c-info: #135ba1;
   --c-info-soft: #e8f1fb;
+  --c-info-br: #cfe0f4;
 
   /* pět tónů stavu (+ neutrální idle) */
   --c-tone-todo-bg: #d6f6ea;

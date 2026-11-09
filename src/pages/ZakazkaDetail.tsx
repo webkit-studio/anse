@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { FormDefinition } from "@shared/form-schema";
-import type { ItemRow, OrderDetail } from "@shared/types";
-import { blokaceProRoli } from "@shared/types";
+import type { ItemRow, OrderDetail, OrderKind } from "@shared/types";
+import { ORDER_KINDS, ORDER_KIND_LABELS, blokaceProRoli } from "@shared/types";
 import { dodaniPoMontazi } from "@shared/dodani";
 import { czDate, czDateShort, items as czItems, money } from "@shared/format";
 import { api } from "../api/client";
@@ -16,7 +16,9 @@ import { useToast } from "../components/Toast";
 import {
   Button,
   CancelBlock,
+  Chips,
   ErrorBanner,
+  KindBadge,
   PhaseBadge,
   SkeletonList,
   ToneBadge,
@@ -301,6 +303,11 @@ export default function ZakazkaDetailPage() {
       {d && order && (
         <>
           <div>
+            {order.kind === "oprava" && (
+              <div className="badges-row" style={{ margin: "4px 0 6px" }}>
+                <KindBadge kind={order.kind} />
+              </div>
+            )}
             <h1 className="t-title" style={{ margin: "4px 0 2px" }}>
               {order.customer_name?.trim() || order.contact_name}
             </h1>
@@ -398,6 +405,17 @@ export default function ZakazkaDetailPage() {
           <section className="card card-pad">
             <h2 className="card-section-title card-section-title-inline">Zakázka</h2>
             <div className="value-rows">
+              {/* Typ přepne i technik — u zákazníka často pozná, že jde o opravu. */}
+              <ValueRow label="Typ" row="typ" value="">
+                <Chips
+                  options={ORDER_KINDS.map((k) => ({ value: k, label: ORDER_KIND_LABELS[k] }))}
+                  value={order.kind}
+                  scroll={false}
+                  onChange={(k: OrderKind) => {
+                    if (k !== order.kind) void patch({ kind: k }, `Typ: ${ORDER_KIND_LABELS[k]}`);
+                  }}
+                />
+              </ValueRow>
               <ValueRow
                 label="Zaměření"
                 kind="datum"

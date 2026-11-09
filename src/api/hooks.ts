@@ -151,7 +151,7 @@ export function useOverview(enabled = true) {
   });
 }
 
-export function useOrders(search: string, filter: OrderPhase | "vse" | "archiv") {
+export function useOrders(search: string, filter: OrderPhase | "vse" | "archiv" | "opravy") {
   const params = new URLSearchParams();
   if (search) params.set("search", search);
   if (filter !== "vse") params.set("filter", filter);

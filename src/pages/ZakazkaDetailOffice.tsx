@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { ItemRow, JwCsvNabidka, OrderPhase } from "@shared/types";
-import { PHASE_FLOW, PHASE_LABELS } from "@shared/types";
+import type { ItemRow, JwCsvNabidka, OrderKind, OrderPhase } from "@shared/types";
+import { ORDER_KINDS, ORDER_KIND_LABELS, PHASE_FLOW, PHASE_LABELS } from "@shared/types";
 import { czDate, items as czItems, money } from "@shared/format";
 import { missingForPdf } from "@shared/print";
 import { api, isConflict } from "../api/client";
@@ -15,9 +15,11 @@ import { useToast } from "../components/Toast";
 import {
   Button,
   CancelBlock,
+  Chips,
   ConfirmButton,
   ErrorBanner,
   Field,
+  KindBadge,
   MultiSelectSheet,
   NativeSelect,
   PhaseBadge,
@@ -333,6 +335,7 @@ export default function ZakazkaDetailOfficePage() {
             <section className="card card-pad">
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                 <PhaseBadge phase={order.phase} role="kancelar" />
+                <KindBadge kind={order.kind} />
                 {order.signed_at && <ToneBadge tone="done">Podepsáno</ToneBadge>}
                 <span className="muted t-caption" style={{ marginLeft: "auto" }}>
                   {czItems(d.items.length)}
@@ -405,6 +408,16 @@ export default function ZakazkaDetailOfficePage() {
                   placeholder="zadá technik"
                   onSave={(v) => patch({ price_montage: v })}
                 />
+                <ValueRow label="Typ" row="typ" value="">
+                  <Chips
+                    options={ORDER_KINDS.map((k) => ({ value: k, label: ORDER_KIND_LABELS[k] }))}
+                    value={order.kind}
+                    scroll={false}
+                    onChange={(k: OrderKind) => {
+                      if (k !== order.kind) void patch({ kind: k });
+                    }}
+                  />
+                </ValueRow>
                 <ValueRow label="Technik" value="">
                   <MultiSelectSheet
                     id="o-assignee"

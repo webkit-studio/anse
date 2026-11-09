@@ -104,7 +104,7 @@ export const contactRoutes: Route[] = [
       order by n.created_at desc
     `;
     const orders = await db`
-      select o.id, o.contact_id, o.phase, o.addr_montaz, o.assignee_ids,
+      select o.id, o.contact_id, o.phase, o.kind, o.addr_montaz, o.assignee_ids,
              ${assigneeNamesCol(db, "o")}, o.term_dodani, o.term_montaz, o.updated_at,
              (select count(*)::int from items i where i.order_id = o.id) as item_count,
              (select s.signed_at from signatures s where s.order_id = o.id) as signed_at

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ORDER_PHASES, NOTIF_EVENTS } from "./types";
+import { ORDER_KINDS, ORDER_PHASES, NOTIF_EVENTS } from "./types";
 
 // Zod kontrakty request bodies — parsují se na serveru (nikdy nevěříme
 // klientovi) a typují API klienta.
@@ -65,9 +65,15 @@ export const contactCancelBody = z.object({
 
 // === zakázky ===============================================================
 
+const orderKind = z.enum(ORDER_KINDS, {
+  errorMap: () => ({ message: "Typ zakázky je Nová, nebo Oprava." }),
+});
+
 /** Zakázka vzniká vždy z kontaktu zadáním termínu zaměření. */
 export const orderCreateBody = z.object({
   contact_id: z.string().uuid(),
+  /** Nová / Oprava — jedno klepnutí při založení, bez volby je nová. */
+  kind: orderKind.default("nova"),
   measured_at: dateString,
   measured_time: timeString,
   /** Jen kancelář; bez něj se převezme přidělení kontaktu. */
@@ -87,6 +93,8 @@ export const orderUpdateBody = z.object({
   measured_at: dateString,
   measured_time: timeString,
   addr_fakt_same: z.boolean().optional(),
+  /** Nová / Oprava — smí měnit kancelář i přidělený technik. */
+  kind: orderKind.optional(),
 
   /** Cena práce technika — smí měnit technik i kancelář. */
   price_montage: trimmed.optional(),

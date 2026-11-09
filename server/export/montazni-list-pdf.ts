@@ -2,7 +2,8 @@ import fontkit from "@pdf-lib/fontkit";
 import { PDFDocument, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { formDefinitionSchema, type FormDefinition } from "../../shared/form-schema";
 import { konfigPrintValues } from "../../shared/konfigurator";
-import { aggregateForList, missingForPdf, totalPieces } from "../../shared/print";
+import { aggregateForList, missingForPdf, oznaceniTypuProPdf, totalPieces } from "../../shared/print";
+import type { OrderKind } from "../../shared/types";
 import { getKonfigProduct } from "../konfigurator";
 import { sql } from "../db";
 import { ApiError } from "../http";
@@ -87,6 +88,7 @@ export function exportFilename(orderNumber: string, orderId: string): string {
 
 interface PdfOrder {
   id: string;
+  kind: OrderKind;
   addr_montaz: string;
   addr_fakt: string;
   order_no: string;
@@ -317,7 +319,7 @@ export async function buildMontazniListPdf(
   const db = sql();
 
   const [order] = (await db`
-    select o.id, o.addr_montaz,
+    select o.id, o.kind, o.addr_montaz,
            case when o.addr_fakt_same then o.addr_montaz else o.addr_fakt end as addr_fakt,
            o.order_no, o.invoice_no,
            o.price_customer, o.price_montage,
@@ -427,6 +429,33 @@ export async function buildMontazniListPdf(
   const titleW = bold.widthOfTextAtSize(TITLE, titleSize);
   drawText(ctx, TITLE, MARGIN + (CONTENT_W - titleW) / 2, titleSize, { bold: true });
   ctx.y -= titleSize + 12;
+
+  // --- typ zakázky ----------------------------------------------------------
+  // Jen u opravy: rámeček s nápisem, čitelný i na černobílé tiskárně.
+  const typ = oznaceniTypuProPdf(order.kind);
+  if (typ) {
+    const typSize = 10;
+    const padX = 12;
+    const boxH = typSize + 9;
+    const boxW = bold.widthOfTextAtSize(typ, typSize) + 2 * padX;
+    const boxX = MARGIN + (CONTENT_W - boxW) / 2;
+    ctx.page.drawRectangle({
+      x: boxX,
+      y: ctx.y - boxH,
+      width: boxW,
+      height: boxH,
+      borderColor: INK,
+      borderWidth: 1.2,
+    });
+    ctx.page.drawText(typ, {
+      x: boxX + padX,
+      y: ctx.y - boxH + 6,
+      size: typSize,
+      font: bold,
+      color: INK,
+    });
+    ctx.y -= boxH + 10;
+  }
 
   // --- dodavatel × objednavatel --------------------------------------------
   const colLeftX = MARGIN;

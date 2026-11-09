@@ -96,7 +96,8 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
   const types = useProductTypes();
   const invalidate = useInvalidateOrder();
 
-  const [kind, setKind] = useState<Kind>("config");
+  // Volba typu položky; dokud technik neklepne, řídí se typem zakázky.
+  const [kindPick, setKindPick] = useState<Kind | null>(null);
   const [productId, setProductId] = useState<string | null>(null);
   const [subId, setSubId] = useState<string | null>(null);
   const [room, setRoom] = useState<{ id: string } | { name: string }>(
@@ -114,6 +115,9 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
 
   const d = detail.data;
   const item = mode === "edit" ? d?.items.find((i) => i.id === itemId) : undefined;
+  // Zakázka typu Oprava = skoro vždy opravové položky. Formulář rovnou
+  // nabídne Opravu a ušetří klepnutí; přepnout na Zaměření jde pořád.
+  const kind: Kind = kindPick ?? (d?.order.kind === "oprava" ? "oprava" : "config");
 
   // Údaje zákazníka tu ZÁMĚRNĚ nic neblokují. Technik měří hned, jak vejde do
   // domu, a jméno s e-mailem dopisuje, až na ně přijde řeč — chybí jen k tomu,
@@ -252,7 +256,7 @@ export default function ItemFormPage({ mode }: { mode: "new" | "edit" }) {
           {activeKind === "config" ? "Co zaměřujeme" : "Co opravujeme"}
         </h1>
         <Chips options={KINDS} value={kind} onChange={(k) => {
-          setKind(k);
+          setKindPick(k);
           setProductId(null);
           setSubId(null);
         }} />
