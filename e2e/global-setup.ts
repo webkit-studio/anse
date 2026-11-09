@@ -17,6 +17,8 @@ export default async function globalSetup() {
   try {
     await sql`update users set code = '111111' where name = 'Jakub Svoboda'`;
     await sql`update users set code = '999999' where name = 'Marek Konderla'`;
+    // druhá kancelář — v e2e ji Marek přidá jako montážníka (S02)
+    await sql`update users set code = '555555' where name = 'Darina Konderlová'`;
   } finally {
     await sql.end();
   }

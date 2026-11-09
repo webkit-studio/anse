@@ -105,6 +105,9 @@ export function blockingFor(
     if (o.price_customer !== undefined && !o.price_customer.trim()) missing.push("Cena zakázky");
     if (dodani && dodani.length > 0) missing.push(...chybejiciDodani(dodani));
     else if (!o.term_dodani) missing.push("Termín dodání");
+    // Měřit a montovat můžou různí lidé. Po „Objednáno" jde zpráva o dodání
+    // jen přiděleným — bez nich by se montážník o objednávce nedozvěděl.
+    if (o.assignee_ids.length === 0) missing.push("Kdo montuje");
   }
   if (phase === "k_montazi") {
     if (!o.term_montaz) missing.push("Termín montáže");

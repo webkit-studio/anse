@@ -60,6 +60,14 @@ describe("blokující kroky", () => {
     expect(blockingFor("k_naceneni", full, 2, false, oba)).toEqual([]);
   });
 
+  it("Objednáno bez přiděleného neprojde — montážník by se o dodání nedozvěděl", () => {
+    expect(blockingFor("k_naceneni", { ...full, assignee_ids: [] }, 1, false)).toEqual([
+      "Kdo montuje",
+    ]);
+    expect(blokaceProRoli(["Kdo montuje"], "technik")).toEqual([]);
+    expect(blokaceProRoli(["Kdo montuje"], "kancelar")).toEqual(["Kdo montuje"]);
+  });
+
   it("jeden dodavatel bez termínu = prosté „Termín dodání\"", () => {
     const rows = dodaniRows([{ subcategory_manufacturer: "jackwest" }], []);
     expect(blockingFor("k_naceneni", full, 1, false, rows)).toEqual(["Termín dodání"]);
