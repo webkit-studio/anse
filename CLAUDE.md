@@ -68,8 +68,12 @@ uživatelem, port 5433, DB `anse` — connection string
   přiděluje vědomě (default nikdo). Zakázka má taky `assignee_ids`, při založení
   je převezme z kontaktu; vidí a edituje ji každý přidělený, odškrtnutý ji
   ztratí. Notifikaci dostanou jen nově přidaní (`novy_kontakt`, `nova_zakazka`).
-  Staré sloupce `contacts.assigned_to` / `orders.assignee_id` jsou zastaralé
-  (migrace 013), kód je nečte — smazat další migrací.
+  Kdo měří, nemusí montovat: kancelář v K nacenění vybírá „Kdo montuje"
+  (stejné `assignee_ids`) a „Objednáno" bez přiděleného neprojde
+  (`blockingFor`). Staré sloupce `assigned_to` / `assignee_id` smazala migrace 015.
+- Položky zadává i kancelář (stejný formulář, žádná dvojí role) — v detailu
+  zakázky ve fázi K zaměření je „Přidat položku"; server omezuje jen technika
+  na jeho zakázky (`assertOwnOrder`).
 - **Galerie** (`src/components/Galerie.tsx`): fotka patří buď kontaktu
   (`kind = klient`, od zákazníka — jde přidat už při založení kontaktu), nebo
   zakázce (zaměření, závada, realizace). Výpis `GET /api/photos?contact_id|order_id`

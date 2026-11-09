@@ -111,6 +111,54 @@ test("technik cenu zakázky nevidí ani v API", async ({ request }) => {
 test.describe("kancelář (desktop)", () => {
   test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
 
+  // Marek je kancelář, a přesto měří. Položky zadá stejným formulářem jako
+  // technik, rovnou z detailu zakázky (S02 #3).
+  test("kancelář přidá, upraví a smaže položku ze zaměření", async ({ page }) => {
+    // Přihlášení přes API sdílí cookie se stránkou — data se zakládají hned.
+    await page.request.post("/api/login", { data: { code: "999999" } });
+    const kontakt = (await (
+      await page.request.post("/api/contacts", {
+        data: { name: `E2E Měří kancelář ${SUFFIX}`, phone: "608 777 888", place: "Opava" },
+      })
+    ).json()) as { contact: { id: string } };
+    const { id } = (await (
+      await page.request.post("/api/orders", {
+        data: { contact_id: kontakt.contact.id, measured_at: "2026-11-20", measured_time: "10:00" },
+      })
+    ).json()) as { id: string };
+
+    await page.goto(`/zakazky/${id}`);
+    await page.getByRole("link", { name: /Přidat položku/ }).click();
+    await expect(page).toHaveURL(/\/polozka\/nova$/);
+    await page.locator(".product-tile").first().click();
+    await page.locator(".chip", { hasText: "Ložnice" }).first().click();
+    await page.locator("#f-sirka").fill("800");
+    await page.locator("#f-vyska").fill("1200");
+    for (const fid of ["f-barva_profilu", "f-sitovina", "f-barva_sitoviny", "f-typ_uchyceni"]) {
+      await pickSheet(page, fid);
+    }
+    await page.getByRole("button", { name: "Uložit položku" }).click();
+    await expect(page).toHaveURL(new RegExp(`/zakazky/${id}$`));
+    const radek = page.locator("tr.row-link", { hasText: "Ložnice" });
+    await expect(radek).toContainText("800 × 1200");
+
+    // úprava: rozbalit řádek → Upravit → stejný formulář
+    await radek.click();
+    await page.getByRole("link", { name: "Upravit" }).click();
+    await page.locator("#f-sirka").fill("850");
+    await page.getByRole("button", { name: "Uložit změny" }).click();
+    await expect(page).toHaveURL(new RegExp(`/zakazky/${id}$`));
+    await expect(radek).toContainText("850 × 1200");
+
+    // smazání z formuláře položky (s potvrzením)
+    await radek.click();
+    await page.getByRole("link", { name: "Upravit" }).click();
+    await page.getByRole("button", { name: "Smazat položku" }).click();
+    await page.getByRole("button", { name: "Opravdu smazat?" }).click();
+    await expect(page).toHaveURL(new RegExp(`/zakazky/${id}$`));
+    await expect(page.getByText(/Zatím žádné položky/)).toBeVisible();
+  });
+
   test("nacenění → objednáno", async ({ page }) => {
     await login(page, "999999");
     await page.goto(orderUrl);
@@ -172,8 +220,26 @@ test.describe("kancelář (desktop)", () => {
 
     await page.locator("#dodani-ostatni").click();
     await page.locator(".calendar-day:not(:disabled)").nth(5).click();
+
+    // Kdo montuje: měřil Jakub, montovat jde s ním Darina — přidá se k zakázce.
+    await page.locator("#p-montuje").click();
+    await page.locator(".sheet-option", { hasText: "Darina Konderlová" }).click();
+    await page.locator(".sheet").getByRole("button", { name: "Zavřít" }).click();
+    await expect(page.locator("#p-montuje")).toContainText("Darina Konderlová");
+
     await page.getByRole("button", { name: "Objednáno" }).click();
     await expect(page.getByText("K montáži").first()).toBeVisible();
+
+    // přidaná montážnice se dozví o zakázce i o termínu dodání
+    const darina = await page.context().browser()!.newContext({ baseURL: "http://localhost:5173" });
+    await darina.request.post("/api/login", { data: { code: "555555" } });
+    const { notifications } = (await (await darina.request.get("/api/notifications")).json()) as {
+      notifications: { event: string; order_id: string }[];
+    };
+    const udalosti = notifications.filter((n) => n.order_id === id).map((n) => n.event);
+    expect(udalosti).toContain("nova_zakazka");
+    expect(udalosti).toContain("termin_dodani");
+    await darina.close();
   });
 
   test("po objednání jde termín změnit a technik dostane zprávu", async ({ page, request }) => {

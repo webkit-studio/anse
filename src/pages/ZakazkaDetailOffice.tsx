@@ -421,7 +421,16 @@ export default function ZakazkaDetailOfficePage() {
             </section>
 
             <section>
-              <h2 className="card-section-title">Položky</h2>
+              <div className="section-head">
+                <h2 className="card-section-title">Položky</h2>
+                {/* Zaměřit jde i kancelář (Marek jezdí taky) — stejný formulář
+                    jako technik, žádná zvláštní role. */}
+                {order.phase === "k_zamereni" && (
+                  <Link to={`/zakazky/${orderId}/polozka/nova`} className="btn btn-secondary">
+                    ＋ Přidat položku
+                  </Link>
+                )}
+              </div>
               <div className="table-wrap">
                 <table className="table">
                   <thead>
@@ -490,7 +499,13 @@ export default function ZakazkaDetailOfficePage() {
                   </tbody>
                 </table>
               </div>
-              {d.items.length === 0 && <p className="muted t-body-s">Zatím žádné položky.</p>}
+              {d.items.length === 0 && (
+                <p className="muted t-body-s">
+                  {order.phase === "k_zamereni"
+                    ? "Zatím žádné položky. Zadá je technik ze zaměření, nebo je přidej sem."
+                    : "Zatím žádné položky."}
+                </p>
+              )}
             </section>
 
             <Galerie contactId={order.contact_id} orderId={order.id} />
@@ -522,6 +537,7 @@ export default function ZakazkaDetailOfficePage() {
             {order.phase === "k_zamereni" && (
               <p className="muted t-body-s">
                 Zaměřuje technik. Až pošle podklady, objeví se tu cena a termín dodání.
+                Měříš sám? Položky přidáš v seznamu vlevo.
               </p>
             )}
 
@@ -548,6 +564,21 @@ export default function ZakazkaDetailOfficePage() {
                 </p>
 
                 {terminy}
+
+                {/* Kdo měří, nemusí montovat. Přidaný dostane zprávu o zakázce
+                    hned, po „Objednáno" pak všichni přidělení termín dodání. */}
+                <Field label="Kdo montuje" htmlFor="p-montuje" required>
+                  <MultiSelectSheet
+                    id="p-montuje"
+                    title="Kdo montuje"
+                    placeholder="Vyber, kdo montuje"
+                    value={order.assignee_ids}
+                    options={(users.data?.users ?? [])
+                      .filter((u) => u.active)
+                      .map((u) => ({ value: u.id, label: u.name }))}
+                    onChange={(ids) => void patch({ assignee_ids: ids })}
+                  />
+                </Field>
 
                 {/* Co chybí, počítá server (u víc dodavatelů jmenuje, komu
                     termín chybí) — UI to jen vypíše. */}

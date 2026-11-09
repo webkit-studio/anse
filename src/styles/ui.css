@@ -1146,6 +1146,18 @@ input[type="date"] {
   margin: 0 0 var(--sp-3);
 }
 
+/* nadpis sekce s akcí vpravo (Položky + „Přidat položku") */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+.section-head .card-section-title {
+  margin: 0;
+}
+
 /* nadpis uvnitř karty — menší, ať nekonkuruje jménu zakázky nad ní */
 .card-section-title-inline {
   font-size: 13px;

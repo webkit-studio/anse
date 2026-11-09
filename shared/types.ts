@@ -98,6 +98,7 @@ export const BLOKACE_PATRI: Record<string, Role> = {
   "Cena práce": "technik",
   "Cena zakázky": "kancelar",
   "Termín dodání": "kancelar",
+  "Kdo montuje": "kancelar",
   "Termín montáže": "technik",
   "Podpis zákazníka": "technik",
   "Číslo faktury": "kancelar",
