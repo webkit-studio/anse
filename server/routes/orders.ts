@@ -1,4 +1,5 @@
-import { orderCreateBody, orderUpdateBody, phaseBody } from "../../shared/api-contracts";
+import { dodaniBody, orderCreateBody, orderUpdateBody, phaseBody } from "../../shared/api-contracts";
+import { chybejiciDodani, dodavatelNazev, type DodaniRow } from "../../shared/dodani";
 import { czDate, items as czItems } from "../../shared/format";
 import { paramyZDefinice, paramyZKonfiguratoru } from "../../shared/item-view";
 import { konfigSummary } from "../../shared/konfigurator";
@@ -12,6 +13,12 @@ import {
 } from "../../shared/types";
 import { assertAssignable, assigneeNamesCol, newlyAdded } from "../assignees";
 import { sql } from "../db";
+import {
+  dodaniProPolozky,
+  nastavVsemDodavatelum,
+  polozkyDodavatelu,
+  syncTermDodani,
+} from "../dodani";
 import { jwCsvNabidky, type JwCsvPolozkaRadek } from "../export/jw-csv";
 import { ApiError, json } from "../http";
 import { getKonfigProduct } from "../konfigurator";
@@ -28,7 +35,7 @@ const OFFICE_ONLY_FIELDS = [
   "assignee_ids",
 ] as const;
 
-function orderCols(db: ReturnType<typeof sql>, role: Role) {
+function orderCols(db: Pick<ReturnType<typeof sql>, "unsafe">, role: Role) {
   return db.unsafe(`
     o.id, o.contact_id, o.phase, o.assignee_ids,
     array(
@@ -81,6 +88,8 @@ export function blockingFor(
   },
   itemCount: number,
   hasSignature: boolean,
+  /** Termíny po dodavatelích; bez nich se kontroluje jen souhrnné term_dodani. */
+  dodani?: DodaniRow[],
 ): string[] {
   const missing: string[] = [];
   if (phase === "k_zamereni") {
@@ -94,7 +103,8 @@ export function blockingFor(
   }
   if (phase === "k_naceneni") {
     if (o.price_customer !== undefined && !o.price_customer.trim()) missing.push("Cena zakázky");
-    if (!o.term_dodani) missing.push("Termín dodání");
+    if (dodani && dodani.length > 0) missing.push(...chybejiciDodani(dodani));
+    else if (!o.term_dodani) missing.push("Termín dodání");
   }
   if (phase === "k_montazi") {
     if (!o.term_montaz) missing.push("Termín montáže");
@@ -326,11 +336,18 @@ export const orderRoutes: Route[] = [
       )
     `;
 
+    const dodani = await dodaniProPolozky(
+      db,
+      order.id as string,
+      items as never,
+      order.term_dodani as string | null,
+    );
     const blocking = blockingFor(
       order.phase as OrderPhase,
       order as never,
       items.length,
       !!order.signed_at,
+      dodani,
     );
 
     return json({
@@ -366,6 +383,7 @@ export const orderRoutes: Route[] = [
       // server, klient jen vykreslí tlačítka (nesmí nabídnout, co portál odmítne).
       jw_csv: jwCsvNabidky(items as unknown as JwCsvPolozkaRadek[]),
       blocking,
+      dodani,
     });
   }),
 
@@ -400,11 +418,19 @@ export const orderRoutes: Route[] = [
     if (body.addr_fakt_same !== undefined) patch.addr_fakt_same = body.addr_fakt_same;
     if (Object.keys(patch).length === 0) throw new ApiError(400, "Není co uložit.");
 
-    const [updated] = await db`
-      update orders o set ${db(patch)}
-      where o.id = ${params.id!} and o.updated_at = ${body.expected_updated_at}
-      returning ${orderCols(db, ctx.user.role)}
-    `;
+    const updated = await db.begin(async (tx) => {
+      const [row] = await tx`
+        update orders o set ${tx(patch)}
+        where o.id = ${params.id!} and o.updated_at = ${body.expected_updated_at}
+        returning ${orderCols(tx, ctx.user.role)}
+      `;
+      // Záložka se starým kódem posílá jedno datum — dostanou ho všichni
+      // dodavatelé zakázky, ať tabulka termínů a souhrnné pole nejdou od sebe.
+      if (row && body.term_dodani !== undefined) {
+        await nastavVsemDodavatelum(tx, params.id!, body.term_dodani);
+      }
+      return row;
+    });
     if (!updated) {
       const [exists] = await db`select 1 from orders where id = ${params.id!}`;
       if (!exists) throw new ApiError(404, "Zakázka nenalezena.");
@@ -429,6 +455,82 @@ export const orderRoutes: Route[] = [
     }
     return json({ order: updated });
   }),
+
+  // Termín dodání jednoho dodavatele. Kancelář ho zadává při nacenění a může
+  // ho měnit i po objednání (dodavatel termín posune) — pak se to přidělení
+  // technici dozví, ať nemontují naprázdno.
+  makeRoute(
+    "PUT",
+    "/api/orders/:id/dodani",
+    async (req, ctx, params) => {
+      const body = await parseBody(req, dodaniBody);
+      const db = sql();
+
+      const result = await db.begin(async (tx) => {
+        // Optimistický zámek jako u PATCH zakázky: porovnává se čas z klienta.
+        const [o] = await tx`
+          select id, phase, assignee_ids, customer_name, addr_montaz,
+                 to_char(term_dodani, 'YYYY-MM-DD') as term_dodani,
+                 exists (select 1 from order_dodani d where d.order_id = orders.id) as ma_radky,
+                 updated_at = ${body.expected_updated_at} as same
+          from orders where id = ${params.id!}
+          for update
+        `.catch(invalidUuidAsMissing);
+        if (!o) throw new ApiError(404, "Zakázka nenalezena.");
+        if (o.phase !== "k_naceneni" && o.phase !== "k_montazi") {
+          // 422, ne 409: klient by 409 vyložil jako „někdo to mezitím změnil".
+          throw new ApiError(422, "Termín dodání jde měnit jen při nacenění a před montáží.");
+        }
+        if (!o.same) {
+          throw new ApiError(409, "Zakázku mezitím upravil někdo jiný. Načti ji prosím znovu.");
+        }
+
+        const polozky = await polozkyDodavatelu(tx, params.id!);
+        if (!polozky.some((p) => p.subcategory_manufacturer === body.dodavatel)) {
+          throw new ApiError(400, "Tento dodavatel v zakázce není.");
+        }
+
+        // Termín ze starého kódu (jen souhrnné pole) napřed dostanou všichni
+        // dodavatelé — jinak by změna jednoho ostatním termín „vzala".
+        if (!o.ma_radky && o.term_dodani) {
+          await nastavVsemDodavatelum(tx, params.id!, o.term_dodani as string);
+        }
+        const [prev] = await tx`
+          select to_char(term, 'YYYY-MM-DD') as term from order_dodani
+          where order_id = ${params.id!} and dodavatel = ${body.dodavatel}
+        `;
+        await tx`
+          insert into order_dodani (order_id, dodavatel, term)
+          values (${params.id!}, ${body.dodavatel}, ${body.term})
+          on conflict (order_id, dodavatel) do update set term = excluded.term, updated_at = now()
+        `;
+        await syncTermDodani(tx, params.id!);
+        // Zámek se posune vždy — i když se nejpozdější termín nezměnil, jiný
+        // dodavatel ano a souběžná úprava by ho jinak tiše přepsala.
+        const [updated] = await tx`
+          update orders o set updated_at = now() where o.id = ${params.id!}
+          returning ${orderCols(tx, ctx.user.role)}
+        `;
+        const dodani = await dodaniProPolozky(tx, params.id!, polozky);
+        return { o, prev: (prev?.term as string | undefined) ?? null, updated: updated!, dodani };
+      });
+
+      // Po „Objednáno" je každá změna zpráva pro montáž.
+      if (result.o.phase === "k_montazi" && result.prev !== body.term) {
+        await notify({
+          event: "zmena_dodani",
+          subject: orderLabel(result.o),
+          vars: { dodavatel: dodavatelNazev(body.dodavatel), datum: czDate(body.term) },
+          orderId: params.id!,
+          actorId: ctx.user.id,
+          userIds: result.o.assignee_ids as string[],
+          url: `${appOrigin(req)}/zakazky/${params.id!}`,
+        });
+      }
+      return json({ order: result.updated, dodani: result.dodani });
+    },
+    { officeOnly: true },
+  ),
 
   makeRoute(
     "DELETE",
@@ -494,7 +596,14 @@ export const orderRoutes: Route[] = [
       throw new ApiError(400, "Napiš důvod zrušení.");
     }
 
-    const [items] = await db`select count(*)::int as n from items where order_id = ${order.id}`;
+    const polozky = await polozkyDodavatelu(db, order.id as string);
+    const items = { n: polozky.length };
+    const dodani = await dodaniProPolozky(
+      db,
+      order.id as string,
+      polozky,
+      order.term_dodani as string | null,
+    );
     if (to !== "zruseno") {
       // Kancelář kontroluje i cenu zakázky, kterou technikův pohled nezná.
       const [full] = await db`
@@ -504,7 +613,7 @@ export const orderRoutes: Route[] = [
                to_char(term_montaz, 'YYYY-MM-DD') as term_montaz
         from orders where id = ${order.id}
       `;
-      const missing = blockingFor(expected, full as never, items?.n ?? 0, !!order.signed_at);
+      const missing = blockingFor(expected, full as never, items.n, !!order.signed_at, dodani);
       if (missing.length > 0) {
         throw new ApiError(422, `Ještě chybí: ${missing.join(", ")}.`, { blocking: missing });
       }
@@ -542,7 +651,7 @@ export const orderRoutes: Route[] = [
       await notify({
         event: "nove_zamereni",
         subject: label,
-        vars: { "položky": czItems(items?.n ?? 0) },
+        vars: { "položky": czItems(items.n) },
         orderId: params.id!,
         actorId: ctx.user.id,
         url,
@@ -551,7 +660,13 @@ export const orderRoutes: Route[] = [
       await notify({
         event: "termin_dodani",
         subject: label,
-        vars: { datum: czDate(updated.term_dodani) },
+        // Víc dodavatelů = každý svoje datum, ať technik ví, co dorazí kdy.
+        vars: {
+          datum:
+            dodani.length > 1
+              ? dodani.map((d) => `${d.nazev} ${czDate(d.term)}`).join(", ")
+              : czDate(updated.term_dodani),
+        },
         orderId: params.id!,
         actorId: ctx.user.id,
         userIds: assignee,

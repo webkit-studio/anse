@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import type { FormDefinition } from "@shared/form-schema";
 import type { ItemRow, OrderDetail } from "@shared/types";
 import { blokaceProRoli } from "@shared/types";
+import { dodaniPoMontazi } from "@shared/dodani";
 import { czDate, czDateShort, items as czItems, money } from "@shared/format";
 import { api } from "../api/client";
 import { useInvalidateOrder, useMe, useOrder } from "../api/hooks";
@@ -120,6 +121,9 @@ export default function ZakazkaDetailPage() {
   const role = me.data?.role ?? "technik";
   const d = detail.data;
   const order = d?.order;
+  // Během nasazení může ještě odpovídat starší API bez termínů po dodavatelích.
+  const dodani = d?.dodani ?? [];
+  const pozde = dodaniPoMontazi(dodani, order?.term_montaz ?? null);
   // Technikovi se vypisuje jen to, co může sám odblokovat.
   const mojeBlokace = blokaceProRoli(d?.blocking ?? [], role);
 
@@ -404,14 +408,29 @@ export default function ZakazkaDetailPage() {
                 }
                 onEdit={order.phase === "k_zamereni" ? () => setZamereniOpen(true) : undefined}
               />
-              <ValueRow
-                label="Termín dodání"
-                kind="datum"
-                copy={false}
-                value={order.term_dodani ? czDate(order.term_dodani) : ""}
-                placeholder="zatím neznámý"
-                hint={order.term_dodani ? undefined : "doplní kancelář po objednání u dodavatele"}
-              />
+              {/* Víc dodavatelů = každý svůj termín (jen data, žádné ceny). */}
+              {dodani.length > 1 ? (
+                dodani.map((r) => (
+                  <ValueRow
+                    key={r.dodavatel}
+                    label={`Dodání · ${r.nazev}`}
+                    row={`dodani-${r.dodavatel || "ostatni"}`}
+                    kind="datum"
+                    copy={false}
+                    value={r.term ? czDate(r.term) : ""}
+                    placeholder="zatím neznámý"
+                  />
+                ))
+              ) : (
+                <ValueRow
+                  label="Termín dodání"
+                  kind="datum"
+                  copy={false}
+                  value={order.term_dodani ? czDate(order.term_dodani) : ""}
+                  placeholder="zatím neznámý"
+                  hint={order.term_dodani ? undefined : "doplní kancelář po objednání u dodavatele"}
+                />
+              )}
               <ValueRow
                 label="Termín montáže"
                 row="montaz"
@@ -422,6 +441,12 @@ export default function ZakazkaDetailPage() {
                 hint={order.term_dodani ? undefined : "montáž se domlouvá, až kancelář zná dodání"}
                 onEdit={order.term_dodani ? () => setMontazOpen(true) : undefined}
               />
+              {pozde.length > 0 && (
+                <p className="field-msg field-msg-warning value-row-warning" role="status">
+                  Pozor: dodání {pozde.map((r) => `${r.nazev} ${czDate(r.term)}`).join(", ")} vyjde
+                  až po montáži. Domluv nový termín montáže.
+                </p>
+              )}
               <ValueRow label="Položek" value={String(d.items.length)} copy={false} />
               <ValueRow
                 label="Cena práce"

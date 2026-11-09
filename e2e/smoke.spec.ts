@@ -136,21 +136,80 @@ test.describe("kancelář (desktop)", () => {
     expect(data[kody.indexOf("Vyska")]).toBe("1400");
     expect(data[kody.indexOf("Pozice")]).toBe("Kuchyně 1");
 
-    // panel fáze: cena zakázky + termín dodání, teprve pak Objednáno
+    // Druhý „dodavatel": oprava nemá podkategorii → společný termín Ostatní.
+    const id = orderUrl.split("/").pop()!;
+    const detail = (await (await page.request.get(`/api/orders/${id}`)).json()) as {
+      items: { product_type_id: string; room_id: string }[];
+    };
+    const oprava = await page.request.post("/api/items", {
+      data: {
+        kind: "oprava",
+        order_id: id,
+        room: { id: detail.items[0]!.room_id },
+        product_type_id: detail.items[0]!.product_type_id,
+        defect_note: "Utržená šňůra",
+        note: "",
+      },
+    });
+    expect(oprava.status()).toBe(201);
+    await page.reload();
+
+    // panel fáze: cena zakázky + termín pro každého dodavatele, teprve pak Objednáno
     await expect(page.getByRole("button", { name: "Objednáno" })).toBeDisabled();
     await page.locator("#p-cena").fill("18400");
     await page.locator("#p-cena").blur();
-    await page.getByRole("button", { name: /Vyber datum/ }).click();
-    await page.locator(".calendar-day:not(:disabled)").last().click();
+    await page.locator("#dodani-jackwest").click();
+    await page.locator(".calendar-day:not(:disabled)").nth(10).click();
+    await expect(page.locator("#dodani-jackwest")).not.toContainText("Vyber datum");
+
+    // jeden termín ze dvou nestačí — server to odmítne a UI vypíše, komu chybí
+    await expect(page.getByText("Chybí: Termín dodání (Ostatní).")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Objednáno" })).toBeDisabled();
+    const predcasne = await page.request.post(`/api/orders/${id}/phase`, {
+      data: { to: "k_montazi", expected: "k_naceneni", reason: "" },
+    });
+    expect(predcasne.status()).toBe(422);
+
+    await page.locator("#dodani-ostatni").click();
+    await page.locator(".calendar-day:not(:disabled)").nth(5).click();
     await page.getByRole("button", { name: "Objednáno" }).click();
     await expect(page.getByText("K montáži").first()).toBeVisible();
+  });
+
+  test("po objednání jde termín změnit a technik dostane zprávu", async ({ page, request }) => {
+    await login(page, "999999");
+    await page.goto(orderUrl);
+    const id = orderUrl.split("/").pop()!;
+
+    // ve fázi K montáži je pořád výběr data, ne jen text
+    await page.locator("#dodani-jackwest").click();
+    await page.locator(".calendar-day:not(:disabled)").nth(20).click();
+    await expect(page.locator("#dodani-jackwest")).not.toContainText("Vyber datum");
+
+    // souhrnné term_dodani = nejpozdější z termínů dodavatelů
+    const { order, dodani } = (await (await page.request.get(`/api/orders/${id}`)).json()) as {
+      order: { term_dodani: string };
+      dodani: { dodavatel: string; term: string }[];
+    };
+    expect(dodani.map((r) => r.dodavatel)).toEqual(["jackwest", ""]);
+    expect(order.term_dodani).toBe(dodani.map((r) => r.term).sort().at(-1));
+
+    // přidělený technik má in-app notifikaci o změně
+    await request.post("/api/login", { data: { code: "111111" } });
+    const { notifications } = (await (await request.get("/api/notifications")).json()) as {
+      notifications: { event: string; order_id: string; body: string }[];
+    };
+    const zmena = notifications.find((n) => n.event === "zmena_dodani" && n.order_id === id);
+    expect(zmena?.body).toContain("změna dodání Jack West");
   });
 });
 
 test("technik: montáž → podpis → hotovo", async ({ page }) => {
   await login(page, "111111");
   await page.goto(orderUrl);
-  await expect(page.getByText("Termín dodání")).toBeVisible();
+  // dva dodavatelé = dva termíny, technik vidí oba (jen data)
+  await expect(page.getByText("Dodání · Jack West")).toBeVisible();
+  await expect(page.getByText("Dodání · Ostatní")).toBeVisible();
   await page.locator('[data-row="montaz"] .value-row-edit').click();
   await page.getByRole("button", { name: "Uložit termín" }).click();
 
