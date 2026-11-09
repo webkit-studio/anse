@@ -226,6 +226,16 @@ test("technik: Zprávy → Nastavení → Kalendář a „Přidat do kalendáře
   // montáž zatím termín nemá → tlačítko u ní není
   await expect(page.getByRole("link", { name: "Přidat termín montáže do kalendáře" })).toHaveCount(0);
 
+  // Chyba (termín mezitím smazaný, vypršelé přihlášení) nesmí appku nahradit
+  // holým JSONem — zůstane se v detailu a ukáže se hláška.
+  await page.route(`**/api/orders/${id}/kalendar/zamereni.ics`, (r) =>
+    r.fulfill({ status: 404, json: { error: "Termín zatím není zadaný." } }),
+  );
+  await odkaz.click();
+  await expect(page.getByText("Termín zatím není zadaný.")).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`/zakazky/${id}$`));
+  await page.unroute(`**/api/orders/${id}/kalendar/zamereni.ics`);
+
   const [download] = await Promise.all([page.waitForEvent("download"), odkaz.click()]);
   expect(download.suggestedFilename()).toMatch(/^zamereni-kal-detail-\d+\.ics$/);
   const ics = readFileSync((await download.path())!, "utf8").replace(/\r\n /g, "");

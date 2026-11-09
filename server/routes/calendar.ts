@@ -22,7 +22,8 @@ import { makeRoute, type Route } from "../router";
 // iPhonu cookie nepošle. Přístup drží jen náhodný token v adrese, proto:
 // - token se NIKDY neloguje (ani v chybách, viz bezTokenu),
 // - neplatný token = stejná 404 jako neexistující adresa, bez rozlišení,
-// - neúspěchy per IP hlídá levný limit v paměti (token má 256 bitů).
+// - neúspěchy per IP hlídá levný limit v paměti (různé neplatné tokeny;
+//   token má 256 bitů, limit je jen pojistka).
 // Ve feedu nejsou ceny: sloupce níž je ani nevybírají.
 
 const NAZEV_KALENDARE = "Anse – zakázky";
@@ -80,9 +81,9 @@ function icsOdpoved(ics: string, method: string, soubor?: string): Response {
   return new Response(method === "HEAD" ? null : ics, { headers });
 }
 
-/** Stejná odpověď jako neexistující routa — neplatný token nesmí být poznat. */
+/** Přesně stejná odpověď jako neexistující routa (handler.ts) — neplatný token nesmí být poznat. */
 function nenalezeno(): Response {
-  return json({ error: "Nenalezeno." }, { status: 404, headers: { "cache-control": "no-store" } });
+  return json({ error: "Nenalezeno." }, { status: 404 });
 }
 
 /** Text chyby bez tokenu — do logu se token nesmí dostat ani omylem. */
@@ -107,7 +108,7 @@ async function feed(req: Request, params: Record<string, string>): Promise<Respo
   const token = soubor.endsWith(".ics") ? soubor.slice(0, -4) : "";
   // Nesmyslný tvar se do DB vůbec neposílá.
   if (!KALENDAR_TOKEN.test(token)) {
-    limit.neuspech(ip);
+    limit.neuspech(ip, soubor);
     return nenalezeno();
   }
 
@@ -115,7 +116,7 @@ async function feed(req: Request, params: Record<string, string>): Promise<Respo
     const db = sql();
     const [user] = await db`select id from users where calendar_token = ${token} and active`;
     if (!user) {
-      limit.neuspech(ip);
+      limit.neuspech(ip, token);
       return nenalezeno();
     }
     // Jen zakázky, kde je uživatel přidělený (i kancelář — sdílený kalendář

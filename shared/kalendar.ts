@@ -218,6 +218,19 @@ const VTIMEZONE_PRAHA = [
   "END:VTIMEZONE",
 ];
 
+/** Počátek pro SEQUENCE — malá čísla, která s každou úpravou zakázky rostou. */
+const SEKVENCE_OD = Date.UTC(2026, 0, 1);
+
+/**
+ * SEQUENCE z času poslední změny (minuty od 1. 1. 2026). Znovu stažená
+ * událost se stejným UID pak přepíše starší verzi, místo aby ji kalendář
+ * (Outlook, import na iPhonu) ignoroval jako tutéž revizi.
+ */
+export function sekvence(zmeneno: string | null): number {
+  const t = zmeneno ? Date.parse(zmeneno) : Number.NaN;
+  return Number.isNaN(t) ? 0 : Math.max(0, Math.floor((t - SEKVENCE_OD) / 60_000));
+}
+
 function vevent(u: Udalost, ted: Date): string[] {
   const [start, end] = zacatekKonec(u);
   const zmeneno = u.zmeneno ? new Date(u.zmeneno) : null;
@@ -226,6 +239,7 @@ function vevent(u: Udalost, ted: Date): string[] {
     `UID:${u.uid}`,
     `DTSTAMP:${utcStamp(ted)}`,
     ...(zmeneno && !Number.isNaN(zmeneno.getTime()) ? [`LAST-MODIFIED:${utcStamp(zmeneno)}`] : []),
+    `SEQUENCE:${sekvence(u.zmeneno)}`,
     start,
     end,
     `SUMMARY:${escapeText(u.souhrn)}`,

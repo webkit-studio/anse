@@ -25,6 +25,7 @@ import {
   ConfirmButton,
   ErrorBanner,
   Field,
+  KalendarOdkaz,
   KindBadge,
   MultiSelectSheet,
   NativeSelect,
@@ -649,14 +650,10 @@ export default function ZakazkaDetailOfficePage() {
                   <span className="meta-value meta-value-akce">
                     {order.term_montaz ? czDate(order.term_montaz) : "zadá technik"}
                     {order.term_montaz && (
-                      <a
-                        className="icon-btn"
+                      <KalendarOdkaz
                         href={`/api/orders/${orderId}/kalendar/montaz.ics`}
-                        aria-label="Přidat termín montáže do kalendáře"
-                        title="Přidat do kalendáře"
-                      >
-                        <Icon name="kalendar" size={18} />
-                      </a>
+                        label="Přidat termín montáže do kalendáře"
+                      />
                     )}
                   </span>
                 </div>

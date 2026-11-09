@@ -5,6 +5,7 @@ import {
   escapeText,
   foldLine,
   nazevSouboru,
+  sekvence,
   sestavKalendar,
   udalostZakazky,
   udalostiZakazky,
@@ -256,6 +257,15 @@ describe("drobnosti", () => {
     expect(nazevSouboru("zamereni", "Jana Dvořáková")).toBe("zamereni-jana-dvorakova.ics");
     expect(nazevSouboru("montaz", "  ")).toBe("montaz-zakazka.ics");
     expect(nazevSouboru("montaz", "Ř".repeat(60))).toBe(`montaz-${"r".repeat(40)}.ics`);
+  });
+
+  it("SEQUENCE roste s každou úpravou zakázky, bez času je 0", () => {
+    expect(sekvence(null)).toBe(0);
+    expect(sekvence("nesmysl")).toBe(0);
+    expect(sekvence("2025-06-01T00:00:00Z")).toBe(0);
+    const a = sekvence("2026-11-09T20:00:00Z");
+    expect(sekvence("2026-11-09T20:05:00Z")).toBe(a + 5);
+    expect(sestavKalendar(udalostiZakazky(ZAKAZKA, ORIGIN), { ted: TED })).toContain(`SEQUENCE:${a}\r\n`);
   });
 
   it("token odkazu má 256 bitů v base64url", () => {

@@ -13,6 +13,7 @@ import {
 import type { OrderKind, OrderPhase, Role, Tone } from "@shared/types";
 import { ORDER_KIND_LABELS, phaseLabelFor, phaseTone } from "@shared/types";
 import { Icon, ToneGlyph } from "./Icon";
+import { useToast } from "./Toast";
 
 // --- Button -------------------------------------------------------------
 
@@ -712,6 +713,50 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
+/**
+ * „Přidat do kalendáře" u termínu — stáhne .ics jedné události.
+ * Bez atributu download: iPhone soubor text/calendar rovnou nabídne přidat do
+ * Kalendáře, Android a počítač ho stáhnou a otevřou. Napřed se ale ověří, že
+ * soubor jde stáhnout: holý přechod by při chybě (vypršelé přihlášení, termín
+ * mezitím smazaný) nahradil appku JSONem — a appka na ploše iPhonu nemá zpět.
+ */
+export function KalendarOdkaz({ href, label }: { href: string; label: string }) {
+  const toast = useToast();
+
+  async function otevri() {
+    try {
+      const res = await fetch(href, { credentials: "same-origin" });
+      if (res.ok) {
+        window.location.assign(href);
+        return;
+      }
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      toast(
+        res.status === 401
+          ? "Přihlášení vypršelo. Přihlas se znovu."
+          : (body?.error ?? "Termín se nepodařilo stáhnout. Zkus to znovu."),
+      );
+    } catch {
+      toast("Bez připojení se termín stáhnout nedá. Zkus to znovu.");
+    }
+  }
+
+  return (
+    <a
+      className="icon-btn"
+      href={href}
+      aria-label={label}
+      title="Přidat do kalendáře"
+      onClick={(e) => {
+        e.preventDefault();
+        void otevri();
+      }}
+    >
+      <Icon name="kalendar" size={18} />
+    </a>
+  );
+}
+
 /** Odkaz na mapy — otevře se v appce, když ji člověk má, jinak na webu. */
 export function mapUrl(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -892,16 +937,7 @@ export function ValueRow({
         <Icon name="obalka" size={18} />
       </a>
     ) : has && kalendar ? (
-      // Bez atributu download: iPhone soubor text/calendar rovnou nabídne
-      // přidat do Kalendáře, Android a počítač ho stáhnou a otevřou.
-      <a
-        className="icon-btn"
-        href={kalendar}
-        aria-label={`Přidat ${label.toLowerCase()} do kalendáře`}
-        title="Přidat do kalendáře"
-      >
-        <Icon name="kalendar" size={18} />
-      </a>
+      <KalendarOdkaz href={kalendar} label={`Přidat ${label.toLowerCase()} do kalendáře`} />
     ) : has && kind === "adresa" ? (
       <a
         className="icon-btn"
