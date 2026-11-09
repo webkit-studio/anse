@@ -5,21 +5,20 @@ jde štafetou (`docs/pipeline.md`), koordinuje ji chat podle
 `docs/koordinator.md`.
 
 ## Stav
-_Aktualizováno: 9. 11. 2026 · založení štafety_
+_Aktualizováno: 9. 11. 2026 · koordinátor, noční běh S01–S04_
 
 **Hotovo:** kontakty s přidělením víc lidem, zakázky v pěti fázích,
 formuláře podle výrobce, konfigurátor (Jack West, SUYS, Neva), návody,
 galerie fotek, podpis a montážní list PDF, XML a CSV export pro Jack West,
 notifikace in-app a e-mail, lišta „Je tu nová verze". Podrobně `README.md`.
-**Rozpracováno:** nic.
-**Další krok:** Lukáš zadá koordinátorovi úkoly, koordinátor z nich udělá issues.
+**Rozpracováno:** noční běh lane A z SMS Dariny a Jakuba: S01 #2 → S02 #3 → S03 #4 → S04 #5.
+**Další krok:** ráno souhrn a snímky pro Lukáše.
 **Blokery:** žádné.
 
 ### Na Lukášovi
 | Co | Proč | Od kdy |
 |---|---|---|
-| Zadat první úkoly koordinátorovi | Štafeta nemá plán | 9. 11. 2026 |
+| Ráno zkontrolovat snímky S01–S04 | Úpravy panelu kanceláře bez samostatného návrhu | 10. 11. 2026 |
 
 ## Dluh, který stojí za session
-- Smazat zastaralé sloupce `contacts.assigned_to` a `orders.assignee_id`
-  (migrace 013 je nahradila, kód je nečte) – migrace 014 nebo později.
+- ~~Smazat zastaralé sloupce~~ → přibaleno do S02 #3 (migrace 015).

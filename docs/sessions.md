@@ -55,3 +55,7 @@ Nesahej na: <soubory souběžné lane>
 
 | Kód | Issue |
 |---|---|
+| S01 | #2 |
+| S02 | #3 |
+| S03 | #4 |
+| S04 | #5 |
