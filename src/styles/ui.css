@@ -3931,3 +3931,32 @@ input[type="date"] {
     display: none;
   }
 }
+
+/* === termíny dodání po dodavatelích (panel kanceláře) ===================== */
+.dodani {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.dodani-row {
+  display: grid;
+  grid-template-columns: minmax(80px, max-content) 1fr;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.dodani-nazev {
+  font-size: 14px;
+  color: var(--c-ink);
+}
+
+/* Kalendář pod řádkem, zarovnaný k pravé hraně (výběr data je vpravo). */
+.dodani-row .calendar {
+  top: 100%;
+  right: 0;
+}
+
+/* Varování přímo pod řádkem hodnoty (dodání po termínu montáže). */
+.value-row-warning {
+  margin: var(--sp-1) 0 var(--sp-3);
+}

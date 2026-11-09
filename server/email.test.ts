@@ -76,6 +76,7 @@ describe("fillTemplate", () => {
       "položky": "3 položky",
       dny: "8 dní",
       "důvod": "nezájem",
+      dodavatel: "Jack West",
     };
     for (const e of NOTIF_EVENTS) {
       expect(fillTemplate(e.template, vars)).not.toMatch(/\{[^}]+\}/);

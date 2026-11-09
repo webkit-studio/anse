@@ -3,6 +3,7 @@ import { hasBlocking, validateItem, type Issue } from "../../shared/form-engine"
 import { formDefinitionSchema, type FormDefinition, type Params } from "../../shared/form-schema";
 import { validateKonfig, validateSuysDimensions, type KonfigProduct } from "../../shared/konfigurator";
 import { sql } from "../db";
+import { syncTermDodani } from "../dodani";
 import { ApiError, json } from "../http";
 import { getKonfigProduct } from "../konfigurator";
 import { makeRoute, parseBody, type Ctx, type Route } from "../router";
@@ -189,6 +190,8 @@ export const itemRoutes: Route[] = [
           left join subcategories s on s.id = ins.subcategory_id
         `,
       );
+      // Nový dodavatel v zakázce mění nejpozdější termín dodání.
+      await syncTermDodani(db, body.order_id);
       return json({ item: withNames(item) }, { status: 201 });
     } catch (err) {
       if (isForeignKeyViolation(err)) {
@@ -295,9 +298,11 @@ export const itemRoutes: Route[] = [
   makeRoute("DELETE", "/api/items/:id", async (_req, ctx, params) => {
     const db = sql();
     await assertOwnItem(ctx, params.id!);
-    const [deleted] = await db`delete from items where id = ${params.id!} returning id`
+    const [deleted] = await db`delete from items where id = ${params.id!} returning id, order_id`
       .catch(() => []);
     if (!deleted) throw new ApiError(404, "Položka nenalezena.");
+    // Zmizí-li ze zakázky poslední položka dodavatele, jeho termín přestane platit.
+    await syncTermDodani(db, deleted.order_id as string);
     return json({ ok: true });
   }),
 ];

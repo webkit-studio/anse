@@ -102,6 +102,14 @@ export const orderUpdateBody = z.object({
   expected_updated_at: z.string().min(1),
 });
 
+/** Termín dodání jednoho dodavatele zakázky (jen kancelář). */
+export const dodaniBody = z.object({
+  /** Klíč výrobce z položek (jackwest, suys, neva), "" = Ostatní. */
+  dodavatel: z.string().max(40),
+  term: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Neplatné datum."),
+  expected_updated_at: z.string().min(1),
+});
+
 export const phaseBody = z.object({
   to: z.enum(ORDER_PHASES as [string, ...string[]]),
   expected: z.enum(ORDER_PHASES as [string, ...string[]]),
@@ -244,4 +252,5 @@ export const notifReadBody = z.object({
 
 export type ContactCreateBody = z.infer<typeof contactCreateBody>;
 export type OrderUpdateBody = z.infer<typeof orderUpdateBody>;
+export type DodaniBody = z.infer<typeof dodaniBody>;
 export type ItemCreateBody = z.infer<typeof itemCreateBody>;

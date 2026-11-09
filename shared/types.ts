@@ -1,3 +1,4 @@
+import type { DodaniRow } from "./dodani";
 import type { FormDefinition, Params } from "./form-schema";
 
 // === role ==================================================================
@@ -105,7 +106,12 @@ export const BLOKACE_PATRI: Record<string, Role> = {
 /** Co z blokací má smysl ukazovat dané roli. Kancelář vidí všechno. */
 export function blokaceProRoli(blokace: string[], role: Role): string[] {
   if (role === "kancelar") return blokace;
-  return blokace.filter((b) => BLOKACE_PATRI[b] !== "kancelar");
+  return blokace.filter((b) => BLOKACE_PATRI[blokaceKlic(b)] !== "kancelar");
+}
+
+/** „Termín dodání (Jack West)" patří stejné roli jako „Termín dodání". */
+export function blokaceKlic(b: string): string {
+  return b.replace(/ \(.*\)$/, "");
 }
 
 /**
@@ -347,6 +353,8 @@ export interface OrderDetail {
   jw_csv: JwCsvNabidka[];
   /** Co chybí k odeslání do další fáze — počítá server, UI to jen vypíše. */
   blocking: string[];
+  /** Termíny dodání po dodavatelích (odvozeno z položek). Jen data, žádné ceny. */
+  dodani: DodaniRow[];
 }
 
 // === produkty ==============================================================
@@ -387,6 +395,7 @@ export function displayName(t: { name: string; custom_name: string }): string {
 
 export type NotifEvent =
   | "termin_dodani"
+  | "zmena_dodani"
   | "novy_kontakt"
   | "nova_zakazka"
   | "zakazka_zrusena"
@@ -413,6 +422,14 @@ export const NOTIF_EVENTS: NotifEventMeta[] = [
     label: "Termín dodání",
     trigger: "Kancelář dá Objednáno",
     template: "{zakázka} — dodání {datum}. Zadej termín montáže.",
+    emailDefault: true,
+  },
+  {
+    event: "zmena_dodani",
+    to: "technik",
+    label: "Změna dodání",
+    trigger: "Kancelář změní termín dodání po objednání",
+    template: "{zakázka} — změna dodání {dodavatel}: {datum}.",
     emailDefault: true,
   },
   {

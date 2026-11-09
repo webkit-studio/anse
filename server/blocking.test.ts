@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { BLOKACE_PATRI, ORDER_PHASES, blokaceProRoli } from "../shared/types";
+import { dodaniRows } from "../shared/dodani";
+import { BLOKACE_PATRI, ORDER_PHASES, blokaceKlic, blokaceProRoli } from "../shared/types";
 import { blockingFor } from "./routes/orders";
 
 const full = {
@@ -42,6 +43,26 @@ describe("blokující kroky", () => {
     expect(blockingFor("k_naceneni", { ...full, price_customer: "", term_dodani: null }, 1, false)).toEqual(
       ["Cena zakázky", "Termín dodání"],
     );
+  });
+
+  it("dva dodavatelé = dva termíny; Objednáno bez obou neprojde", () => {
+    const polozky = [
+      { subcategory_manufacturer: "jackwest" },
+      { subcategory_manufacturer: "suys" },
+    ];
+    const jenJeden = dodaniRows(polozky, [{ dodavatel: "jackwest", term: "2026-11-20" }]);
+    // souhrnné term_dodani je vyplněné (nejpozdější z vyplněných), přesto chybí SUYS
+    expect(blockingFor("k_naceneni", full, 2, false, jenJeden)).toEqual(["Termín dodání (SUYS)"]);
+    const oba = dodaniRows(polozky, [
+      { dodavatel: "jackwest", term: "2026-11-20" },
+      { dodavatel: "suys", term: "2026-11-27" },
+    ]);
+    expect(blockingFor("k_naceneni", full, 2, false, oba)).toEqual([]);
+  });
+
+  it("jeden dodavatel bez termínu = prosté „Termín dodání\"", () => {
+    const rows = dodaniRows([{ subcategory_manufacturer: "jackwest" }], []);
+    expect(blockingFor("k_naceneni", full, 1, false, rows)).toEqual(["Termín dodání"]);
   });
 
   it("technikův pohled cenu zakázky vůbec nemá, tak ji ani neblokuje", () => {
@@ -87,12 +108,17 @@ describe("blokace mají všechny určeného vlastníka", () => {
       for (const podpis of [false, true]) {
         for (const pocet of [0, 1]) {
           for (const b of blockingFor(faze, prazdna, pocet, podpis)) vsechny.add(b);
+          const dvaDodavatele = dodaniRows(
+            [{ subcategory_manufacturer: "jackwest" }, { subcategory_manufacturer: null }],
+            [],
+          );
+          for (const b of blockingFor(faze, prazdna, pocet, podpis, dvaDodavatele)) vsechny.add(b);
         }
       }
     }
     expect(vsechny.size).toBeGreaterThan(0);
     for (const b of vsechny) {
-      expect(BLOKACE_PATRI[b], `blokace „${b}" nemá vlastníka`).toBeDefined();
+      expect(BLOKACE_PATRI[blokaceKlic(b)], `blokace „${b}" nemá vlastníka`).toBeDefined();
     }
   });
 
@@ -100,5 +126,9 @@ describe("blokace mají všechny určeného vlastníka", () => {
     const vse = ["Údaje zákazníka", "Cena práce", "Číslo faktury", "Termín dodání"];
     expect(blokaceProRoli(vse, "technik")).toEqual(["Údaje zákazníka", "Cena práce"]);
     expect(blokaceProRoli(vse, "kancelar")).toEqual(vse);
+    // termín konkrétního dodavatele je pořád práce kanceláře
+    expect(blokaceProRoli(["Termín dodání (Jack West)", "Podpis zákazníka"], "technik")).toEqual([
+      "Podpis zákazníka",
+    ]);
   });
 });

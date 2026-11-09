@@ -6,10 +6,10 @@ import { czDate, items as czItems, money } from "@shared/format";
 import { missingForPdf } from "@shared/print";
 import { api, isConflict } from "../api/client";
 import { useInvalidateOrder, useOrder, useUsers } from "../api/hooks";
-import { MiniCalendar } from "../components/DateSheet";
 import { Galerie } from "../components/Galerie";
 import { Icon } from "../components/Icon";
 import { PhotoLightbox } from "../components/PhotoLightbox";
+import { TerminyDodani } from "../components/TerminyDodani";
 import { OfficeShell } from "../components/Shell";
 import { useToast } from "../components/Toast";
 import {
@@ -219,7 +219,6 @@ export default function ZakazkaDetailOfficePage() {
 
   const [price, setPrice] = useState("");
   const [invoice, setInvoice] = useState("");
-  const [calOpen, setCalOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [foto, setFoto] = useState<number | null>(null);
@@ -294,6 +293,22 @@ export default function ZakazkaDetailOfficePage() {
         ...d.photos.map((p) => ({ id: p.id, data: p.data, popis: "K celé zakázce" })),
       ]
     : [];
+
+  const terminy =
+    order && d ? (
+      <TerminyDodani
+        orderId={orderId}
+        updatedAt={order.updated_at}
+        dodani={d.dodani ?? []}
+        termMontaz={order.term_montaz}
+        onSaved={() => invalidate(orderId)}
+        onConflict={() => {
+          toast("Zakázku mezitím někdo změnil. Načítám znovu.");
+          void detail.refetch();
+        }}
+        onError={toast}
+      />
+    ) : null;
 
   const pdfMissing = order
     ? missingForPdf({ invoice_no: order.invoice_no, signed: !!order.signed_at })
@@ -531,48 +546,20 @@ export default function ZakazkaDetailOfficePage() {
                   součástí.
                 </p>
 
-                <div style={{ position: "relative" }}>
-                  <span className="field-label">Termín dodání *</span>
-                  <button
-                    type="button"
-                    className="select-sheet-trigger"
-                    aria-haspopup="dialog"
-                    aria-expanded={calOpen}
-                    onClick={() => setCalOpen((v) => !v)}
-                  >
-                    <span>{order.term_dodani ? czDate(order.term_dodani) : "Vyber datum"}</span>
-                    <span aria-hidden="true">▾</span>
-                  </button>
-                  {calOpen && (
-                    <MiniCalendar
-                      value={order.term_dodani}
-                      onClose={() => setCalOpen(false)}
-                      onPick={(iso) => {
-                        setCalOpen(false);
-                        void patch({ term_dodani: iso });
-                      }}
-                    />
-                  )}
-                </div>
+                {terminy}
 
+                {/* Co chybí, počítá server (u víc dodavatelů jmenuje, komu
+                    termín chybí) — UI to jen vypíše. */}
                 <Button
                   variant="primary"
                   className="btn-block"
-                  disabled={busy || !order.price_customer?.trim() || !order.term_dodani}
+                  disabled={busy || d.blocking.length > 0}
                   onClick={() => void movePhase("k_montazi")}
                 >
                   Objednáno
                 </Button>
-                {(!order.price_customer?.trim() || !order.term_dodani) && (
-                  <p className="field-help">
-                    Chybí:{" "}
-                    {[
-                      !order.price_customer?.trim() && "cena zakázky",
-                      !order.term_dodani && "termín dodání",
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
+                {d.blocking.length > 0 && (
+                  <p className="field-help">Chybí: {d.blocking.join(", ")}.</p>
                 )}
 
                 <ExportyDodavateli orderId={orderId} nabidky={d?.jw_csv ?? []} toast={toast} />
@@ -587,10 +574,9 @@ export default function ZakazkaDetailOfficePage() {
 
             {order.phase === "k_montazi" && (
               <>
-                <div className="meta-row">
-                  <span className="meta-label">Termín dodání</span>
-                  <span className="meta-value">{czDate(order.term_dodani)}</span>
-                </div>
+                {/* Dodavatel termín posune i po objednání — jde změnit
+                    a přidělený technik dostane zprávu. */}
+                {terminy}
                 <div className="meta-row">
                   <span className="meta-label">Termín montáže</span>
                   <span className="meta-value">
