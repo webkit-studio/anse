@@ -443,6 +443,7 @@ export default function ZakazkaDetailPage() {
                   (order.measured_time ? ` v ${order.measured_time}` : "")
                 }
                 onEdit={order.phase === "k_zamereni" ? () => setZamereniOpen(true) : undefined}
+                kalendar={order.measured_at ? `/api/orders/${orderId}/kalendar/zamereni.ics` : undefined}
               />
               {/* Víc dodavatelů = každý svůj termín (jen data, žádné ceny). */}
               {dodani.length > 1 ? (
@@ -476,6 +477,7 @@ export default function ZakazkaDetailPage() {
                 placeholder={order.term_dodani ? "zadat termín" : "až bude známé dodání"}
                 hint={order.term_dodani ? undefined : "montáž se domlouvá, až kancelář zná dodání"}
                 onEdit={order.term_dodani ? () => setMontazOpen(true) : undefined}
+                kalendar={order.term_montaz ? `/api/orders/${orderId}/kalendar/montaz.ics` : undefined}
               />
               {pozde.length > 0 && (
                 <p className="field-msg field-msg-warning value-row-warning" role="status">

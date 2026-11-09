@@ -295,3 +295,23 @@ export function useSettings(enabled: boolean) {
 }
 
 export type { ItemRow };
+
+// --- kalendář (S04) --------------------------------------------------------
+
+/** Můj odkaz na odebíraný kalendář; null = zatím nevytvořený. */
+export function useMyCalendar() {
+  return useQuery({
+    queryKey: ["my-calendar"],
+    queryFn: () => api<{ url: string | null }>("/api/me/calendar"),
+    staleTime: 5 * 60_000,
+  });
+}
+
+/** Vytvoří nový odkaz — starý tím přestane fungovat. */
+export function useNewCalendarLink() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api<{ url: string }>("/api/me/calendar", { method: "POST" }),
+    onSuccess: (data) => qc.setQueryData(["my-calendar"], data),
+  });
+}

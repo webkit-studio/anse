@@ -25,6 +25,7 @@ import {
   ConfirmButton,
   ErrorBanner,
   Field,
+  KalendarOdkaz,
   KindBadge,
   MultiSelectSheet,
   NativeSelect,
@@ -417,6 +418,7 @@ export default function ZakazkaDetailOfficePage() {
                     czDate(order.measured_at) +
                     (order.measured_time ? ` v ${order.measured_time}` : "")
                   }
+                  kalendar={order.measured_at ? `/api/orders/${orderId}/kalendar/zamereni.ics` : undefined}
                 />
                 <ValueRow
                   label="Cena práce technika"
@@ -645,8 +647,14 @@ export default function ZakazkaDetailOfficePage() {
                 {terminy}
                 <div className="meta-row">
                   <span className="meta-label">Termín montáže</span>
-                  <span className="meta-value">
+                  <span className="meta-value meta-value-akce">
                     {order.term_montaz ? czDate(order.term_montaz) : "zadá technik"}
+                    {order.term_montaz && (
+                      <KalendarOdkaz
+                        href={`/api/orders/${orderId}/kalendar/montaz.ics`}
+                        label="Přidat termín montáže do kalendáře"
+                      />
+                    )}
                   </span>
                 </div>
                 <p className="muted t-body-s">

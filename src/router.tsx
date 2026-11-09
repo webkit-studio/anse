@@ -5,6 +5,7 @@ import { Spinner } from "./components/ui";
 import CenaPracePage from "./pages/CenaPrace";
 import DnesPage from "./pages/Dnes";
 import ItemFormPage from "./pages/ItemForm";
+import KalendarPage from "./pages/Kalendar";
 import KontaktDetailPage from "./pages/KontaktDetail";
 import KontaktNovyPage from "./pages/KontaktNovy";
 import KontaktyPage from "./pages/Kontakty";
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
           { path: "/zakazky/:orderId/montaz", element: <MontazPage /> },
           { path: "/zakazky/:orderId/polozka/nova", element: <ItemFormPage mode="new" /> },
           { path: "/zakazky/:orderId/polozka/:itemId", element: <ItemFormPage mode="edit" /> },
+
+          // Kalendář má každý (technik ho otevírá ze Zprávy → Nastavení);
+          // statická cesta vyhraje nad /nastaveni/:section kanceláře.
+          { path: "/nastaveni/kalendar", element: <KalendarPage /> },
 
           {
             element: <RequireOffice />,
