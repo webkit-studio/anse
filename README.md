@@ -10,7 +10,7 @@ telefonátu po montážní list s podpisem.
   (i jako [PDF](docs/proces-zakazky.pdf)) — fáze, den technika, den kanceláře, notifikace
 - **Build konvence a architektonická pravidla:** [`CLAUDE.md`](CLAUDE.md)
 - **Zprovoznění e-mailů (Resend):** [`docs/notifikace-resend.md`](docs/notifikace-resend.md)
-- Zadání a úkoly žijí v Notionu (stránka „Vývoj interní aplikace")
+- Další vývoj jede štafetou: [`docs/pipeline.md`](docs/pipeline.md), stav v [`docs/roadmap.md`](docs/roadmap.md)
 
 ## Co umí
 

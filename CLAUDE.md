@@ -5,8 +5,10 @@ produktové formuláře stínicí techniky z telefonu, kancelář objednává. P
 v tomto pořadí: **1) rychlost vyplnění formuláře, 2) jednoduchost,
 3) spolehlivost dat, 4) škálovatelnost formulářů.**
 
-Kontext projektu, úkoly a podklady žijí v Notionu (stránka „Vývoj interní
-aplikace"). Tento soubor drží jen build konvence.
+Vývoj jede **štafetou**: koordinátor + session po GitHub issues
+(`docs/pipeline.md` = protokol, `docs/koordinator.md` = role koordinátora).
+Projekt v Dashboardu Webkit.Studio (`projects:anse`). Tento soubor drží
+jen build konvence.
 
 ## Stack
 
@@ -168,10 +170,11 @@ Katalog má dvě úrovně: **produkt** (Okenní síť) → **podkategorie**
   a nikdy nejdou do logů; bez této proměnné se kódy jednorázově vypíšou do
   build logu (fallback, ať se jde přihlásit).
 
-## Notion workflow
+## Štafeta a úkoly
 
-- Úkoly: DB Úkoly (filtr na projekt „Vývoj interní aplikace"), stavy
-  K řešení → Pracujeme na tom → Ke kontrole.
-- Zásadní rozhodnutí (stack, model, scope): navrhnout ke schválení Lukášovi,
-  schválené zapsat do DB Zápisky (Typ = Rozhodnutí, relace na projekt).
-- Když se zadání v promptu liší od Notionu, platí Notion.
+- Zadání každé session je celé v GitHub issue, protokol v `docs/pipeline.md`
+  (kroky 0–8, brány před merge, lane). Stav v `docs/roadmap.md`,
+  rozhodnutí v `docs/decisions.md`.
+- Zásadní rozhodnutí (stack, model, scope): navrhnout Lukášovi přes
+  koordinátora, schválená zapsat do `docs/decisions.md`.
+- Notion je jen archiv, nic tam nezapisuj.
