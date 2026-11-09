@@ -75,6 +75,13 @@ uživatelem, port 5433, DB `anse` — connection string
   zakázce (zaměření, závada, realizace). Výpis `GET /api/photos?contact_id|order_id`
   posílá jen popisy, obrázek jde z `/api/photos/:id/img` (cache napořád) —
   base64 se do výpisů neposílá kvůli limitu velikosti odpovědi funkce.
+- **Termín dodání po dodavatelích** (`order_dodani`, `server/dodani.ts`,
+  čistá pravidla `shared/dodani.ts`): dodavatelé se odvozují z položek
+  (podkategorie → výrobce, bez výrobce = „Ostatní"), tabulka drží jen zadané
+  termíny. `orders.term_dodani` je nejpozdější z nich a přepočítává ho server
+  (změna termínu, přidání/smazání položky) — nikdy ho nezapisuj napřímo.
+  Kancelář mění termíny přes `PUT /api/orders/:id/dodani` (K nacenění
+  i K montáži); v K montáži jde přiděleným `zmena_dodani`.
 - Fakturační adresa je příznak `addr_fakt_same` (odvozuje se z montážní),
   ne kopie textu.
 - Co brání posunu dál, počítá server (`blockingFor()`); UI to jen vypisuje.
