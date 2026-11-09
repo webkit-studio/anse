@@ -12,6 +12,7 @@ import {
 import { errorResponse, json, withCookie } from "./http";
 import { checkCsrf, matchRoute, requireOffice, type Ctx, type Route } from "./router";
 import { authRoutes } from "./routes/auth-routes";
+import { calendarRoutes } from "./routes/calendar";
 import { contactRoutes } from "./routes/contacts";
 import { itemRoutes } from "./routes/items";
 import { notificationRoutes } from "./routes/notifications";
@@ -29,6 +30,7 @@ const routes: Route[] = [
     isPublic: true,
   }),
   ...authRoutes,
+  ...calendarRoutes,
   ...orderRoutes,
   ...itemRoutes,
   ...contactRoutes,

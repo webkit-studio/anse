@@ -35,7 +35,8 @@ export type IconName =
   | "hotovo"
   | "lupa"
   | "obnovit"
-  | "kos";
+  | "kos"
+  | "kalendar";
 
 const STAR_PATH =
   "M12 3.6l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z";
@@ -92,6 +93,14 @@ const PATHS: Record<IconName, JSX.Element> = {
       <rect x="3.5" y="4.5" width="17" height="16" rx="3" />
       <path d="M8 3v3M16 3v3M3.5 9.5h17" />
       <path d="M9 14.5l2 2 4-4" />
+    </>
+  ),
+  // přidat do kalendáře — list kalendáře s plusem (u termínů v detailu)
+  kalendar: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="16" rx="3" />
+      <path d="M8 3v3M16 3v3M3.5 9.5h17" />
+      <path d="M12 12.5v5M9.5 15h5" />
     </>
   ),
   // kontakty i volat — sluchátko

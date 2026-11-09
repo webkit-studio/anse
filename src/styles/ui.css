@@ -3257,6 +3257,98 @@ input[type="date"] {
   font-weight: 600;
 }
 
+/* --- Kalendář (S04): osobní odkaz na odebíraný kalendář --- */
+
+.kalendar {
+  display: grid;
+  gap: var(--sp-4);
+  max-width: 720px;
+}
+
+.kalendar-sekce {
+  display: grid;
+  gap: var(--sp-3);
+  align-content: start;
+}
+
+.kalendar-label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: calc(var(--sp-2) * -1);
+}
+
+/* Odkaz je dlouhý — pole ho celý neukáže, ale jde označit a zkopírovat. */
+.kalendar-url {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-muted);
+  text-overflow: ellipsis;
+}
+
+.kalendar-akce {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+.kalendar-akce > .btn,
+.kalendar-hlavni {
+  flex: 1 1 200px;
+}
+
+.kalendar-navod {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.kalendar-navod h3 {
+  margin: 0;
+}
+
+.kalendar-navod ol {
+  margin: 0;
+  padding-left: 1.3em;
+  display: grid;
+  gap: 2px;
+}
+
+.kalendar-novy {
+  justify-self: start;
+}
+
+/* Hodnota s ikonovou akcí vedle (termín montáže → do kalendáře). */
+.meta-value-akce {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+/* Řádek v nastavení Zpráv, který vede na podstránku (Kalendář). */
+.sheet-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--c-hairline);
+  color: inherit;
+  text-decoration: none;
+}
+
+.sheet-link-row .notif-time {
+  display: block;
+}
+
+.sheet-link-chevron {
+  color: var(--c-text-muted);
+  font-size: 20px;
+  flex: none;
+}
+
+.sheet-subtitle {
+  margin: var(--sp-4) 0 var(--sp-1);
+}
+
 /* === Responzivita ======================================================= */
 
 @media (max-width: 1023px) {

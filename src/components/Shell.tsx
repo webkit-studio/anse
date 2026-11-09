@@ -154,7 +154,7 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sheet-head">
-              <span className="sheet-title">{settings ? "Nastavení notifikací" : "Zprávy"}</span>
+              <span className="sheet-title">{settings ? "Nastavení" : "Zprávy"}</span>
               <span className="notif-head-akce">
                 {/* Přečtení je akce nad seznamem, ne tlačítko pod ním — dole
                     se schovávalo pod zprávami a nikdo ho nenašel. */}
@@ -173,8 +173,8 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
                   <button
                     type="button"
                     className="icon-btn"
-                    title="Nastavení notifikací"
-                    aria-label="Nastavení notifikací"
+                    title="Nastavení"
+                    aria-label="Nastavení"
                     onClick={() => setSettings(true)}
                   >
                     <Icon name="nastaveni" size={18} />
@@ -190,7 +190,24 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
                 </button>
               </span>
             </div>
-            {settings ? <NotifPrefsPanel /> : <NotifList onOpen={openTarget} />}
+            {settings ? (
+              <>
+                {/* Technik vlastní Nastavení nemá — osobní volby žijí tady. */}
+                <Link to="/nastaveni/kalendar" className="sheet-link-row" onClick={() => setOpen(false)}>
+                  <span>
+                    Kalendář
+                    <span className="notif-time">Zaměření a montáže v kalendáři v telefonu</span>
+                  </span>
+                  <span className="sheet-link-chevron" aria-hidden="true">
+                    ›
+                  </span>
+                </Link>
+                <h3 className="card-section-title card-section-title-inline sheet-subtitle">E-maily</h3>
+                <NotifPrefsPanel />
+              </>
+            ) : (
+              <NotifList onOpen={openTarget} />
+            )}
           </div>
         </div>
       )}

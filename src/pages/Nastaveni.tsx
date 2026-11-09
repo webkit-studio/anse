@@ -25,6 +25,7 @@ const CARDS = [
   { to: "/nastaveni/produkty", title: "Produkty", desc: "Názvy, poznámky pro techniky, dostupnost" },
   { to: "/nastaveni/notifikace", title: "Notifikace", desc: "Co komu chodí a kam" },
   { to: "/nastaveni/ucty", title: "Účty", desc: "Přihlašovací kódy, role, telefony" },
+  { to: "/nastaveni/kalendar", title: "Kalendář", desc: "Moje zaměření a montáže v telefonu" },
 ];
 
 // --- Produkty -----------------------------------------------------------------

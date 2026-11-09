@@ -53,11 +53,20 @@ export function matchRoute(
     if (!m) continue;
     const params: Record<string, string> = {};
     route.keys.forEach((key, i) => {
-      params[key] = decodeURIComponent(m[i + 1] ?? "");
+      params[key] = safeDecode(m[i + 1] ?? "");
     });
     return { route, params };
   }
   return null;
+}
+
+/** Rozbité %-kódování v adrese nesmí shodit request na 500 — routa ho odmítne sama. */
+function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 /** Parse + validace JSON body přes zod; první chybová hláška jde uživateli. */

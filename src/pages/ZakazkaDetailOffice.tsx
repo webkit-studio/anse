@@ -417,6 +417,7 @@ export default function ZakazkaDetailOfficePage() {
                     czDate(order.measured_at) +
                     (order.measured_time ? ` v ${order.measured_time}` : "")
                   }
+                  kalendar={order.measured_at ? `/api/orders/${orderId}/kalendar/zamereni.ics` : undefined}
                 />
                 <ValueRow
                   label="Cena práce technika"
@@ -645,8 +646,18 @@ export default function ZakazkaDetailOfficePage() {
                 {terminy}
                 <div className="meta-row">
                   <span className="meta-label">Termín montáže</span>
-                  <span className="meta-value">
+                  <span className="meta-value meta-value-akce">
                     {order.term_montaz ? czDate(order.term_montaz) : "zadá technik"}
+                    {order.term_montaz && (
+                      <a
+                        className="icon-btn"
+                        href={`/api/orders/${orderId}/kalendar/montaz.ics`}
+                        aria-label="Přidat termín montáže do kalendáře"
+                        title="Přidat do kalendáře"
+                      >
+                        <Icon name="kalendar" size={18} />
+                      </a>
+                    )}
                   </span>
                 </div>
                 <p className="muted t-body-s">

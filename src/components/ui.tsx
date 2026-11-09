@@ -764,6 +764,7 @@ export function ValueRow({
   copy = true,
   onSave,
   onEdit,
+  kalendar,
   children,
 }: {
   label: string;
@@ -782,6 +783,8 @@ export function ValueRow({
   onSave?: (next: string) => void | Promise<void>;
   /** Vlastní editor místo inputu (kalendář). Má přednost před onSave. */
   onEdit?: () => void;
+  /** U termínu: adresa .ics jedné události → ikona „Přidat do kalendáře". */
+  kalendar?: string;
   /** Vlastní ovládání v místě hodnoty (výběr technika) — ať i select sedí
    *  ve stejné mřížce jako ostatní řádky a nekazí rytmus karty. */
   children?: ReactNode;
@@ -887,6 +890,17 @@ export function ValueRow({
     ) : has && kind === "email" ? (
       <a className="icon-btn" href={`mailto:${value}`} aria-label={`Napsat na ${value}`} title="Napsat e-mail">
         <Icon name="obalka" size={18} />
+      </a>
+    ) : has && kalendar ? (
+      // Bez atributu download: iPhone soubor text/calendar rovnou nabídne
+      // přidat do Kalendáře, Android a počítač ho stáhnou a otevřou.
+      <a
+        className="icon-btn"
+        href={kalendar}
+        aria-label={`Přidat ${label.toLowerCase()} do kalendáře`}
+        title="Přidat do kalendáře"
+      >
+        <Icon name="kalendar" size={18} />
       </a>
     ) : has && kind === "adresa" ? (
       <a
