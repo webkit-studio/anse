@@ -11,7 +11,7 @@ _Aktualizováno: 9. 11. 2026 · koordinátor, noční běh S01–S04_
 formuláře podle výrobce, konfigurátor (Jack West, SUYS, Neva), návody,
 galerie fotek, podpis a montážní list PDF, XML a CSV export pro Jack West,
 notifikace in-app a e-mail, lišta „Je tu nová verze". Podrobně `README.md`.
-**Rozpracováno:** noční běh lane A z SMS Dariny a Jakuba: ~~S01 #2~~ (hotovo, termíny dodání po dodavatelích) → ~~S02 #3~~ (hotovo, kancelář zadává položky, Kdo montuje) → S03 #4 → S04 #5.
+**Rozpracováno:** noční běh lane A z SMS Dariny a Jakuba: ~~S01 #2~~ (hotovo, termíny dodání po dodavatelích) → ~~S02 #3~~ (hotovo, kancelář zadává položky, Kdo montuje) → ~~S03 #4~~ (hotovo, typ zakázky Nová / Oprava) → S04 #5.
 **Další krok:** ráno souhrn a snímky pro Lukáše.
 **Blokery:** žádné.
 
@@ -22,3 +22,4 @@ notifikace in-app a e-mail, lišta „Je tu nová verze". Podrobně `README.md`.
 
 ## Dluh, který stojí za session
 - ~~Smazat zastaralé sloupce~~ → přibaleno do S02 #3 (migrace 015).
+- Chipy (`.chip`) mají `min-height: 44px`, `CLAUDE.md` chce touch target 48 px (`--tap`). Platí pro všechny chipy v appce (filtry, místnosti, termíny, Nová / Oprava). Oprava je jeden řádek CSS, ale mění výšku všude – chce kontrolu snímků (S03 #4).
