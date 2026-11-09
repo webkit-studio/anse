@@ -222,6 +222,8 @@ test.describe("kancelář (desktop)", () => {
     await page.locator(".calendar-day:not(:disabled)").nth(5).click();
 
     // Kdo montuje: měřil Jakub, montovat jde s ním Darina — přidá se k zakázce.
+    // Uložení termínu posune updated_at; výběr až po načtení nové verze, jinak 409.
+    await page.waitForLoadState("networkidle");
     await page.locator("#p-montuje").click();
     await page.locator(".sheet-option", { hasText: "Darina Konderlová" }).click();
     await page.locator(".sheet").getByRole("button", { name: "Zavřít" }).click();
