@@ -21,6 +21,8 @@ const db = vi.hoisted(() => {
     /** Simulace produkce před migrací 018: sloupec session_version neexistuje. */
     missingColumn: false,
     queries: [] as string[],
+    /** login_attempts — sdílený limit přihlášení a změny kódu (S05). */
+    attempts: [] as { ip: string; success: boolean }[],
   };
 
   type Fragment = { text: string; values: unknown[] };
@@ -37,8 +39,32 @@ const db = vi.hoisted(() => {
     if (state.missingColumn && text.includes("session_version") && !text.includes("0 as session_version")) {
       throw Object.assign(new Error('column "session_version" does not exist'), { code: "42703" });
     }
-    if (text.includes("from login_attempts")) return [{ ip_failures: 0, global_failures: 0 }];
-    if (text.includes("insert into login_attempts")) return [];
+    if (text.includes("from login_attempts")) {
+      const failures = state.attempts.filter((a) => !a.success);
+      return [{ ip_failures: failures.filter((a) => a.ip === values[0]).length, global_failures: failures.length }];
+    }
+    if (text.includes("insert into login_attempts")) {
+      state.attempts.push({ ip: values[0] as string, success: values[1] as boolean });
+      return [];
+    }
+    if (text === "select code from users where id = $ and active") {
+      const u = state.users.get(values[0] as string);
+      return u && u.active ? [{ code: u.code }] : [];
+    }
+    if (text.startsWith("update users set code = $, session_version = session_version + 1 where id = $ and code = $")) {
+      const [code, id, stored] = values as string[];
+      const u = state.users.get(id!);
+      if (!u || u.code !== stored) return [];
+      if ([...state.users.values()].some((x) => x.id !== id && x.code === code)) {
+        throw Object.assign(new Error('duplicate key value violates unique constraint "users_code_key"'), {
+          code: "23505",
+          detail: `Key (code)=(${code}) already exists.`,
+        });
+      }
+      u.code = code!;
+      u.session_version += 1;
+      return [{ session_version: u.session_version }];
+    }
     if (text.includes("select 1 from users where code")) return [];
     if (/select id, name, role, (0 as )?session_version from users where code/.test(text)) {
       const u = [...state.users.values()].find((x) => x.code === values[0] && x.active);
@@ -142,6 +168,7 @@ beforeEach(() => {
   seed();
   db.state.missingColumn = false;
   db.state.queries = [];
+  db.state.attempts = [];
   auth.invalidateUsersCache();
 });
 
@@ -325,5 +352,141 @@ describe("bez migrace 018", () => {
     db.state.missingColumn = true;
     await expect(auth.login(new Request("http://localhost/api/login"), "000001")).rejects.toMatchObject({ status: 401 });
     expect(db.state.queries.some((q) => q.includes("insert into login_attempts"))).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// S05 #7: vlastní přihlašovací kód
+// ---------------------------------------------------------------------------
+
+function zmenaKodu(token: string, body: { current: string; code: string }) {
+  return new Request("http://localhost/api/me/code", {
+    method: "PUT",
+    headers: { cookie: `anse_session=${token}`, "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+function prihlaseni(code: string) {
+  return new Request("http://localhost/api/login", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ code }),
+  });
+}
+
+const neuspechy = () => db.state.attempts.filter((a) => !a.success).length;
+
+describe("vlastní kód", () => {
+  it("změna odhlásí ostatní zařízení, tohle zůstane, nový kód platí a starý ne", async () => {
+    const telefon = await tokenFor(TECHNIK, 0);
+    const tablet = await tokenFor(TECHNIK, 0);
+
+    const res = await handle(zmenaKodu(telefon, { current: "482913", code: "Moje-Brana-77" }));
+    expect(res.status).toBe(200);
+    // kód se nikdy nevrací
+    expect(await res.json()).toEqual({ ok: true });
+    expect(db.state.users.get(TECHNIK)!.code).toBe("moje-brana-77");
+
+    const novy = cookieToken(res)!;
+    expect(decodeJwt(novy).sv).toBe(1);
+    expect((await handle(req("/api/me", novy))).status).toBe(200);
+    expect((await handle(req("/api/me", tablet))).status).toBe(401);
+    expect((await handle(req("/api/me", telefon))).status).toBe(401);
+
+    // přihlášení novým kódem bez ohledu na velikost písmen, starým ne
+    expect((await handle(prihlaseni("MOJE-brana-77"))).status).toBe(200);
+    const stary = await handle(prihlaseni("482913"));
+    expect(stary.status).toBe(401);
+    expect(await stary.json()).toEqual({ error: "Neplatný kód." });
+  });
+
+  it("slabý i obsazený kód → stejná obecná hláška; oba se počítají do pokusů", async () => {
+    db.state.users.get(KANCELAR)!.code = "obsazeny-kod-9";
+    const technik = await tokenFor(TECHNIK, 0);
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const obsazeny = await handle(zmenaKodu(technik, { current: "482913", code: "Obsazeny-Kod-9" }));
+    const slaby = await handle(zmenaKodu(technik, { current: "482913", code: "12345678" }));
+    expect(obsazeny.status).toBe(400);
+    expect(slaby.status).toBe(obsazeny.status);
+    const a = await obsazeny.json();
+    const b = await slaby.json();
+    expect(a).toEqual({ error: "Tento kód nejde použít, zvol jiný.", pole: "code" });
+    expect(b).toEqual(a);
+
+    expect(neuspechy()).toBe(2);
+    // kolize v DB nese kód v `detail` — do logu nesmí
+    expect(log).not.toHaveBeenCalled();
+    log.mockRestore();
+    // nic se nezměnilo a nikoho to neodhlásilo
+    expect(db.state.users.get(TECHNIK)!.code).toBe("482913");
+    expect(db.state.users.get(TECHNIK)!.session_version).toBe(0);
+    expect((await handle(req("/api/me", technik))).status).toBe(200);
+  });
+
+  it("bez správného současného kódu změna neprojde (400, ne 401 — appka se neodhlásí)", async () => {
+    const technik = await tokenFor(TECHNIK, 0);
+    const res = await handle(zmenaKodu(technik, { current: "730164", code: "moje-brana-77" }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "Současný kód nesedí.", pole: "current" });
+    expect(res.headers.get("set-cookie")).toBeNull();
+    expect(neuspechy()).toBe(1);
+    expect(db.state.users.get(TECHNIK)!.code).toBe("482913");
+    expect(db.state.users.get(KANCELAR)!.code).toBe("730164");
+  });
+
+  it("chyby tvaru jdou k poli a do pokusů se nepočítají", async () => {
+    const technik = await tokenFor(TECHNIK, 0);
+    const kratky = await handle(zmenaKodu(technik, { current: "482913", code: "abc12" }));
+    expect(await kratky.json()).toEqual({ error: "Kód musí mít aspoň 8 znaků.", pole: "code" });
+    const prazdny = await handle(zmenaKodu(technik, { current: " ", code: "moje-brana-77" }));
+    expect(await prazdny.json()).toEqual({ error: "Zadej současný kód.", pole: "current" });
+    const stejny = await handle(zmenaKodu(technik, { current: "482913", code: "482913xx" }));
+    expect(stejny.status).toBe(200);
+    const zpet = await handle(zmenaKodu(cookieToken(stejny)!, { current: "482913XX", code: "482913xx" }));
+    expect(await zpet.json()).toEqual({ error: "Nový kód je stejný jako současný.", pole: "code" });
+    expect(neuspechy()).toBe(0);
+  });
+
+  it("limit pokusů je společný s přihlášením — oběma směry", async () => {
+    const technik = await tokenFor(TECHNIK, 0);
+    // 8 neplatných přihlášení z téže IP → změna kódu i se správným kódem 429
+    for (let i = 0; i < 8; i++) {
+      expect((await handle(prihlaseni(`10000${i}`))).status).toBe(401);
+    }
+    const zablokovano = await handle(zmenaKodu(technik, { current: "482913", code: "moje-brana-77" }));
+    expect(zablokovano.status).toBe(429);
+    expect(db.state.users.get(TECHNIK)!.code).toBe("482913");
+
+    // a obráceně: hádání současného kódu zablokuje přihlášení
+    db.state.attempts = [];
+    for (let i = 0; i < 8; i++) {
+      await handle(zmenaKodu(technik, { current: `20000${i}`, code: "moje-brana-77" }));
+    }
+    expect(neuspechy()).toBe(8);
+    expect((await handle(prihlaseni("482913"))).status).toBe(429);
+  });
+
+  it("neplatný tvar kódu při přihlášení se do pokusů nepočítá", async () => {
+    const res = await handle(prihlaseni("1234567"));
+    expect(res.status).toBe(400);
+    expect(neuspechy()).toBe(0);
+  });
+
+  it("kancelář resetuje vlastní kód technika: odhlásí ho a vlastní kód přestane platit", async () => {
+    const technik = await tokenFor(TECHNIK, 0);
+    const zmena = await handle(zmenaKodu(technik, { current: "482913", code: "moje-brana-77" }));
+    const technikNovy = cookieToken(zmena)!;
+
+    const kancelar = await tokenFor(KANCELAR, 0);
+    const reset = await handle(req(`/api/users/${TECHNIK}/code`, kancelar, "POST"));
+    expect(reset.status).toBe(200);
+    const { user } = (await reset.json()) as { user: { code: string } };
+    expect(user.code).toMatch(/^\d{6}$/);
+
+    expect((await handle(req("/api/me", technikNovy))).status).toBe(401);
+    expect((await handle(prihlaseni("moje-brana-77"))).status).toBe(401);
+    expect((await handle(prihlaseni(user.code))).status).toBe(200);
   });
 });

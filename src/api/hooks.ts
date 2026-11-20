@@ -55,6 +55,14 @@ export function useLogin() {
   });
 }
 
+/** Změna vlastního přihlašovacího kódu (S05 #7). Kód se nikdy nevrací. */
+export function useZmenaKodu() {
+  return useMutation({
+    mutationFn: (body: { current: string; code: string }) =>
+      api<{ ok: true }>("/api/me/code", { method: "PUT", body }),
+  });
+}
+
 export function useLogout() {
   const qc = useQueryClient();
   return useMutation({

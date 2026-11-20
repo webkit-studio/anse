@@ -165,8 +165,11 @@ export interface UserRow {
   email: string;
   active: boolean;
   created_at: string;
-  /** Přihlašovací kód — vrací se POUZE na routách kanceláře. */
-  code?: string;
+  /** Přihlašovací kód — vrací se POUZE na routách kanceláře, a jen
+   *  vygenerovaný (6 číslic). Vlastní kód (S05 #7) kancelář nevidí → null. */
+  code?: string | null;
+  /** Uživatel si nastavil vlastní kód. */
+  vlastni_kod?: boolean;
 }
 
 // === kontakty ==============================================================

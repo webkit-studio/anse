@@ -202,6 +202,15 @@ export function NotifBell({ variant = "sheet" }: { variant?: "sheet" | "popover"
                     ›
                   </span>
                 </Link>
+                <Link to="/nastaveni/kod" className="sheet-link-row" onClick={() => setOpen(false)}>
+                  <span>
+                    Přihlašovací kód
+                    <span className="notif-time">Vlastní kód místo vygenerovaného</span>
+                  </span>
+                  <span className="sheet-link-chevron" aria-hidden="true">
+                    ›
+                  </span>
+                </Link>
                 <h3 className="card-section-title card-section-title-inline sheet-subtitle">E-maily</h3>
                 <NotifPrefsPanel />
               </>

@@ -32,7 +32,8 @@ test("přihlášení: pole pro správce hesel a skutečná navigace po odeslán�
   const kod = form.getByLabel("Přihlašovací kód");
   await expect(kod).toHaveAttribute("type", "password");
   await expect(kod).toHaveAttribute("autocomplete", "current-password");
-  await expect(kod).toHaveAttribute("inputmode", "numeric");
+  // S05 #7: vlastní kód může mít písmena — klávesnice nesmí být jen číselná.
+  await expect(kod).not.toHaveAttribute("inputmode", "numeric");
   expect(await kod.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
 
   // Username ve stejném formuláři před heslem — Klíčenka ví, k čemu kód patří.

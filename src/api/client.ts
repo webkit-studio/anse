@@ -3,11 +3,14 @@ import type { Issue } from "@shared/form-engine";
 export class ApiFetchError extends Error {
   status: number;
   issues?: Issue[];
+  /** Pole formuláře, ke kterému chyba patří (např. změna kódu). */
+  pole?: string;
 
-  constructor(status: number, message: string, issues?: Issue[]) {
+  constructor(status: number, message: string, issues?: Issue[], pole?: string) {
     super(message);
     this.status = status;
     this.issues = issues;
+    this.pole = pole;
   }
 }
 
@@ -47,11 +50,12 @@ export async function api<T>(path: string, opts: ApiOptions = {}): Promise<T> {
   }
 
   if (!res.ok) {
-    const payload = (data ?? {}) as { error?: string; issues?: Issue[] };
+    const payload = (data ?? {}) as { error?: string; issues?: Issue[]; pole?: string };
     throw new ApiFetchError(
       res.status,
       payload.error ?? "Neočekávaná chyba serveru.",
       payload.issues,
+      typeof payload.pole === "string" ? payload.pole : undefined,
     );
   }
   return data as T;

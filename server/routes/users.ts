@@ -1,7 +1,21 @@
 import { randomInt } from "node:crypto";
-import { userCreateBody, userUpdateBody } from "../../shared/api-contracts";
-import { isTrivialCode } from "../../shared/codes";
-import { invalidateUsersCache, sessionCookie, signSession } from "../auth";
+import { ownCodeBody, userCreateBody, userUpdateBody } from "../../shared/api-contracts";
+import {
+  KOD_NEJDE_POUZIT,
+  chybaTvaruVlastnihoKodu,
+  isTrivialCode,
+  jeSlabyVlastniKod,
+  normalizujKod,
+} from "../../shared/codes";
+import {
+  assertAttemptLimit,
+  clientIp,
+  invalidateUsersCache,
+  recordAttempt,
+  sameCode,
+  sessionCookie,
+  signSession,
+} from "../auth";
 import { sql } from "../db";
 import { ApiError, json } from "../http";
 import { makeRoute, parseBody, type Ctx, type Route } from "../router";
@@ -18,7 +32,12 @@ async function generateUniqueCode(): Promise<string> {
   throw new ApiError(500, "Nepodařilo se vygenerovat unikátní kód.");
 }
 
-const USER_COLS = "id, name, code, role, phone, email, active, created_at";
+// Vlastní kód (S05 #7) si uživatel zvolil sám a může ho mít i jinde — kancelář
+// ho nevidí, vidí jen, že ho má. Zapomenutý kód vyřeší reset (nový 6místný).
+const USER_COLS = `id, name,
+  case when code ~ '^[0-9]{6}$' then code end as code,
+  code !~ '^[0-9]{6}$' as vlastni_kod,
+  role, phone, email, active, created_at`;
 
 /**
  * Po odvolání přihlášení (vyšší session_version) se uživatel odhlásí na všech
@@ -36,7 +55,74 @@ async function keepOwnSession(
   return { "set-cookie": sessionCookie(req, await signSession(ctx.user, sessionVersion)) };
 }
 
+/** Chyba formuláře změny kódu u konkrétního pole (klient ji ukáže u něj). */
+function chybaPole(pole: "current" | "code", message: string): ApiError {
+  return new ApiError(400, message, { pole });
+}
+
 export const userRoutes: Route[] = [
+  // Změna vlastního kódu (S05 #7) — kdokoli přihlášený, jen sám sobě.
+  // Login je jen kód, bez jména: kód musí být unikátní, a tak by hláška
+  // „obsazený" prozradila cizí kód. Proto stejná hláška pro slabý i obsazený
+  // kód, nutný současný kód a společný limit pokusů s přihlášením. Kód se
+  // nikdy nevrací ani neloguje.
+  makeRoute("PUT", "/api/me/code", async (req, ctx) => {
+    const db = sql();
+    const body = await parseBody(req, ownCodeBody);
+    const current = normalizujKod(body.current);
+    const code = normalizujKod(body.code);
+
+    if (!current) throw chybaPole("current", "Zadej současný kód.");
+    const tvar = chybaTvaruVlastnihoKodu(code);
+    if (tvar) throw chybaPole("code", tvar);
+
+    const ip = clientIp(req);
+    await assertAttemptLimit(ip);
+
+    const [me] = await db`select code from users where id = ${ctx.user.id} and active`;
+    if (!me) throw new ApiError(401, "Přihlášení už není platné.");
+    const stored = String(me.code).trim();
+
+    if (!sameCode(current, stored)) {
+      await recordAttempt(ip, false);
+      throw chybaPole("current", "Současný kód nesedí.");
+    }
+    if (code === stored) throw chybaPole("code", "Nový kód je stejný jako současný.");
+    if (jeSlabyVlastniKod(code)) {
+      await recordAttempt(ip, false);
+      throw chybaPole("code", KOD_NEJDE_POUZIT);
+    }
+
+    let row;
+    try {
+      // where code = stored: souběžná změna (druhé zařízení) nepřepíše tu první
+      [row] = await db`
+        update users set code = ${code}, session_version = session_version + 1
+        where id = ${ctx.user.id} and code = ${stored}
+        returning session_version
+      `;
+    } catch (err) {
+      // Chyby z DB nesou v `detail` hodnotu kódu — nesmí dojít do logu.
+      const pgCode = (err as { code?: string }).code;
+      if (pgCode === "23505") {
+        await recordAttempt(ip, false);
+        throw chybaPole("code", KOD_NEJDE_POUZIT);
+      }
+      if (pgCode === "23514") {
+        console.error("Změna kódu: users_code_check neprošel (hodnota se neloguje).");
+        throw chybaPole("code", KOD_NEJDE_POUZIT);
+      }
+      throw new Error(`Změna kódu selhala v DB (${pgCode ?? "bez kódu"}).`);
+    }
+    if (!row) throw new ApiError(409, "Kód se mezitím změnil. Obnov stránku a zkus to znovu.");
+    await recordAttempt(ip, true);
+    invalidateUsersCache();
+
+    // Ostatní zařízení se odhlásí (vyšší verze), tohle dostane nový cookie.
+    const headers = await keepOwnSession(req, ctx, ctx.user.id, Number(row.session_version));
+    return json({ ok: true }, { headers });
+  }),
+
   // Kdo si může vzít kontakt nebo zakázku. Vidí ho i technik — bez něj měl
   // v „Ozve se" jedinou možnost „— nikdo —", protože /api/users je jen pro
   // kancelář. Posílá se jen jméno a role: žádné kódy, telefony ani e-maily.

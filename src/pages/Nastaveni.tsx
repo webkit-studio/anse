@@ -26,6 +26,7 @@ const CARDS = [
   { to: "/nastaveni/notifikace", title: "Notifikace", desc: "Co komu chodí a kam" },
   { to: "/nastaveni/ucty", title: "Účty", desc: "Přihlašovací kódy, role, telefony" },
   { to: "/nastaveni/kalendar", title: "Kalendář", desc: "Moje zaměření a montáže v telefonu" },
+  { to: "/nastaveni/kod", title: "Přihlašovací kód", desc: "Můj vlastní kód místo vygenerovaného" },
 ];
 
 // --- Produkty -----------------------------------------------------------------
@@ -324,7 +325,7 @@ function Ucty() {
   }
 
   return (
-    <OfficeShell title="Účty" subtitle="Přihlášení šestimístným kódem">
+    <OfficeShell title="Účty" subtitle="Přihlášení kódem — vygenerovaným nebo vlastním">
       <section className="card card-pad user-new">
         <div className="user-new-name">
           <Field label="Jméno" htmlFor="u-new">
@@ -401,23 +402,32 @@ function Ucty() {
                   {!u.email && <span className="badge badge-warn">chybí e-mail</span>}
                 </td>
                 <td className="code-cell">
-                  {shown.has(u.id) ? u.code : "••••••"}{" "}
-                  <button
-                    type="button"
-                    className="icon-btn"
-                    title={shown.has(u.id) ? "Skrýt" : "Zobrazit"}
-                    aria-label={shown.has(u.id) ? `Skrýt kód ${u.name}` : `Zobrazit kód ${u.name}`}
-                    onClick={() =>
-                      setShown((s) => {
-                        const next = new Set(s);
-                        if (next.has(u.id)) next.delete(u.id);
-                        else next.add(u.id);
-                        return next;
-                      })
-                    }
-                  >
-                    <Icon name={shown.has(u.id) ? "oko-skrt" : "oko"} size={18} />
-                  </button>
+                  {u.vlastni_kod ? (
+                    // Vlastní kód si zvolil sám (S05) — kancelář ho nevidí.
+                    <span className="code-vlastni" title="Kód si nastavil sám. Zapomenutý vyřeší nový kód.">
+                      vlastní
+                    </span>
+                  ) : (
+                    <>
+                      {shown.has(u.id) ? u.code : "••••••"}{" "}
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        title={shown.has(u.id) ? "Skrýt" : "Zobrazit"}
+                        aria-label={shown.has(u.id) ? `Skrýt kód ${u.name}` : `Zobrazit kód ${u.name}`}
+                        onClick={() =>
+                          setShown((s) => {
+                            const next = new Set(s);
+                            if (next.has(u.id)) next.delete(u.id);
+                            else next.add(u.id);
+                            return next;
+                          })
+                        }
+                      >
+                        <Icon name={shown.has(u.id) ? "oko-skrt" : "oko"} size={18} />
+                      </button>
+                    </>
+                  )}
                   <ConfirmButton
                     label={<Icon name="obnovit" size={17} />}
                     confirmLabel="Opravdu nový kód?"
@@ -443,7 +453,8 @@ function Ucty() {
       <p className="muted t-caption">
         Kódy generuje server náhodně a nikdy je nezapisuje do logů. „Nový" vydá jiný kód —
         ten starý okamžitě přestane platit a dotyčný se do minuty odhlásí ze všech zařízení.
-        Stejně odhlásí i vypnutí účtu.
+        Stejně odhlásí i vypnutí účtu. Kdo si nastavil vlastní kód, má u kódu „vlastní":
+        ten nevidíš, a když ho zapomene, vydej mu nový.
       </p>
     </OfficeShell>
   );
