@@ -82,6 +82,11 @@ export function sessionCookie(req: Request, token: string): string {
   return `${COOKIE_NAME}=${token}; Max-Age=${SESSION_S}; Path=/; HttpOnly; SameSite=Lax${secure}`;
 }
 
+/** Nastavuje už odpověď session cookie? */
+export function setsSessionCookie(res: Response): boolean {
+  return res.headers.getSetCookie().some((c) => c.startsWith(`${COOKIE_NAME}=`));
+}
+
 export function clearSessionCookie(req: Request): string {
   const secure = isHttps(req) ? "; Secure" : "";
   return `${COOKIE_NAME}=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax${secure}`;
@@ -159,14 +164,19 @@ export async function activeUser(id: string): Promise<CachedUser | null> {
 }
 
 /**
- * Uživatel k ověřenému tokenu: aktivní a token nese aktuální verzi přihlášení.
- * Starší verze = přihlášení odvolané resetem kódu nebo deaktivací → null.
- * Vyšší verze než v cache = cache je pozadu (přihlásil se po resetu, změnu
- * provedla jiná instance) → platí; vyšší verzi než v DB server nevydá.
+ * Uživatel k ověřenému tokenu: aktivní a token nese právě aktuální verzi
+ * přihlášení. Starší verze = přihlášení odvolané resetem kódu nebo
+ * deaktivací → null. Vyšší verze než v cache = cache je pozadu (přihlásil se
+ * po resetu, který proběhl na jiné instanci) → cache se dočte z DB a verze
+ * musí sedět přesně (po obnově DB ze zálohy tak neplatí tokeny „z budoucnosti").
  */
 export async function sessionUser(session: VerifiedSession): Promise<CachedUser | null> {
-  const user = await activeUser(session.user.id);
-  if (!user || session.sv < user.sessionVersion) return null;
+  let user = await activeUser(session.user.id);
+  if (user && session.sv > user.sessionVersion) {
+    invalidateUsersCache();
+    user = await activeUser(session.user.id);
+  }
+  if (!user || session.sv !== user.sessionVersion) return null;
   return user;
 }
 

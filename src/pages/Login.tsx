@@ -5,13 +5,19 @@ import { Logo } from "../components/Logo";
 
 /**
  * Kam po přihlášení. Bere se z routeru (RequireAuth), ale do
- * window.location jde jen cesta v rámci appky — nikdy cizí adresa.
+ * window.location jde jen adresa na stejném originu — nikdy cizí web.
+ * Parsuje se přes URL: prohlížeč z adresy vypouští tabulátory a konce řádků,
+ * takže kontrola samotného řetězce by šla obejít.
  */
 function safeFrom(raw: unknown): string {
-  if (typeof raw !== "string" || !raw.startsWith("/") || raw.startsWith("//") || raw.includes("\\")) {
+  if (typeof raw !== "string") return "/";
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin !== window.location.origin || url.pathname.startsWith("/login")) return "/";
+    return url.pathname + url.search + url.hash;
+  } catch {
     return "/";
   }
-  return raw.startsWith("/login") ? "/" : raw;
 }
 
 // L01 #6: kód je pro správce hesel „heslo" — skutečný <form> se submitem,
@@ -88,7 +94,8 @@ export default function LoginPage() {
 
   return (
     <main className="login-page">
-      <form ref={formRef} className="login-card" onSubmit={onSubmit} noValidate>
+      {/* method=post: kdyby se onSubmit někdy nespustil, kód nesmí skončit v URL. */}
+      <form ref={formRef} className="login-card" method="post" onSubmit={onSubmit} noValidate>
         <h1 className="login-logo" aria-label="Anse">
           <Logo height={26} />
         </h1>

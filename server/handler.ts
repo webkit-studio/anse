@@ -1,11 +1,11 @@
 import type { SessionUser } from "../shared/types";
 import {
-  clearSessionCookie,
   clientIp,
   readSessionCookie,
   sessionCookie,
   shouldRenew,
   sessionUser,
+  setsSessionCookie,
   signSession,
   verifySessionToken,
 } from "./auth";
@@ -71,10 +71,11 @@ export async function handle(req: Request): Promise<Response> {
       // do minuty i s dřív vydaným tokenem.
       const current = await sessionUser(session);
       if (!current) {
-        return withCookie(
-          json({ error: "Přihlášení už není platné." }, { status: 401 }),
-          clearSessionCookie(req),
-        );
+        // Cookie se nemaže: request, který byl na cestě ještě se starým
+        // tokenem, by jinak po vlastním resetu kódu smazal i nový cookie,
+        // který mezitím přišel. Klient na 401 přejde na přihlášení a nový
+        // login cookie přepíše.
+        return json({ error: "Přihlášení už není platné." }, { status: 401 });
       }
       ctx = {
         user: { id: session.user.id, name: current.name, role: current.role },
@@ -87,7 +88,9 @@ export async function handle(req: Request): Promise<Response> {
     }
 
     let res = await matched.route.handler(req, ctx, matched.params);
-    if (renewedCookie) res = withCookie(res, renewedCookie);
+    // Routa, která session sama vydala (vlastní reset kódu → nová verze),
+    // má přednost: obnova se starou verzí by ji přepsala a odhlásila.
+    if (renewedCookie && !setsSessionCookie(res)) res = withCookie(res, renewedCookie);
     return res;
   } catch (err) {
     return errorResponse(err);

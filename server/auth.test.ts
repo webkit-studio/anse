@@ -201,7 +201,8 @@ describe("odvolání přihlášení", () => {
 
     const after = await handle(req("/api/me", technik));
     expect(after.status).toBe(401);
-    expect(after.headers.get("set-cookie")).toContain("Max-Age=0");
+    // cookie se nemaže — request na cestě by jinak smazal i nově vydaný
+    expect(after.headers.get("set-cookie")).toBeNull();
     // kancelář dál přihlášená
     expect((await handle(req("/api/me", kancelar))).status).toBe(200);
   });
@@ -224,6 +225,22 @@ describe("odvolání přihlášení", () => {
     expect(decodeJwt(novy).sv).toBe(1);
     expect((await handle(req("/api/me", novy))).status).toBe(200);
     expect((await handle(req("/api/me", jinyPocitac))).status).toBe(401);
+  });
+
+  it("vlastní reset s tokenem ve druhé polovině platnosti: obnova nepřepíše novou verzi", async () => {
+    const stary = await new SignJWT({ name: "Marek", role: "kancelar", sv: 0 })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject(KANCELAR)
+      .setIssuedAt()
+      .setExpirationTime("10d")
+      .sign(secret());
+    const reset = await handle(req(`/api/users/${KANCELAR}/code`, stary, "POST"));
+    expect(reset.status).toBe(200);
+    const cookies = reset.headers.getSetCookie().filter((c) => c.startsWith("anse_session="));
+    expect(cookies).toHaveLength(1);
+    const novy = cookieToken(reset)!;
+    expect(decodeJwt(novy).sv).toBe(1);
+    expect((await handle(req("/api/me", novy))).status).toBe(200);
   });
 
   it("změna kódu přes úpravu účtu odhlásí taky", async () => {
@@ -266,10 +283,18 @@ describe("odvolání přihlášení", () => {
     expect((await handle(req("/api/me", technik))).status).toBe(200);
   });
 
-  it("token s vyšší verzí než v cache platí (cache jiné instance je pozadu)", async () => {
+  it("token s vyšší verzí než v cache: cache se dočte a verze musí sedět", async () => {
     expect((await handle(req("/api/me", await tokenFor(TECHNIK, 0)))).status).toBe(200); // naplní cache s verzí 0
-    db.state.users.get(TECHNIK)!.session_version = 1; // reset proběhl jinde
+    db.state.users.get(TECHNIK)!.session_version = 1; // reset proběhl na jiné instanci
+    // přihlásil se novým kódem jinde → token s verzí 1, cache tu ještě drží 0
     expect((await handle(req("/api/me", await tokenFor(TECHNIK, 1)))).status).toBe(200);
+    // starý token po dočtení cache neplatí
+    expect((await handle(req("/api/me", await tokenFor(TECHNIK, 0)))).status).toBe(401);
+  });
+
+  it("token z budoucnosti (DB obnovená ze zálohy s nižší verzí) neplatí", async () => {
+    db.state.users.get(TECHNIK)!.session_version = 1;
+    expect((await handle(req("/api/me", await tokenFor(TECHNIK, 2)))).status).toBe(401);
   });
 
   it("nesmyslná verze v tokenu neprojde", async () => {

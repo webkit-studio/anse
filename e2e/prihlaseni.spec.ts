@@ -91,11 +91,12 @@ test("reset kódu kanceláří odhlásí technika ze všech zařízení", async 
     await page.getByRole("button", { name: "Opravdu nový kód?" }).click();
     await expect(page.getByText("Nový kód platí")).toBeVisible();
 
-    // Obě zařízení technika skončí na přihlášení.
-    for (const z of [telefon, tablet]) {
-      await z.reload();
-      await expect(z).toHaveURL(/\/login$/);
-    }
+    // Otevřená appka se odhlásí sama při dalším požadavku, bez obnovení
+    // stránky; druhé zařízení po obnovení.
+    await telefon.getByRole("link", { name: /Kontakty/ }).click();
+    await expect(telefon).toHaveURL(/\/login$/);
+    await tablet.reload();
+    await expect(tablet).toHaveURL(/\/login$/);
 
     // Starý kód už neplatí.
     await telefon.getByLabel("Přihlašovací kód").fill(user.code);
@@ -104,6 +105,21 @@ test("reset kódu kanceláří odhlásí technika ze všech zařízení", async 
     // Kancelář zůstala přihlášená.
     await page.reload();
     await expect(page).toHaveURL(/\/nastaveni\/ucty$/);
+
+    // Nový kód funguje.
+    const ucty = (await (await page.request.get("/api/users")).json()) as {
+      users: { id: string; code: string }[];
+    };
+    const novyKod = ucty.users.find((u) => u.id === user.id)!.code;
+    expect(novyKod).not.toBe(user.code);
+    await prihlasit(telefon, novyKod);
+    await expect(telefon.getByRole("navigation", { name: "Hlavní navigace" })).toBeVisible();
+
+    // Vypnutí účtu odhlásí taky (skutečný PATCH proti Postgresu).
+    const vypnuti = await page.request.patch(`/api/users/${user.id}`, { data: { active: false } });
+    expect(vypnuti.ok()).toBe(true);
+    await telefon.reload();
+    await expect(telefon).toHaveURL(/\/login$/);
   } finally {
     await page.request.patch(`/api/users/${user.id}`, { data: { active: false } });
     await telefon.context().close();
