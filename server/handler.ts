@@ -1,11 +1,11 @@
 import type { SessionUser } from "../shared/types";
 import {
-  activeUser,
   clearSessionCookie,
   clientIp,
   readSessionCookie,
   sessionCookie,
   shouldRenew,
+  sessionUser,
   signSession,
   verifySessionToken,
 } from "./auth";
@@ -66,9 +66,10 @@ export async function handle(req: Request): Promise<Response> {
       if (!session) {
         return json({ error: "Přihlas se prosím." }, { status: 401 });
       }
-      // Role a jméno se berou z DB (cache 60 s) — deaktivace/změna role platí
+      // Role a jméno se berou z DB (cache 60 s) — deaktivace, změna role
+      // i odvolání přihlášení (reset kódu → vyšší session_version) platí
       // do minuty i s dřív vydaným tokenem.
-      const current = await activeUser(session.user.id);
+      const current = await sessionUser(session);
       if (!current) {
         return withCookie(
           json({ error: "Přihlášení už není platné." }, { status: 401 }),
@@ -81,7 +82,7 @@ export async function handle(req: Request): Promise<Response> {
       };
       if (matched.route.officeOnly) requireOffice(ctx);
       if (shouldRenew(session)) {
-        renewedCookie = sessionCookie(req, await signSession(ctx.user));
+        renewedCookie = sessionCookie(req, await signSession(ctx.user, session.sv));
       }
     }
 

@@ -304,10 +304,15 @@ function Ucty() {
   }
 
   async function newCode(id: string) {
-    await api(`/api/users/${id}/code`, { method: "POST" });
+    try {
+      await api(`/api/users/${id}/code`, { method: "POST" });
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Nový kód se nepodařilo vygenerovat.");
+      return;
+    }
     await refresh();
     setShown((prev) => new Set(prev).add(id));
-    toast("Vygenerován nový kód");
+    toast("Nový kód platí — přihlášení se starým kódem skončila");
   }
 
   async function create() {
@@ -437,7 +442,8 @@ function Ucty() {
       </div>
       <p className="muted t-caption">
         Kódy generuje server náhodně a nikdy je nezapisuje do logů. „Nový" vydá jiný kód —
-        ten starý tím okamžitě přestane platit.
+        ten starý okamžitě přestane platit a dotyčný se do minuty odhlásí ze všech zařízení.
+        Stejně odhlásí i vypnutí účtu.
       </p>
     </OfficeShell>
   );
