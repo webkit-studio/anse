@@ -126,6 +126,6 @@ S stavba · D návrh · H oprava · R revize · P výkon · L drobná úprava pr
 | S03 | Typ zakázky Nová / Oprava | #4 | A | #3 | 016 | test + e2e | hotovo |
 | S04 | Zaměření a montáže v kalendáři (ICS) | #5 | A | #4 | 017 | test + e2e | hotovo |
 | L01 | Přihlášení: uložení do hesel, 90 dní, odvolání session | #6 | A | – | 018 | test + e2e | hotovo |
-| S05 | Vlastní přihlašovací kód v Nastavení | #7 | A | #6 | 019 | test + e2e | běží |
+| S05 | Vlastní přihlašovací kód v Nastavení | #7 | A | #6 | 019 | test + e2e | hotovo |
 
 Tabulka je jen snímek. Pravdu drží issue.

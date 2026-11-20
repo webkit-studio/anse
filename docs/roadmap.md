@@ -5,13 +5,13 @@ jde štafetou (`docs/pipeline.md`), koordinuje ji chat podle
 `docs/koordinator.md`.
 
 ## Stav
-_Aktualizováno: 20. 11. 2026 · L01 po nasazení_
+_Aktualizováno: 20. 11. 2026 · S05 po nasazení_
 
 **Hotovo:** kontakty s přidělením víc lidem, zakázky v pěti fázích,
 formuláře podle výrobce, konfigurátor (Jack West, SUYS, Neva), návody,
 galerie fotek, podpis a montážní list PDF, XML a CSV export pro Jack West,
 notifikace in-app a e-mail, lišta „Je tu nová verze". Podrobně `README.md`.
-**Rozpracováno:** S05 #7 (vlastní přihlašovací kód). Noční běh S01–S04 (#2–#5) hotový a v produkci 9. 11. 23:17–00:27: termíny dodání po dodavatelích, kancelář zadává položky + Kdo montuje, typ Nová / Oprava, kalendář (ICS). L01 #6 v produkci 20. 11.: kód se ukládá do Klíčenky / Google hesel (Face ID), přihlášení 90 dní, reset kódu nebo vypnutí účtu odhlásí ze všech zařízení.
+**Rozpracováno:** nic. Noční běh S01–S04 (#2–#5) hotový a v produkci 9. 11. 23:17–00:27: termíny dodání po dodavatelích, kancelář zadává položky + Kdo montuje, typ Nová / Oprava, kalendář (ICS). L01 #6 v produkci 20. 11.: kód se ukládá do Klíčenky / Google hesel (Face ID), přihlášení 90 dní, reset kódu nebo vypnutí účtu odhlásí ze všech zařízení. S05 #7 v produkci 20. 11.: vlastní přihlašovací kód v Nastavení (8+ znaků, změna odhlásí ostatní zařízení, kancelář vlastní kód nevidí, reset ho nahradí 6místným).
 **Další krok:** Lukáš projde snímky a rozhodne otevřené body níže.
 **Blokery:** žádné.
 
@@ -26,8 +26,12 @@ notifikace in-app a e-mail, lišta „Je tu nová verze". Podrobně `README.md`.
 | Vyzkoušet na iPhonu a Androidu: odhlásit se, přihlásit kódem → telefon nabídne kód uložit → příště ho doplní přes Face ID / otisk | Automatické testy Klíčenku ani Google hesla neověří, reálné telefony jsem neměl (L01 #6) | 20. 11. 2026 |
 | Říct technikům: kód si teď uloží telefon (nabídka přijde při příštím přihlášení); kdo ho zapomene, kancelář mu v Nastavení → Účty vydá nový | Přihlášení dnes zůstává 90 dní; kdo je přihlášený, nabídku uložení uvidí až po odhlášení a novém přihlášení (L01 #6) | 20. 11. 2026 |
 | Rozhodnout: má reset kódu nebo vypnutí účtu zneplatnit i odkaz na kalendář? | Dnes ho přežije – ztracený telefon dál dostává jména a adresy zákazníků z kalendáře, dokud si uživatel odkaz nepřegeneruje (L01 #6) | 20. 11. 2026 |
+| Vyzkoušet na iPhonu a Androidu: Nastavení → Přihlašovací kód → změnit kód → telefon nabídne aktualizovat uložené heslo, druhé zařízení se odhlásí | Automatické testy Klíčenku ani Google hesla neověří (S05 #7) | 20. 11. 2026 |
+| Říct technikům: vlastní kód si nastaví ve Zprávy → ⚙ Nastavení → Přihlašovací kód (aspoň 8 znaků, mezi prvními šesti písmeno). Kancelář ho nevidí; kdo ho zapomene, dostane v Účtech nový | Kancelář dřív viděla každý kód, teď u vlastního jen „vlastní" (S05 #7) | 20. 11. 2026 |
+| Rozhodnout: šifrovat vlastní kódy v DB (otisk s tajným klíčem)? | Dnes jsou plaintext jako ostatní kódy. Kdo má DB nebo zálohu, je vidí, a uživatel si může zvolit heslo, které má i jinde. Otisk by stál jednu proměnnou v Netlify a pár řádků (S05 #7) | 20. 11. 2026 |
 
 ## Dluh, který stojí za session
 - ~~Smazat zastaralé sloupce~~ → přibaleno do S02 #3 (migrace 015).
 - Kalendář bere přidělení zakázky pro zaměření i montáž. Když kancelář přepne „Kdo montuje" na jiné lidi, měřič ztratí minulé zaměření z kalendáře a montážníci ho uvidí. Kdo měřil, se zvlášť neukládá (S04 #5).
+- Limit přihlášení má souběh: kontrola počtu neúspěchů jde před zápisem pokusu, takže dávka souběžných požadavků limit přeskočí. U změny kódu to S05 zavřela zápisem před kontrolou (`consumeAttempt`); login by potřeboval totéž s dodatečným označením úspěchu (S05 #7).
 - Chipy (`.chip`) mají `min-height: 44px`, `CLAUDE.md` chce touch target 48 px (`--tap`). Platí pro všechny chipy v appce (filtry, místnosti, termíny, Nová / Oprava). Oprava je jeden řádek CSS, ale mění výšku všude – chce kontrolu snímků (S03 #4).
