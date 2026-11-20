@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  PAUZA_PRED_ODESLANIM_MS,
-  VLASTNI_KOD_MAX,
-  chybaPrihlasovacihoKodu,
-  samoOdeslani,
-} from "@shared/codes";
+import { VLASTNI_KOD_MAX, chybaPrihlasovacihoKodu, samoOdeslat } from "@shared/codes";
 import { useLogin, useMe } from "../api/hooks";
 import { Logo } from "../components/Logo";
 
@@ -31,8 +26,8 @@ function safeFrom(raw: unknown): string {
 // username. iCloud Klíčenka a Google pak kód nabídnou uložit a příště doplní
 // přes Face ID / otisk.
 // S05 #7: kód může být i vlastní (8–64 znaků, písmena) — klávesnice je proto
-// textová. Doplněný kód (správce hesel) se odešle hned, ručně dopsaných
-// 6 číslic po krátké pauze (vlastní kód může mít číslic víc), delší kód
+// textová. Šestá číslice odesílá sama dál (vlastní kód šesti číslicemi začínat
+// nesmí), doplněný kód (správce hesel) se odešle hned, ručně psaný vlastní kód
 // potvrdí Enter nebo tlačítko.
 export default function LoginPage() {
   const [code, setCode] = useState("");
@@ -47,21 +42,12 @@ export default function LoginPage() {
   const submitRef = useRef<HTMLButtonElement>(null);
   /** Brzda dvojího odeslání — isPending z renderu je ve stejném tiku ještě false. */
   const sending = useRef(false);
-  /** Odložené odeslání po ručně dopsané 6. číslici. */
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const from = safeFrom((location.state as { from?: unknown } | null)?.from);
 
   useEffect(() => {
     // Po chybě zpátky do pole — až po překreslení, během odesílání je vypnuté.
     if (error) inputRef.current?.focus();
   }, [error]);
-
-  useEffect(() => () => zrusOdlozene(), []);
-
-  function zrusOdlozene() {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = null;
-  }
 
   useEffect(() => {
     // Už přihlášený (otevřel /login ručně) → rovnou dál. Během vlastního
@@ -71,7 +57,6 @@ export default function LoginPage() {
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    zrusOdlozene();
     if (sending.current) return;
     // Hodnota z DOM, ne ze stavu: při automatickém odeslání React stav ještě
     // nemusí být překreslený.
@@ -107,12 +92,10 @@ export default function LoginPage() {
 
   function onChange(raw: string) {
     const next = raw.replace(/\s/g, "").slice(0, VLASTNI_KOD_MAX);
-    const kdy = samoOdeslani(code, next);
+    const odeslatHned = samoOdeslat(code, next);
     setCode(next);
     setError(null);
-    zrusOdlozene();
-    if (kdy === "hned") odeslat();
-    else if (kdy === "po-pauze") timer.current = setTimeout(odeslat, PAUZA_PRED_ODESLANIM_MS);
+    if (odeslatHned) odeslat();
   }
 
   const busy = login.isPending || leaving;

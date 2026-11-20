@@ -188,9 +188,8 @@ export function invalidateUsersCache(): void {
 
 // ---------------------------------------------------------------------------
 // Login s rate-limitem: per IP + globální pojistka (6místný prostor kódů).
-// Stejný limit hlídá i změnu vlastního kódu (S05 #7): špatný současný kód
-// i obsazený nový kód se počítají jako neúspěšný pokus — přes kolize by se
-// jinak dalo hádat, jaký kód má někdo jiný.
+// Stejný limit hlídá i změnu vlastního kódu (S05 #7) — přes kolize by se
+// jinak dalo hádat, jaký kód má někdo jiný (viz consumeAttempt).
 // ---------------------------------------------------------------------------
 
 const IP_WINDOW_MIN = 10;
@@ -205,8 +204,11 @@ export function clientIp(req: Request): string {
   );
 }
 
-/** 429, když je z téhle IP (nebo celkově) moc neúspěšných pokusů. */
-export async function assertAttemptLimit(ip: string): Promise<void> {
+/**
+ * 429, když je z téhle IP (nebo celkově) moc neúspěšných pokusů.
+ * `vlastni` = kolik z nich už zapsal tenhle požadavek sám (consumeAttempt).
+ */
+export async function assertAttemptLimit(ip: string, vlastni = 0): Promise<void> {
   const db = sql();
   const [limits] = await db`
     select
@@ -215,10 +217,10 @@ export async function assertAttemptLimit(ip: string): Promise<void> {
     from login_attempts
     where success = false and attempted_at > now() - make_interval(mins => ${IP_WINDOW_MIN})
   `;
-  if (Number(limits!.global_failures) >= GLOBAL_MAX_FAILURES) {
+  if (Number(limits!.global_failures) - vlastni >= GLOBAL_MAX_FAILURES) {
     throw new ApiError(429, "Přihlašování je dočasně uzamčené. Zkus to za 15 minut.");
   }
-  if (Number(limits!.ip_failures) >= IP_MAX_FAILURES) {
+  if (Number(limits!.ip_failures) - vlastni >= IP_MAX_FAILURES) {
     throw new ApiError(429, "Příliš mnoho pokusů. Zkus to za chvíli.");
   }
 }
@@ -226,6 +228,17 @@ export async function assertAttemptLimit(ip: string): Promise<void> {
 export async function recordAttempt(ip: string, success: boolean): Promise<void> {
   const db = sql();
   await db`insert into login_attempts (ip, success) values (${ip}, ${success})`;
+}
+
+/**
+ * Změna vlastního kódu: KAŽDÝ pokus (i úspěšný) se do limitu počítá jako
+ * neúspěch. Jinak by řetěz úspěšných změn A → B → C zkoušel cizí kódy zdarma
+ * a platil by jen za zásah. Zápis jde před kontrolu, takže ani souběžné
+ * požadavky limit nepřeskočí (každý ve svém součtu vidí aspoň sám sebe).
+ */
+export async function consumeAttempt(ip: string): Promise<void> {
+  await recordAttempt(ip, false);
+  await assertAttemptLimit(ip, 1);
 }
 
 /** Porovnání kódů v konstantním čase (otisky mají vždy stejnou délku). */

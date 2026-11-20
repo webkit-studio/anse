@@ -137,8 +137,9 @@ function KodPanel() {
 
         <Field label="Nový kód" htmlFor={POLE.code} messages={zpravy(chyby.code)}>
           <p className="field-help" id="kod-novy-napoveda">
-            Aspoň {VLASTNI_KOD_MIN} znaků: písmena bez diakritiky, číslice nebo znaky. Žádné řady
-            ani opakování jako 12345678 nebo aaaaaaaa. Na velikosti písmen nezáleží.
+            Aspoň {VLASTNI_KOD_MIN} znaků, mezi prvními šesti aspoň jedno písmeno. Písmena bez
+            diakritiky, číslice nebo znaky. Žádné řady ani opakování jako abcdefgh nebo aaaaaaaa.
+            Na velikosti písmen nezáleží.
           </p>
           <input
             {...KOD_INPUT}

@@ -9,7 +9,7 @@ import {
   jeVygenerovanyKod,
   maTvarKodu,
   normalizujKod,
-  samoOdeslani,
+  samoOdeslat,
 } from "./codes";
 
 describe("přihlašovací kódy", () => {
@@ -44,7 +44,11 @@ describe("vlastní kód (S05)", () => {
   it("tvar: 6 číslic, nebo 8–64 viditelných znaků bez diakritiky", () => {
     expect(maTvarKodu("482913")).toBe(true);
     expect(maTvarKodu("moje-brana-77")).toBe(true);
-    expect(maTvarKodu("48291736")).toBe(true);
+    expect(maTvarKodu("kuba2026")).toBe(true);
+    // vlastní kód nesmí začínat šesti číslicemi — šest číslic = vygenerovaný
+    expect(maTvarKodu("48291736")).toBe(false);
+    expect(maTvarKodu("482913xx")).toBe(false);
+    expect(maTvarKodu("48291x36")).toBe(true);
     expect(maTvarKodu("1234567")).toBe(false); // 7 znaků: ani jedno
     expect(maTvarKodu("abc123")).toBe(false); // 6 znaků, ale ne číslice
     expect(maTvarKodu("čelákovice")).toBe(false);
@@ -54,7 +58,7 @@ describe("vlastní kód (S05)", () => {
 
   it("kancelář vidí jen vygenerovaný kód", () => {
     expect(jeVygenerovanyKod("482913")).toBe(true);
-    expect(jeVygenerovanyKod("48291736")).toBe(false);
+    expect(jeVygenerovanyKod("48291x36")).toBe(false);
     expect(jeVygenerovanyKod("moje-brana-77")).toBe(false);
   });
 
@@ -63,6 +67,11 @@ describe("vlastní kód (S05)", () => {
     expect(chybaTvaruVlastnihoKodu("a".repeat(65))).toBe("Kód může mít nejvýš 64 znaků.");
     expect(chybaTvaruVlastnihoKodu("moje brana")).toBe("Kód nesmí obsahovat mezery.");
     expect(chybaTvaruVlastnihoKodu("čelákovice")).toBe("Použij jen písmena bez diakritiky, číslice a znaky.");
+    for (const kod of ["48291736", "04121985", "482913xx"]) {
+      expect(chybaTvaruVlastnihoKodu(kod), kod).toBe(
+        "Kód nesmí začínat šesti číslicemi. Dej mezi prvních šest znaků písmeno.",
+      );
+    }
     expect(chybaTvaruVlastnihoKodu("moje-brana-77")).toBeNull();
   });
 
@@ -71,6 +80,8 @@ describe("vlastní kód (S05)", () => {
       "00000000",
       "aaaaaaaa",
       "11112222",
+      "11223344",
+      "aabbccdd",
       "12121212",
       "abcabcab",
       "12341234",
@@ -88,6 +99,11 @@ describe("vlastní kód (S05)", () => {
       "heslo123",
       "anse1234",
       "1q2w3e4r",
+      "qwertzuiopasdf",
+      "password!",
+      "heslo1234!",
+      "anse2026!",
+      "!abcd1234",
       "12345678a",
       "a1234567",
       "aaaaaaa1",
@@ -97,7 +113,7 @@ describe("vlastní kód (S05)", () => {
   });
 
   it("rozumné kódy projdou — i datum narození (zadání ho neřeší)", () => {
-    const dobre = ["moje-brana-77", "kuba2026", "48291736", "04121985", "celakovice", "kuzpyb-3vamwi-byzqyc"];
+    const dobre = ["moje-brana-77", "kuba2026", "48291736", "04121985", "celakovice", "kuzpyb-3vamwi-byzqyc", "kkuubbaa"];
     for (const kod of dobre) expect(jeSlabyVlastniKod(kod), kod).toBe(false);
   });
 
@@ -112,25 +128,32 @@ describe("přihlašovací pole", () => {
     expect(chybaPrihlasovacihoKodu("Moje-Brana-77")).toBeNull();
     expect(chybaPrihlasovacihoKodu("")).toBe("Kód má 6 číslic.");
     expect(chybaPrihlasovacihoKodu("123")).toBe("Kód má 6 číslic.");
-    expect(chybaPrihlasovacihoKodu("1234567")).toBe("Vlastní kód má aspoň 8 znaků.");
+    expect(chybaPrihlasovacihoKodu("1234567")).toBe("Kód má 6 číslic.");
+    expect(chybaPrihlasovacihoKodu("48291736")).toBe("Kód má 6 číslic.");
+    expect(chybaPrihlasovacihoKodu("kuba")).toBe("Vlastní kód má aspoň 8 znaků.");
     expect(chybaPrihlasovacihoKodu("brana")).toBe("Vlastní kód má aspoň 8 znaků.");
     // česká klávesnice: číslice bez Shiftu píšou háčky a čárky
     expect(chybaPrihlasovacihoKodu("ěščřžý")).toBe("Kód je bez diakritiky — zkontroluj klávesnici.");
   });
 
-  it("samo odeslání: doplněný kód hned, ručně psaných 6 číslic po pauze, delší kód ne", () => {
+  it("samo odeslání: 6 číslic hned, doplněný kód hned, ručně psaný vlastní kód ne", () => {
+    // 6. číslice — vlastní kód tak začínat nesmí, takže je to vygenerovaný kód
+    expect(samoOdeslat("48291", "482913")).toBe(true);
     // správce hesel / vložení: celá hodnota najednou
-    expect(samoOdeslani("", "482913")).toBe("hned");
-    expect(samoOdeslani("", "Moje-Brana-77")).toBe("hned");
-    expect(samoOdeslani("", "48291736")).toBe("hned");
-    // ruční psaní: 6. číslice → počkat, jestli nepřijde 7.
-    expect(samoOdeslani("48291", "482913")).toBe("po-pauze");
-    expect(samoOdeslani("482913", "4829173")).toBeNull();
-    expect(samoOdeslani("4829173", "48291736")).toBeNull();
-    expect(samoOdeslani("moje-brana-7", "moje-brana-77")).toBeNull();
-    // mazání zpátky na 6 číslic neodesílá
-    expect(samoOdeslani("4829137", "482913")).toBeNull();
+    expect(samoOdeslat("", "482913")).toBe(true);
+    expect(samoOdeslat("", "Moje-Brana-77")).toBe(true);
+    // ruční psaní vlastního kódu: nikdy, potvrdí se tlačítkem
+    expect(samoOdeslat("kuba202", "kuba2026")).toBe(false);
+    expect(samoOdeslat("48291x3", "48291x36")).toBe(false);
+    // ruční psaní vlastního kódu nikdy neprojde stavem „přesně 6 číslic“
+    const vlastni = "48291x36";
+    for (let i = 1; i <= vlastni.length; i++) {
+      expect(CODE_REGEX.test(vlastni.slice(0, i))).toBe(false);
+    }
+    // mazání neodesílá
+    expect(samoOdeslat("4829137", "482913")).toBe(false);
     // vložená hodnota bez tvaru kódu se neodešle
-    expect(samoOdeslani("", "1234567")).toBeNull();
+    expect(samoOdeslat("", "1234567")).toBe(false);
+    expect(samoOdeslat("", "48291736")).toBe(false);
   });
 });

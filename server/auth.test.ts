@@ -407,7 +407,7 @@ describe("vlastní kód", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const obsazeny = await handle(zmenaKodu(technik, { current: "482913", code: "Obsazeny-Kod-9" }));
-    const slaby = await handle(zmenaKodu(technik, { current: "482913", code: "12345678" }));
+    const slaby = await handle(zmenaKodu(technik, { current: "482913", code: "abcdefgh" }));
     expect(obsazeny.status).toBe(400);
     expect(slaby.status).toBe(obsazeny.status);
     const a = await obsazeny.json();
@@ -436,17 +436,53 @@ describe("vlastní kód", () => {
     expect(db.state.users.get(KANCELAR)!.code).toBe("730164");
   });
 
-  it("chyby tvaru jdou k poli a do pokusů se nepočítají", async () => {
+  it("chyby tvaru jdou k poli a do pokusů se nepočítají, každý další pokus ano", async () => {
     const technik = await tokenFor(TECHNIK, 0);
     const kratky = await handle(zmenaKodu(technik, { current: "482913", code: "abc12" }));
     expect(await kratky.json()).toEqual({ error: "Kód musí mít aspoň 8 znaků.", pole: "code" });
     const prazdny = await handle(zmenaKodu(technik, { current: " ", code: "moje-brana-77" }));
     expect(await prazdny.json()).toEqual({ error: "Zadej současný kód.", pole: "current" });
-    const stejny = await handle(zmenaKodu(technik, { current: "482913", code: "482913xx" }));
-    expect(stejny.status).toBe(200);
-    const zpet = await handle(zmenaKodu(cookieToken(stejny)!, { current: "482913XX", code: "482913xx" }));
-    expect(await zpet.json()).toEqual({ error: "Nový kód je stejný jako současný.", pole: "code" });
+    // šest číslic na začátku = vypadá jako vygenerovaný kód (přihlášení ho odešle po 6. číslici)
+    const sestCislic = await handle(zmenaKodu(technik, { current: "482913", code: "482913xx" }));
+    expect(await sestCislic.json()).toEqual({
+      error: "Kód nesmí začínat šesti číslicemi. Dej mezi prvních šest znaků písmeno.",
+      pole: "code",
+    });
     expect(neuspechy()).toBe(0);
+
+    const ok = await handle(zmenaKodu(technik, { current: "482913", code: "kuba-2026" }));
+    expect(ok.status).toBe(200);
+    const zpet = await handle(zmenaKodu(cookieToken(ok)!, { current: "KUBA-2026", code: "kuba-2026" }));
+    expect(await zpet.json()).toEqual({ error: "Nový kód je stejný jako současný.", pole: "code" });
+    // i úspěšná změna se do limitu počítá (viz test řetězu níž)
+    expect(neuspechy()).toBe(2);
+  });
+
+  it("řetěz úspěšných změn A → B → C narazí na limit — kolize se nedají zkoušet zdarma", async () => {
+    let token = await tokenFor(TECHNIK, 0);
+    let current = "482913";
+    for (let i = 0; i < 8; i++) {
+      const code = `zkouska-${i}x`;
+      const res = await handle(zmenaKodu(token, { current, code }));
+      expect(res.status).toBe(200);
+      token = cookieToken(res)!;
+      current = code;
+    }
+    const dalsi = await handle(zmenaKodu(token, { current, code: "lukas-2026" }));
+    expect(dalsi.status).toBe(429);
+    expect(db.state.users.get(TECHNIK)!.code).toBe("zkouska-7x");
+  });
+
+  it("souběžné pokusy limit nepřeskočí (zápis jde před kontrolu)", async () => {
+    const technik = await tokenFor(TECHNIK, 0);
+    const vysledky = await Promise.all(
+      Array.from({ length: 12 }, (_, i) =>
+        handle(zmenaKodu(technik, { current: `30000${i}`, code: "moje-brana-77" })),
+      ),
+    );
+    const prosly = vysledky.filter((r) => r.status !== 429).length;
+    expect(prosly).toBeLessThanOrEqual(8);
+    expect(vysledky.every((r) => r.status === 400 || r.status === 429)).toBe(true);
   });
 
   it("limit pokusů je společný s přihlášením — oběma směry", async () => {

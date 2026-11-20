@@ -1,4 +1,5 @@
 import { devices, expect, test, type Browser, type Page } from "@playwright/test";
+import { vycistitPokusy } from "./pokusy";
 
 // S05 #7: uživatel si v Nastavení nastaví vlastní přihlašovací kód. Ostatní
 // zařízení se odhlásí, aktuální zůstane přihlášené, nový kód funguje
@@ -6,11 +7,12 @@ import { devices, expect, test, type Browser, type Page } from "@playwright/test
 
 const SUFFIX = Date.now();
 const NOVY_KOD = `Moje-Brana-${SUFFIX}`;
-/** Číselný vlastní kód — při ručním psaní se nesmí odeslat po 6. číslici. */
-const CISELNY_KOD = String(SUFFIX).slice(-8);
+/** Vlastní kód začínající číslicemi — ručně psaný se sám neodešle. */
+const RUCNI_KOD = `4829x${String(SUFFIX).slice(-6)}`;
 const OBSAZENY_KOD = `obsazeny-${SUFFIX}`;
 
 test.describe.configure({ mode: "serial" });
+test.beforeEach(vycistitPokusy);
 
 async function prihlasit(page: Page, code: string) {
   await page.goto("/login");
@@ -85,7 +87,7 @@ test("technik si změní kód: staré zařízení se odhlásí, nový kód fungu
     }
 
     // Slabý a obsazený kód: stejná obecná hláška u pole.
-    await vyplnZmenu(telefon, technik.code, "12345678");
+    await vyplnZmenu(telefon, technik.code, "abcdefgh");
     await expect(telefon.getByRole("alert")).toHaveText("Tento kód nejde použít, zvol jiný.");
     await vyplnZmenu(telefon, technik.code, OBSAZENY_KOD.toUpperCase());
     await expect(telefon.getByRole("alert")).toHaveText("Tento kód nejde použít, zvol jiný.");
@@ -136,7 +138,7 @@ test("technik si změní kód: staré zařízení se odhlásí, nový kód fungu
     await tablet.getByLabel("Přihlašovací kód").fill(NOVY_KOD);
     await expect(tablet.getByRole("alert")).toHaveText("Neplatný kód.");
 
-    // Nový 6místný kód napsaný ručně se odešle sám (po krátké pauze).
+    // Nový 6místný kód napsaný ručně se odešle sám po 6. číslici.
     const poResetu = (await (await page.request.get("/api/users")).json()) as {
       users: { id: string; code: string | null }[];
     };
@@ -153,14 +155,14 @@ test("technik si změní kód: staré zařízení se odhlásí, nový kód fungu
   }
 });
 
-test("číselný vlastní kód psaný ručně se neodešle po 6. číslici", async ({ page, browser }) => {
+test("ručně psaný vlastní kód se sám neodešle, potvrdí se tlačítkem", async ({ page, browser }) => {
   await prihlasit(page, "999999");
   const technik = await zalozTechnika(page, `E2E Číslice ${SUFFIX}`);
   const telefon = await zarizeni(browser);
   try {
     await prihlasit(telefon, technik.code);
     const zmena = await telefon.request.put("/api/me/code", {
-      data: { current: technik.code, code: CISELNY_KOD },
+      data: { current: technik.code, code: RUCNI_KOD },
     });
     expect(zmena.ok()).toBe(true);
 
@@ -169,11 +171,11 @@ test("číselný vlastní kód psaný ručně se neodešle po 6. číslici", asy
       await jinde.goto("/login");
       const pole = jinde.getByLabel("Přihlašovací kód");
       // Píše se jako na telefonu, číslice po číslici.
-      await pole.pressSequentially(CISELNY_KOD, { delay: 120 });
-      // Po 6. číslici se nic neodeslalo: celý kód je v poli a žádná chyba.
+      await pole.pressSequentially(RUCNI_KOD, { delay: 120 });
+      // Nic se neodeslalo samo: celý kód je v poli a žádná chyba.
       await jinde.waitForTimeout(1200);
       await expect(jinde).toHaveURL(/\/login$/);
-      await expect(pole).toHaveValue(CISELNY_KOD);
+      await expect(pole).toHaveValue(RUCNI_KOD);
       await expect(jinde.getByRole("alert")).toHaveCount(0);
       // Delší kód se potvrdí tlačítkem.
       await jinde.getByRole("button", { name: "Přihlásit" }).click();

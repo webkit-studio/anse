@@ -8,10 +8,9 @@ import {
   normalizujKod,
 } from "../../shared/codes";
 import {
-  assertAttemptLimit,
   clientIp,
+  consumeAttempt,
   invalidateUsersCache,
-  recordAttempt,
   sameCode,
   sessionCookie,
   signSession,
@@ -64,8 +63,9 @@ export const userRoutes: Route[] = [
   // Změna vlastního kódu (S05 #7) — kdokoli přihlášený, jen sám sobě.
   // Login je jen kód, bez jména: kód musí být unikátní, a tak by hláška
   // „obsazený" prozradila cizí kód. Proto stejná hláška pro slabý i obsazený
-  // kód, nutný současný kód a společný limit pokusů s přihlášením. Kód se
-  // nikdy nevrací ani neloguje.
+  // kód, nutný současný kód a společný limit pokusů s přihlášením — do něj
+  // jde každý pokus, který projde kontrolou tvaru. Kód se nikdy nevrací ani
+  // neloguje.
   makeRoute("PUT", "/api/me/code", async (req, ctx) => {
     const db = sql();
     const body = await parseBody(req, ownCodeBody);
@@ -76,22 +76,15 @@ export const userRoutes: Route[] = [
     const tvar = chybaTvaruVlastnihoKodu(code);
     if (tvar) throw chybaPole("code", tvar);
 
-    const ip = clientIp(req);
-    await assertAttemptLimit(ip);
+    await consumeAttempt(clientIp(req));
 
     const [me] = await db`select code from users where id = ${ctx.user.id} and active`;
     if (!me) throw new ApiError(401, "Přihlášení už není platné.");
     const stored = String(me.code).trim();
 
-    if (!sameCode(current, stored)) {
-      await recordAttempt(ip, false);
-      throw chybaPole("current", "Současný kód nesedí.");
-    }
+    if (!sameCode(current, stored)) throw chybaPole("current", "Současný kód nesedí.");
     if (code === stored) throw chybaPole("code", "Nový kód je stejný jako současný.");
-    if (jeSlabyVlastniKod(code)) {
-      await recordAttempt(ip, false);
-      throw chybaPole("code", KOD_NEJDE_POUZIT);
-    }
+    if (jeSlabyVlastniKod(code)) throw chybaPole("code", KOD_NEJDE_POUZIT);
 
     let row;
     try {
@@ -104,10 +97,7 @@ export const userRoutes: Route[] = [
     } catch (err) {
       // Chyby z DB nesou v `detail` hodnotu kódu — nesmí dojít do logu.
       const pgCode = (err as { code?: string }).code;
-      if (pgCode === "23505") {
-        await recordAttempt(ip, false);
-        throw chybaPole("code", KOD_NEJDE_POUZIT);
-      }
+      if (pgCode === "23505") throw chybaPole("code", KOD_NEJDE_POUZIT);
       if (pgCode === "23514") {
         console.error("Změna kódu: users_code_check neprošel (hodnota se neloguje).");
         throw chybaPole("code", KOD_NEJDE_POUZIT);
@@ -115,7 +105,6 @@ export const userRoutes: Route[] = [
       throw new Error(`Změna kódu selhala v DB (${pgCode ?? "bez kódu"}).`);
     }
     if (!row) throw new ApiError(409, "Kód se mezitím změnil. Obnov stránku a zkus to znovu.");
-    await recordAttempt(ip, true);
     invalidateUsersCache();
 
     // Ostatní zařízení se odhlásí (vyšší verze), tohle dostane nový cookie.

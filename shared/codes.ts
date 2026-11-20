@@ -1,7 +1,9 @@
 // Přihlašovací kódy. Login je jen kód, bez jména — kód zároveň určuje, kdo se
 // přihlašuje, proto je unikátní. Dva druhy:
 // - vygenerovaný: přesně 6 číslic, vydává server (nový účet, reset kanceláří),
-// - vlastní (S05 #7): 8–64 znaků, nastaví si ho uživatel v Nastavení.
+// - vlastní (S05 #7): 8–64 znaků, nastaví si ho uživatel v Nastavení. Nesmí
+//   začínat šesti číslicemi — šest číslic je tak vždy vygenerovaný kód
+//   a přihlášení ho může odeslat hned po 6. číslici bez dohadů.
 // Ukládá se a porovnává v normalizovaném tvaru (malá písmena), takže při
 // přihlášení na velikosti písmen nezáleží.
 
@@ -31,11 +33,17 @@ export function jeVygenerovanyKod(code: string): boolean {
   return CODE_REGEX.test(code);
 }
 
+/** Začíná šesti číslicemi — jako vygenerovaný kód. */
+const SEST_CISLIC_NA_ZACATKU = /^\d{6}/;
+
 /** Může to být kód (vygenerovaný nebo vlastní)? Vstup normalizovaný. */
 export function maTvarKodu(code: string): boolean {
   return (
     CODE_REGEX.test(code) ||
-    (code.length >= VLASTNI_KOD_MIN && code.length <= VLASTNI_KOD_MAX && VLASTNI_ZNAKY.test(code))
+    (code.length >= VLASTNI_KOD_MIN &&
+      code.length <= VLASTNI_KOD_MAX &&
+      VLASTNI_ZNAKY.test(code) &&
+      !SEST_CISLIC_NA_ZACATKU.test(code))
   );
 }
 
@@ -44,7 +52,7 @@ export function chybaPrihlasovacihoKodu(raw: string): string | null {
   const code = normalizujKod(raw);
   if (maTvarKodu(code)) return null;
   if (/[^\x21-\x7e]/.test(code)) return "Kód je bez diakritiky — zkontroluj klávesnici.";
-  if (/^\d{0,6}$/.test(code)) return "Kód má 6 číslic.";
+  if (/^\d*$/.test(code) || SEST_CISLIC_NA_ZACATKU.test(code)) return "Kód má 6 číslic.";
   return "Vlastní kód má aspoň 8 znaků.";
 }
 
@@ -55,6 +63,9 @@ export function chybaTvaruVlastnihoKodu(code: string): string | null {
   if (code.length > VLASTNI_KOD_MAX) return `Kód může mít nejvýš ${VLASTNI_KOD_MAX} znaků.`;
   if (/\s/.test(code)) return "Kód nesmí obsahovat mezery.";
   if (!VLASTNI_ZNAKY.test(code)) return "Použij jen písmena bez diakritiky, číslice a znaky.";
+  if (SEST_CISLIC_NA_ZACATKU.test(code)) {
+    return "Kód nesmí začínat šesti číslicemi. Dej mezi prvních šest znaků písmeno.";
+  }
   return null;
 }
 
@@ -69,6 +80,8 @@ const RADY = [
   "yxcvbnm",
   "zxcvbnm",
   "abcdefghijklmnopqrstuvwxyz",
+  "qwertzuiopasdfghjklyxcvbnm",
+  "qwertyuiopasdfghjklzxcvbnm",
   "1qaz2wsx3edc4rfv5tgb",
   "1qay2wsx3edc4rfv5tgb",
   "qaywsxedcrfvtgbzhnujm",
@@ -133,25 +146,38 @@ function jeRada(code: string): boolean {
   return false;
 }
 
+/** Každý znak dvakrát za sebou (11223344, aabbccdd) → vrátí kód bez zdvojení. */
+function bezZdvojeni(code: string): string | null {
+  if (code.length % 2 !== 0) return null;
+  let out = "";
+  for (let i = 0; i < code.length; i += 2) {
+    if (code[i] !== code[i + 1]) return null;
+    out += code[i];
+  }
+  return out;
+}
+
 function jeVzorec(code: string): boolean {
+  const pul = bezZdvojeni(code);
   return (
     new Set(code).size < 3 ||
     jeOpakovani(code) ||
     jeRada(code) ||
+    (pul !== null && pul.length >= 3 && jeVzorec(pul)) ||
     RADY.some((r) => r.includes(code) || [...r].reverse().join("").includes(code))
   );
 }
 
+const jeSlabyZaklad = (code: string) => CASTA.has(code) || jeVzorec(code);
+
 /**
- * Vlastní kód, který jde uhodnout: opakování (00000000, 12121212), řady
- * (12345678, abcdefgh, qwertzui), málo různých znaků, nejčastější hesla
- * a totéž s jedním znakem navíc na začátku nebo na konci (12345678a).
- * Data narození (DDMMRRRR) zadání neřeší. Vstup normalizovaný.
+ * Vlastní kód, který jde uhodnout: opakování (00000000, 12121212, 11223344),
+ * řady (12345678, abcdefgh, qwertzui), málo různých znaků, nejčastější hesla
+ * a totéž s jedním znakem navíc na začátku nebo na konci (password!,
+ * a1234567). Data narození (DDMMRRRR) zadání neřeší. Vstup normalizovaný.
  */
 export function jeSlabyVlastniKod(code: string): boolean {
-  return (
-    CASTA.has(code) || jeVzorec(code) || jeVzorec(code.slice(1)) || jeVzorec(code.slice(0, -1))
-  );
+  return jeSlabyZaklad(code) || jeSlabyZaklad(code.slice(1)) || jeSlabyZaklad(code.slice(0, -1));
 }
 
 // --- 6místné kódy zadané kanceláří ručně ----------------------------------------
@@ -167,19 +193,15 @@ export function isTrivialCode(code: string): boolean {
 
 // --- automatické odeslání přihlášení ---------------------------------------------
 
-/** Jak dlouho po ručně dopsané 6. číslici počkat, jestli se píše dál. */
-export const PAUZA_PRED_ODESLANIM_MS = 800;
-
 /**
- * Kdy přihlášení odeslat samo, bez Enteru:
- * - "hned": hodnota přibyla najednou (správce hesel, vložení) a má tvar kódu,
- * - "po-pauze": ručně dopsaná 6. číslice — vlastní kód může mít víc číslic
- *   (např. 8), tak se chvíli počká, jestli se píše dál,
- * - null: neodesílat (delší kód potvrdí Enter nebo tlačítko).
+ * Odeslat přihlášení samo, bez Enteru? Ano, když hodnota přibyla a je to
+ * 6 číslic (vygenerovaný kód — vlastní tak začínat nesmí, takže je to
+ * jednoznačné), nebo když přibyla najednou (správce hesel, vložení) a má
+ * tvar kódu. Ručně psaný vlastní kód se potvrdí Enterem nebo tlačítkem.
  */
-export function samoOdeslani(predtim: string, ted: string): "hned" | "po-pauze" | null {
+export function samoOdeslat(predtim: string, ted: string): boolean {
+  if (ted.length <= predtim.length) return false;
   const kod = normalizujKod(ted);
-  if (ted.length - predtim.length >= 2 && maTvarKodu(kod)) return "hned";
-  if (ted.length > predtim.length && CODE_REGEX.test(kod)) return "po-pauze";
-  return null;
+  if (CODE_REGEX.test(kod)) return true;
+  return ted.length - predtim.length >= 2 && maTvarKodu(kod);
 }

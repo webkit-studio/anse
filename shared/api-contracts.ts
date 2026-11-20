@@ -29,7 +29,7 @@ const timeString = z
 export const loginBody = z.object({
   code: z
     .string()
-    .max(200)
+    .max(200, "Neplatný kód.")
     .transform(normalizujKod)
     .pipe(z.string().refine(maTvarKodu, "Neplatný kód.")),
 });
@@ -37,8 +37,8 @@ export const loginBody = z.object({
 /** Změna vlastního kódu (S05 #7). Tvar, slabost a shodu kontroluje routa,
  *  aby každá chyba šla k poli, ke kterému patří. */
 export const ownCodeBody = z.object({
-  current: z.string().max(200),
-  code: z.string().max(200),
+  current: z.string().max(200, "Kód je příliš dlouhý."),
+  code: z.string().max(200, "Kód je příliš dlouhý."),
 });
 
 // === kontakty ==============================================================
