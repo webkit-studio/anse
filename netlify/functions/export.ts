@@ -1,4 +1,4 @@
-import { activeUser, readSessionCookie, verifySessionToken } from "../../server/auth";
+import { readSessionCookie, sessionUser, verifySessionToken } from "../../server/auth";
 import { buildDodavatelXml } from "../../server/export/dodavatel-xml";
 import { buildJwCsv } from "../../server/export/jw-csv";
 import { buildMontazniListPdf } from "../../server/export/montazni-list-pdf";
@@ -11,7 +11,8 @@ export default async (req: Request): Promise<Response> => {
   try {
     const token = readSessionCookie(req);
     const session = token ? await verifySessionToken(token) : null;
-    const user = session ? await activeUser(session.user.id) : null;
+    // Stejná kontrola jako v API: aktivní uživatel a neodvolané přihlášení.
+    const user = session ? await sessionUser(session) : null;
     if (!session || !user) {
       return json({ error: "Přihlaste se prosím." }, { status: 401 });
     }
