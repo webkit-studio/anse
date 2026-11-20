@@ -112,7 +112,7 @@ formulářů a konfigurátor, exporty, rutiny, drobná změna ve schváleném vz
 - Nejvýš dvě běžící session, v každé lane jedna. Hotfix H se počítá do limitu.
 - Řez jde napříč vrstvami (DB → server → UI) a funguje sám, proto lane A
   drží celou aplikaci. Lane B jde souběžně, jen když issue A nesahá na její soubory.
-- Migrace jen v lane A. Další volné číslo: **018** (014–017 rezervováno pro S01–S04).
+- Migrace jen v lane A. Další volné číslo: **019** (018 rezervováno pro L01).
 
 ## Kódy session
 S stavba · D návrh · H oprava · R revize · P výkon · L drobná úprava pro provoz.
@@ -125,5 +125,7 @@ S stavba · D návrh · H oprava · R revize · P výkon · L drobná úprava pr
 | S02 | Kancelář zadává položky, kdo montuje, smazat staré sloupce | #3 | A | #2 | 015 | test + e2e | hotovo |
 | S03 | Typ zakázky Nová / Oprava | #4 | A | #3 | 016 | test + e2e | hotovo |
 | S04 | Zaměření a montáže v kalendáři (ICS) | #5 | A | #4 | 017 | test + e2e | hotovo |
+| L01 | Přihlášení: uložení do hesel, 90 dní, odvolání session | #6 | A | – | 018 | test + e2e | spuštěno |
+| S05 | Vlastní přihlašovací kód v Nastavení | #7 | A | #6 | – | test + e2e | čeká |
 
 Tabulka je jen snímek. Pravdu drží issue.
