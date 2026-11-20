@@ -1,4 +1,6 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
+import { normalizujKod } from "../shared/codes";
 import type { Role, SessionUser } from "../shared/types";
 import { sql } from "./db";
 import { ApiError } from "./http";
@@ -186,6 +188,8 @@ export function invalidateUsersCache(): void {
 
 // ---------------------------------------------------------------------------
 // Login s rate-limitem: per IP + globální pojistka (6místný prostor kódů).
+// Stejný limit hlídá i změnu vlastního kódu (S05 #7) — přes kolize by se
+// jinak dalo hádat, jaký kód má někdo jiný (viz consumeAttempt).
 // ---------------------------------------------------------------------------
 
 const IP_WINDOW_MIN = 10;
@@ -200,10 +204,12 @@ export function clientIp(req: Request): string {
   );
 }
 
-export async function login(req: Request, code: string): Promise<{ user: SessionUser; token: string }> {
+/**
+ * 429, když je z téhle IP (nebo celkově) moc neúspěšných pokusů.
+ * `vlastni` = kolik z nich už zapsal tenhle požadavek sám (consumeAttempt).
+ */
+export async function assertAttemptLimit(ip: string, vlastni = 0): Promise<void> {
   const db = sql();
-  const ip = clientIp(req);
-
   const [limits] = await db`
     select
       count(*) filter (where ip = ${ip}) as ip_failures,
@@ -211,12 +217,43 @@ export async function login(req: Request, code: string): Promise<{ user: Session
     from login_attempts
     where success = false and attempted_at > now() - make_interval(mins => ${IP_WINDOW_MIN})
   `;
-  if (Number(limits!.global_failures) >= GLOBAL_MAX_FAILURES) {
+  if (Number(limits!.global_failures) - vlastni >= GLOBAL_MAX_FAILURES) {
     throw new ApiError(429, "Přihlašování je dočasně uzamčené. Zkus to za 15 minut.");
   }
-  if (Number(limits!.ip_failures) >= IP_MAX_FAILURES) {
+  if (Number(limits!.ip_failures) - vlastni >= IP_MAX_FAILURES) {
     throw new ApiError(429, "Příliš mnoho pokusů. Zkus to za chvíli.");
   }
+}
+
+export async function recordAttempt(ip: string, success: boolean): Promise<void> {
+  const db = sql();
+  await db`insert into login_attempts (ip, success) values (${ip}, ${success})`;
+}
+
+/**
+ * Změna vlastního kódu: KAŽDÝ pokus (i úspěšný) se do limitu počítá jako
+ * neúspěch. Jinak by řetěz úspěšných změn A → B → C zkoušel cizí kódy zdarma
+ * a platil by jen za zásah. Zápis jde před kontrolu, takže ani souběžné
+ * požadavky limit nepřeskočí (každý ve svém součtu vidí aspoň sám sebe).
+ */
+export async function consumeAttempt(ip: string): Promise<void> {
+  await recordAttempt(ip, false);
+  await assertAttemptLimit(ip, 1);
+}
+
+/** Porovnání kódů v konstantním čase (otisky mají vždy stejnou délku). */
+export function sameCode(a: string, b: string): boolean {
+  const ha = createHash("sha256").update(a).digest();
+  const hb = createHash("sha256").update(b).digest();
+  return timingSafeEqual(ha, hb);
+}
+
+export async function login(req: Request, rawCode: string): Promise<{ user: SessionUser; token: string }> {
+  const db = sql();
+  const ip = clientIp(req);
+  const code = normalizujKod(rawCode);
+
+  await assertAttemptLimit(ip);
 
   // Verze se čte čerstvá z DB, ne z cache: po resetu kódu na jiné instanci by
   // token se starou verzí z cache hned po přihlášení zase vypadl.
@@ -229,7 +266,7 @@ export async function login(req: Request, code: string): Promise<{ user: Session
     `,
   );
 
-  await db`insert into login_attempts (ip, success) values (${ip}, ${Boolean(user)})`;
+  await recordAttempt(ip, Boolean(user));
 
   if (!user) {
     throw new ApiError(401, "Neplatný kód.");

@@ -13,6 +13,7 @@ import LoginPage from "./pages/Login";
 import MontazPage from "./pages/Montaz";
 import NastaveniPage from "./pages/Nastaveni";
 import PrehledPage from "./pages/Prehled";
+import PrihlasovaciKodPage from "./pages/PrihlasovaciKod";
 import StatistikyPage from "./pages/Statistiky";
 import UdajeZakaznikaPage from "./pages/UdajeZakaznika";
 import ZakazkaDetailPage from "./pages/ZakazkaDetail";
@@ -75,9 +76,10 @@ export const router = createBrowserRouter([
           { path: "/zakazky/:orderId/polozka/nova", element: <ItemFormPage mode="new" /> },
           { path: "/zakazky/:orderId/polozka/:itemId", element: <ItemFormPage mode="edit" /> },
 
-          // Kalendář má každý (technik ho otevírá ze Zprávy → Nastavení);
-          // statická cesta vyhraje nad /nastaveni/:section kanceláře.
+          // Kalendář a přihlašovací kód má každý (technik je otevírá ze
+          // Zprávy → Nastavení); statická cesta vyhraje nad /nastaveni/:section.
           { path: "/nastaveni/kalendar", element: <KalendarPage /> },
+          { path: "/nastaveni/kod", element: <PrihlasovaciKodPage /> },
 
           {
             element: <RequireOffice />,

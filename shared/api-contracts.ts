@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { maTvarKodu, normalizujKod } from "./codes";
 import { ORDER_KINDS, ORDER_PHASES, NOTIF_EVENTS } from "./types";
 
 // Zod kontrakty request bodies — parsují se na serveru (nikdy nevěříme
@@ -23,8 +24,21 @@ const timeString = z
   .optional()
   .or(z.literal("").transform(() => null));
 
+/** Vygenerovaný kód (6 číslic) nebo vlastní (8–64 znaků, S05 #7); velikost
+ *  písmen nerozhoduje. Neplatný tvar se do pokusů nepočítá — nic neprozradí. */
 export const loginBody = z.object({
-  code: z.string().regex(/^\d{6}$/, "Kód má 6 číslic."),
+  code: z
+    .string()
+    .max(200, "Neplatný kód.")
+    .transform(normalizujKod)
+    .pipe(z.string().refine(maTvarKodu, "Neplatný kód.")),
+});
+
+/** Změna vlastního kódu (S05 #7). Tvar, slabost a shodu kontroluje routa,
+ *  aby každá chyba šla k poli, ke kterému patří. */
+export const ownCodeBody = z.object({
+  current: z.string().max(200, "Kód je příliš dlouhý."),
+  code: z.string().max(200, "Kód je příliš dlouhý."),
 });
 
 // === kontakty ==============================================================

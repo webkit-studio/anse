@@ -3315,6 +3315,43 @@ input[type="date"] {
   justify-self: start;
 }
 
+/* --- Přihlašovací kód (S05): vlastní kód v Nastavení --- */
+
+.kod-panel {
+  display: grid;
+  gap: var(--sp-4);
+  max-width: 560px;
+}
+
+.kod-form {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+}
+
+/* Nápověda mezi popiskem a polem — u chyby zůstává vidět. */
+.kod-form .field-help {
+  margin-bottom: 2px;
+}
+
+.kod-ulozit {
+  justify-self: start;
+  min-width: 220px;
+}
+
+@media (max-width: 640px) {
+  .kod-ulozit {
+    justify-self: stretch;
+  }
+}
+
+/* Účty: místo kódu „vlastní" — ten kancelář nevidí. */
+.code-vlastni {
+  font-weight: 600;
+  letter-spacing: normal;
+  color: var(--c-text-muted);
+}
+
 /* Hodnota s ikonovou akcí vedle (termín montáže → do kalendáře). */
 .meta-value-akce {
   display: inline-flex;
@@ -3456,6 +3493,11 @@ input[type="date"] {
   font-variant-numeric: tabular-nums;
   min-height: 62px;
   padding-left: 0.32em; /* vyrovná letter-spacing za posledním znakem */
+}
+
+/* Vlastní kód (S05) se píše ručně a potvrdí tlačítkem; 6místný odešle i sám. */
+.login-submit {
+  margin-top: var(--sp-2);
 }
 
 .login-hint {

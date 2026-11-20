@@ -61,7 +61,22 @@ uživatelem, port 5433, DB `anse` — connection string
   a pošle na přihlášení (`App.tsx`). Login je `<form>`, pole `type=password`
   + `autocomplete=current-password` a skryté `username` „Anse" kvůli
   klíčence a Face ID; po přihlášení skutečná navigace — nevracet na
-  `one-time-code` ani SPA `navigate`.
+  `one-time-code` ani SPA `navigate`. Pole je textové (ne `numeric`):
+  6. číslice a doplněný kód odesílají hned (`samoOdeslat` v
+  `shared/codes.ts`), ručně psaný vlastní kód tlačítkem „Přihlásit".
+- **Vlastní kód** (S05, migrace 019): Nastavení → Přihlašovací kód
+  (`/nastaveni/kod`, technik ze Zprávy → ⚙ Nastavení), `PUT /api/me/code`.
+  Kód je 6 číslic (vygenerovaný) nebo 8–64 znaků (vlastní, **nesmí
+  začínat šesti číslicemi** — šest číslic je tak vždy vygenerovaný kód);
+  ukládá se malými písmeny, login velikost nerozlišuje (`normalizujKod`).
+  Změna chce současný kód, slabý i obsazený kód mají **stejnou hlášku**
+  (`KOD_NEJDE_POUZIT`) a **každý pokus** (i úspěšný) jde do společného
+  limitu s loginem dřív, než se cokoli porovná (`consumeAttempt` v
+  `server/auth.ts`) — řetěz úspěšných změn by jinak zkoušel cizí kódy
+  zdarma. Chyba je 400 s `pole`, nikdy 401 (klient by odhlásil). Změna zvedá `session_version`,
+  aktuální zařízení dostane nový cookie. Kancelář vlastní kód **nevidí**
+  (`code: null`, `vlastni_kod`), reset ho nahradí 6místným. DB chyby nesou
+  kód v `detail` — v routě se nelogují.
 - Role: `technik` (nezávislý dodavatel, vidí jen svoje zakázky) a `kancelar`
   (vidí vše). **Cenu zakázky pro zákazníka server technikovi vůbec neposílá** —
   není to jen skryté v UI (`orderCols()` v `server/routes/orders.ts`).
@@ -178,6 +193,9 @@ Katalog má dvě úrovně: **produkt** (Okenní síť) → **podkategorie**
 
 - Přihlašovací kódy jsou v DB **plaintext**: admin je musí zobrazovat a
   spravovat; hash 6místného prostoru (10^6) je proti offline útoku divadlo.
+  Vlastní kódy (S05) jsou plaintext taky — kancelář je v appce nevidí, ale
+  kdo má přístup k DB nebo záloze, ano. Uživatel si může zvolit heslo,
+  které má i jinde; při předání zmínit.
   Ochrana: kódy generuje server náhodně, unikátní, vystavené jen admin routám,
   nikdy v logách; login má rate-limit per IP + globální pojistku.
 - Session na 90 dní: ukradená cookie (HttpOnly, Secure, SameSite=Lax) platí
@@ -204,6 +222,9 @@ Katalog má dvě úrovně: **produkt** (Okenní síť) → **podkategorie**
   „Je tu nová verze" (`src/components/NovaVerze.tsx`) je vyzve k obnovení.
   Změna tvaru API proto dorazí ke všem až po jejich kliknutí.
   Malé commity s popisem česky nebo anglicky, konzistentně.
+- **Rollback za S05** (deploy před migrací 019): starý kód by vlastní kódy
+  ukázal kanceláři v Účtech a jejich majitelé by se nepřihlásili (starý
+  login bere jen 6 číslic) → před rollbackem jim kancelář vydá nový kód.
 - **Migrace + seed běží v Netlify buildu** (idempotentní) — úprava JSON definice
   → push → deploy = nová verze v DB. První seed: nastav `SEED_ADMIN_CODE`
   (6 číslic) v Netlify env → kód pro Lukáše, ostatní kódy se zobrazí v admin UI

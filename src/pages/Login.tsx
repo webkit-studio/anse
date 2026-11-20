@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { VLASTNI_KOD_MAX, chybaPrihlasovacihoKodu, samoOdeslat } from "@shared/codes";
 import { useLogin, useMe } from "../api/hooks";
 import { Logo } from "../components/Logo";
 
@@ -23,8 +24,11 @@ function safeFrom(raw: unknown): string {
 // L01 #6: kód je pro správce hesel „heslo" — skutečný <form> se submitem,
 // pole type=password s autocomplete=current-password a vedle něj skryté pole
 // username. iCloud Klíčenka a Google pak kód nabídnou uložit a příště doplní
-// přes Face ID / otisk. Vzhled a rychlost zadání zůstávají: šestá číslice
-// formulář odešle sama.
+// přes Face ID / otisk.
+// S05 #7: kód může být i vlastní (8–64 znaků, písmena) — klávesnice je proto
+// textová. Šestá číslice odesílá sama dál (vlastní kód šesti číslicemi začínat
+// nesmí), doplněný kód (správce hesel) se odešle hned, ručně psaný vlastní kód
+// potvrdí Enter nebo tlačítko.
 export default function LoginPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -54,11 +58,12 @@ export default function LoginPage() {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (sending.current) return;
-    // Hodnota z DOM, ne ze stavu: při automatickém odeslání šestou číslicí
-    // React stav ještě nepřekreslil.
-    const value = (inputRef.current?.value ?? "").replace(/\D/g, "").slice(0, 6);
-    if (value.length !== 6) {
-      setError("Kód má 6 číslic.");
+    // Hodnota z DOM, ne ze stavu: při automatickém odeslání React stav ještě
+    // nemusí být překreslený.
+    const value = (inputRef.current?.value ?? "").replace(/\s/g, "");
+    const chyba = chybaPrihlasovacihoKodu(value);
+    if (chyba) {
+      setError(chyba);
       return;
     }
     sending.current = true;
@@ -78,16 +83,19 @@ export default function LoginPage() {
     });
   }
 
+  /** Skutečný submit (ne jen volání funkce), ať ho správce hesel zaznamená. */
+  function odeslat() {
+    const form = formRef.current;
+    if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+    else submitRef.current?.click();
+  }
+
   function onChange(raw: string) {
-    const digits = raw.replace(/\D/g, "").slice(0, 6);
-    setCode(digits);
+    const next = raw.replace(/\s/g, "").slice(0, VLASTNI_KOD_MAX);
+    const odeslatHned = samoOdeslat(code, next);
+    setCode(next);
     setError(null);
-    if (digits.length === 6) {
-      // Skutečný submit (ne jen volání funkce), ať ho správce hesel zaznamená.
-      const form = formRef.current;
-      if (form && typeof form.requestSubmit === "function") form.requestSubmit();
-      else submitRef.current?.click();
-    }
+    if (odeslatHned) odeslat();
   }
 
   const busy = login.isPending || leaving;
@@ -122,8 +130,12 @@ export default function LoginPage() {
           name="password"
           className={`login-code-input ${error ? "input-error" : ""}`}
           type="password"
-          inputMode="numeric"
           autoComplete="current-password"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          enterKeyHint="go"
+          maxLength={VLASTNI_KOD_MAX}
           autoFocus
           placeholder="······"
           value={code}
@@ -131,17 +143,16 @@ export default function LoginPage() {
           onChange={(e) => onChange(e.target.value)}
           aria-describedby={error ? "login-error" : undefined}
         />
-        {/* Enter v poli potřebuje odesílací tlačítko (formulář má dvě pole);
-            šestá číslice odesílá sama, takže zůstává skryté. */}
-        <button ref={submitRef} type="submit" className="visually-hidden" tabIndex={-1} aria-hidden="true">
-          Přihlásit
-        </button>
-        {busy && <p className="login-hint">Přihlašuji…</p>}
         {error && (
           <p id="login-error" className="field-msg field-msg-error" role="alert">
             {error}
           </p>
         )}
+        {/* Enter v poli potřebuje odesílací tlačítko (formulář má dvě pole).
+            Vlastní kód se potvrzuje ručně, proto je vidět. */}
+        <button ref={submitRef} type="submit" className="btn btn-primary login-submit" disabled={busy}>
+          {busy ? "Přihlašuji…" : "Přihlásit"}
+        </button>
       </form>
     </main>
   );
