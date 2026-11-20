@@ -51,6 +51,16 @@ uživatelem, port 5433, DB `anse` — connection string
 - Server **nikdy nevěří klientovi**: params se revalidují proti připnuté verzi
   definice, `position` a `product_type_id` přiděluje server, role se kontroluje
   per routa.
+- **Přihlášení** (L01, migrace 018): JWT v HttpOnly cookie na 90 dní,
+  klouzavá obnova. Token nese `sv` = `users.session_version`; server ho
+  u každého requestu porovná přes cache uživatelů (`sessionUser()`
+  v `server/auth.ts`, nejvýš 60 s). Reset nebo změna kódu a deaktivace
+  verzi zvýší → odhlášení ze všech zařízení (vlastní reset nechá zařízení,
+  ze kterého proběhl). Token bez `sv` = 0. `/api/login` a `/api/me` na
+  sloupci nestojí (záložní dotaz). Login je `<form>`, pole `type=password`
+  + `autocomplete=current-password` a skryté `username` „Anse" kvůli
+  klíčence a Face ID; po přihlášení skutečná navigace — nevracet na
+  `one-time-code` ani SPA `navigate`.
 - Role: `technik` (nezávislý dodavatel, vidí jen svoje zakázky) a `kancelar`
   (vidí vše). **Cenu zakázky pro zákazníka server technikovi vůbec neposílá** —
   není to jen skryté v UI (`orderCols()` v `server/routes/orders.ts`).
