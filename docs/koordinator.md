@@ -88,3 +88,4 @@ připisuj sem:
 
 | Co se stalo | Pravidlo |
 |---|---|
+| S05 #7 dostal „Migrace: žádná", ale `users.code` byl `char(6)` s kontrolou na 6 číslic – session si musela vzít 019 sama | Před „Migrace: žádná" koordinátor grepne `db/migrations` na typy a constrainty sloupců, kterých se issue dotýká |
